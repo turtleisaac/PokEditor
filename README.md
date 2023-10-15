@@ -10,7 +10,7 @@ Written entirely in Java and is completely OS-agnostic.
 
 The majority of the backend can be found in my other library, [PokEditor-Core](https://github.com/turtleisaac/PokEditor-Core).
 
-Also powered by my other libraries, [Nds4j](https://github.com/turtleisaac/Nds4j) and the Nds4j ToolUI. 
+Also powered by my other libraries, [Nds4j](https://github.com/turtleisaac/Nds4j) and [Nds4j-ToolUI](https://github.com/turtleisaac/Nds4j-ToolUI). 
 
 [//]: # (This tool is still in active development and will receive periodic updates as improvements are made and bugs are found, time permitting.)
 
