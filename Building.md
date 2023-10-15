@@ -1,1 +1,0 @@
-# PokEditor v2 Build Guide
