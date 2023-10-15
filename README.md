@@ -8,9 +8,9 @@ Written entirely in Java and is completely OS-agnostic.
 
 **Java 20 is required.** Newer versions may work, but if older classes have been deprecated or removed in those versions, then it may not work for those higher versions of Java.
 
-The majority of the backend can be found in [PokEditor-Core](https://github.com/turtleisaac/PokEditor-Core).
+The majority of the backend can be found in my other library, [PokEditor-Core](https://github.com/turtleisaac/PokEditor-Core).
 
-Powered by my other libraries, [Nds4j](https://github.com/turtleisaac/Nds4j) and the Nds4j ToolUI. 
+Also powered by my other libraries, [Nds4j](https://github.com/turtleisaac/Nds4j) and the Nds4j ToolUI. 
 
 [//]: # (This tool is still in active development and will receive periodic updates as improvements are made and bugs are found, time permitting.)
 
