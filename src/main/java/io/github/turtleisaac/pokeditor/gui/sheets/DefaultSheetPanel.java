@@ -47,6 +47,8 @@ public class DefaultSheetPanel extends JPanel
         reloadSheetButton.setIcon(ThemeUtils.reloadIcon);
         exportSheetButton.setIcon(PokeditorManager.sheetExportIcon);
         importSheetButton.setIcon(PokeditorManager.sheetImportIcon);
+        addRowButton.setIcon(PokeditorManager.rowInsertIcon);
+        deleteRowButton.setIcon(PokeditorManager.rowRemoveIcon);
     }
 
     private void resizeColumnWidth(JTable table) {
@@ -87,12 +89,32 @@ public class DefaultSheetPanel extends JPanel
         resizeColumnWidth(this.table);
     }
 
+    private void addRowButtonPressed(ActionEvent e) {
+        // TODO add your code here
+    }
+
+    private void deleteRowButtonPressed(ActionEvent e) {
+        // TODO add your code here
+    }
+
+    private void exportSheetButtonPressed(ActionEvent e) {
+        // TODO add your code here
+        table.exportClean();
+    }
+
+    private void importSheetButtonPressed(ActionEvent e) {
+        // TODO add your code here
+        JOptionPane.showMessageDialog(this, "Lol you wish", "Nope", JOptionPane.ERROR_MESSAGE);
+    }
+
     private void initComponents() {
         // JFormDesigner - Component initialization - DO NOT MODIFY  //GEN-BEGIN:initComponents
         // Generated using JFormDesigner non-commercial license
         toolBar1 = new JToolBar();
         saveSheetButton = new JButton();
         reloadSheetButton = new JButton();
+        addRowButton = new JButton();
+        deleteRowButton = new JButton();
         exportSheetButton = new JButton();
         importSheetButton = new JButton();
         hSpacer1 = new JPanel(null);
@@ -121,14 +143,29 @@ public class DefaultSheetPanel extends JPanel
             toolBar1.add(reloadSheetButton);
             toolBar1.addSeparator();
 
+            //---- addRowButton ----
+            addRowButton.setText("Add Row");
+            addRowButton.addActionListener(e -> addRowButtonPressed(e));
+            toolBar1.add(addRowButton);
+            toolBar1.addSeparator();
+
+            //---- deleteRowButton ----
+            deleteRowButton.setText("Delete Row");
+            deleteRowButton.addActionListener(e -> deleteRowButtonPressed(e));
+            toolBar1.add(deleteRowButton);
+            toolBar1.addSeparator();
+
             //---- exportSheetButton ----
             exportSheetButton.setText("Export");
+            exportSheetButton.addActionListener(e -> exportSheetButtonPressed(e));
             toolBar1.add(exportSheetButton);
             toolBar1.addSeparator();
 
             //---- importSheetButton ----
             importSheetButton.setText("Import");
+            importSheetButton.addActionListener(e -> importSheetButtonPressed(e));
             toolBar1.add(importSheetButton);
+            toolBar1.addSeparator();
             toolBar1.add(hSpacer1);
 
             //---- zoomOutButton ----
@@ -157,6 +194,8 @@ public class DefaultSheetPanel extends JPanel
     private JToolBar toolBar1;
     private JButton saveSheetButton;
     private JButton reloadSheetButton;
+    private JButton addRowButton;
+    private JButton deleteRowButton;
     private JButton exportSheetButton;
     private JButton importSheetButton;
     private JPanel hSpacer1;

@@ -10,6 +10,7 @@ import io.github.turtleisaac.pokeditor.gui.sheets.tables.renderers.*;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableCellRenderer;
+import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumn;
 import javax.swing.table.TableModel;
 import java.awt.*;
@@ -19,15 +20,13 @@ import java.util.List;
 public abstract class DefaultTable<E extends GenericFileData> extends JTable
 {
     private final CellTypes[] cellTypes;
-    private final List<TextBankData> textData;
     private final int[] widths;
 
-    public DefaultTable(CellTypes[] cellTypes, int[] widths, List<E> data, List<TextBankData> textData, TextFiles[] textSources, TableModel model)
+    public DefaultTable(CellTypes[] cellTypes, TableModel model, List<TextBankData> textData, int[] widths)
     {
         super(model);
 
         this.cellTypes = cellTypes;
-        this.textData = textData;
         this.widths = widths;
         setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
 
@@ -37,14 +36,14 @@ public abstract class DefaultTable<E extends GenericFileData> extends JTable
 //        setBackground(Color.WHITE);
 //        setForeground(Color.black);
 
-        Queue<TextFiles> textSourceQueue = new LinkedList<>(Arrays.asList(textSources));
-
-        loadCellRenderers(textSourceQueue);
+        loadCellRenderers(obtainTextSources(textData));
 
         moo();
     }
 
-    public void loadCellRenderers(Queue<TextFiles> textSources)
+    abstract Queue<String[]> obtainTextSources(List<TextBankData> textData);
+
+    public void loadCellRenderers(Queue<String[]> textSources)
     {
         for (int i = 0; i < cellTypes.length; i++)
         {
@@ -56,18 +55,14 @@ public abstract class DefaultTable<E extends GenericFileData> extends JTable
             if (c == CellTypes.CHECKBOX)
             {
                 col.setCellRenderer(new CheckBoxRenderer());
-//                col.setCellRenderer(new CheckBoxRenderer());
             }
             else if (c == CellTypes.COMBO_BOX || c == CellTypes.COLORED_COMBO_BOX)
             {
-                TextFiles bank = textSources.remove();
-                String[] text;
-                if (bank != null)
-                    text = textData.get(bank.getValue()).getStringList().toArray(String[]::new);
-                else
+                String[] text = textSources.remove();
+                if (text == null)
                     text = new String[] {""};
                 col.setCellEditor(new ComboBoxCellEditor(text));
-                
+
                 if (c == CellTypes.COMBO_BOX)
                     col.setCellRenderer(new IndexedStringCellRenderer(text));
                 else
@@ -82,6 +77,47 @@ public abstract class DefaultTable<E extends GenericFileData> extends JTable
 //                col.setCellRenderer(new ButtonRenderer());
 //            }
         }
+    }
+
+    public String[][] exportClean()
+    {
+        String[][] output = new String[getModel().getRowCount()][getColumnCount()];
+        for (int colIdx = 0; colIdx < output[0].length; colIdx++)
+        {
+            TableColumn column = getColumnModel().getColumn(colIdx);
+            TableCellRenderer renderer = column.getCellRenderer();
+            if (renderer != null && !(renderer instanceof CheckBoxRenderer))
+            {
+                for (int rowIdx = 0; rowIdx < output.length; rowIdx++)
+                {
+                    output[rowIdx][colIdx] = ((DefaultTableCellRenderer) prepareRenderer(renderer, rowIdx, colIdx)).getText();
+                }
+            }
+            else
+            {
+                for (int rowIdx = 0; rowIdx < output.length; rowIdx++)
+                {
+                    output[rowIdx][colIdx] = String.valueOf(getValueAt(rowIdx, colIdx));
+                }
+            }
+
+        }
+
+        return output;
+    }
+
+    public String[][] exportEditable()
+    {
+        String[][] output = new String[getModel().getRowCount()][getColumnCount()];
+        for (int colIdx = 0; colIdx < output[0].length; colIdx++)
+        {
+            for (int rowIdx = 0; rowIdx < output.length; rowIdx++)
+            {
+                output[rowIdx][colIdx] = String.valueOf(getValueAt(rowIdx, colIdx));
+            }
+        }
+
+        return output;
     }
 
     private void moo()
@@ -110,5 +146,16 @@ public abstract class DefaultTable<E extends GenericFileData> extends JTable
         });
 
         setRowSelectionAllowed(false);
+    }
+
+    public static String[] loadStringsFromKeys(String... keys)
+    {
+        ResourceBundle bundle = ResourceBundle.getBundle("sheet_strings");
+        String[] result = new String[keys.length];
+        int idx = 0;
+        for (String s : keys) {
+            result[idx++] = bundle.getString(s);
+        }
+        return result;
     }
 }

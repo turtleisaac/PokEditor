@@ -3,6 +3,7 @@ package io.github.turtleisaac.pokeditor.gui.sheets.tables;
 import io.github.turtleisaac.pokeditor.formats.text.TextBankData;
 import javax.swing.table.AbstractTableModel;
 import java.util.List;
+import java.util.ResourceBundle;
 
 public abstract class FormatModel<E> extends AbstractTableModel
 {
@@ -11,11 +12,17 @@ public abstract class FormatModel<E> extends AbstractTableModel
 
     private final String[] columnNames;
 
-    public FormatModel(String[] columnNames, List<E> data, List<TextBankData> textBankData)
+    public FormatModel(String[] columnNameKeys, List<E> data, List<TextBankData> textBankData)
     {
-        this.columnNames = columnNames;
         this.data = data;
         this.textBankData = textBankData;
+        this.columnNames = new String[columnNameKeys.length];
+
+        ResourceBundle bundle = ResourceBundle.getBundle("sheet_strings");
+
+        int idx = 0;
+        for(String key : columnNameKeys)
+            columnNames[idx++] = bundle.getString(key);
     }
 
     @Override

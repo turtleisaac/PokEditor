@@ -3,103 +3,55 @@ package io.github.turtleisaac.pokeditor.gui.sheets.tables;
 import io.github.turtleisaac.pokeditor.formats.personal.PersonalData;
 import io.github.turtleisaac.pokeditor.formats.text.TextBankData;
 import io.github.turtleisaac.pokeditor.gamedata.TextFiles;
-//import io.github.turtleisaac.pokeditor.gui.sheets.SheetEditorPanel;
 
-import javax.swing.*;
-import java.util.List;
+import java.util.*;
 
 public class PersonalTable extends DefaultTable<PersonalData>
 {
     public static final int[] columnWidths = new int[] {40, 100, 65, 65, 65, 65, 65, 65, 100, 100, 65, 65, 65, 65, 65, 65, 65, 65, 140, 140, 65, 65, 70, 120, 120, 120, 140, 140, 65, 65, 65};
-    public static final TextFiles[] textSources = new TextFiles[] {TextFiles.TYPE_NAMES, TextFiles.TYPE_NAMES, TextFiles.ITEM_NAMES, TextFiles.ITEM_NAMES, null, null, null, TextFiles.ABILITY_NAMES, TextFiles.ABILITY_NAMES};
+    private static final String[] growthRateKeys = new String[] {"growthRate.mediumFast", "growthRate.erratic",  "growthRate.fluctuating", "growthRate.mediumSlow", "growthRate.fast", "growthRate.slow", "growthRate.mediumFast", "growthRate.mediumFast"};
+    private static final String[] eggGroupKeys = new String[] {"eggGroup.null", "eggGroup.monster", "eggGroup.water1", "eggGroup.bug", "eggGroup.flying", "eggGroup.field", "eggGroup.fairy", "eggGroup.grass", "eggGroup.humanLike", "eggGroup.water3", "eggGroup.mineral", "eggGroup.amorphous", "eggGroup.water2", "eggGroup.ditto", "eggGroup.dragon", "eggGroup.undiscovered"};
+
 
     public PersonalTable(List<PersonalData> data, List<TextBankData> textData)
     {
-        super(PersonalModel.personalClasses, columnWidths, data, textData, textSources, new PersonalModel(data, textData));
+        super(PersonalModel.personalClasses, new PersonalModel(data, textData), textData, columnWidths);
     }
 
-//    public static void main(String[] args)
-//    {
-//        FlatDarculaLaf.install();
-////        UIDefaults defaults = UIManager.getLookAndFeelDefaults();
-////        if (defaults.get("Table.alternateRowColor") == null)
-////            defaults.put("Table.alternateRowColor", new Color(208, 108, 108));
-//
-//        Object[][] data = new Object[500][];
-//        for(int i= 0; i < data.length; i++)
-//        {
-//            data[i] = generateTestRow();
-//        }
-//
-//        Sheet s = new Sheet()
-//        {
-//            @Override
-//            public Object[][] getData()
-//            {
-//                return data;
-//            }
-//
-//            @Override
-//            public SinnohSheets getSheetType()
-//            {
-//                return SinnohSheets.Personal;
-//            }
-//
-//            @Override
-//            public JohtoSheets getAltSheetType()
-//            {
-//                return null;
-//            }
-//        };
-//
-////        SheetEditorPanel frame = new SheetEditorPanel(s);
-////        frame.setPreferredSize(new Dimension(1500, 800));
-//    }
+    @Override
+    Queue<String[]> obtainTextSources(List<TextBankData> textData)
+    {
+        Queue<String[]> textSources = new LinkedList<>();
+        String[] temp = textData.get(TextFiles.TYPE_NAMES.getValue()).getStringList().toArray(String[]::new);
+        textSources.add(temp);
+        textSources.add(temp);
 
+        temp = textData.get(TextFiles.ITEM_NAMES.getValue()).getStringList().toArray(String[]::new);
+        textSources.add(temp);
+        textSources.add(temp);
 
-//    private static Object[] generateTestRow()
-//    {
-//
-//        ArrayList<Object> row = new ArrayList<>();
-//        for(Class<?> c : personalClasses)
-//        {
-//            if(c == JCheckBox.class)
-//            {
-//                row.add(true);
-//            }
-//            else if(c == JComboBox.class)
-//            {
-//                row.add("Moo1");
-//            }
-//            else if(c == JSpinner.class)
-//            {
-//                row.add(1);
-//            }
-//            else if(c == JButton.class)
-//            {
-//                row.add(true);
-//            }
-//            else if(c == String.class)
-//            {
-//                row.add("species");
-//            }
-//            else if(c == Integer.class)
-//            {
-//                row.add(0);
-//            }
-//        }
-//
-//        return row.toArray(new Object[] {});
-//    }
+        textSources.add(DefaultTable.loadStringsFromKeys(growthRateKeys));
+
+        temp = DefaultTable.loadStringsFromKeys(eggGroupKeys);
+        textSources.add(temp);
+        textSources.add(temp);
+
+        temp = textData.get(TextFiles.ABILITY_NAMES.getValue()).getStringList().toArray(String[]::new);
+        textSources.add(temp);
+        textSources.add(temp);
+        textSources.add(temp);
+
+        return textSources;
+    }
 
     static class PersonalModel extends FormatModel<PersonalData>
     {
         static final CellTypes[] personalClasses = new CellTypes[] {CellTypes.INTEGER, CellTypes.STRING, CellTypes.INTEGER, CellTypes.INTEGER, CellTypes.INTEGER, CellTypes.INTEGER, CellTypes.INTEGER, CellTypes.INTEGER, CellTypes.COLORED_COMBO_BOX, CellTypes.COLORED_COMBO_BOX, CellTypes.INTEGER, CellTypes.INTEGER, CellTypes.INTEGER, CellTypes.INTEGER, CellTypes.INTEGER, CellTypes.INTEGER, CellTypes.INTEGER, CellTypes.INTEGER, CellTypes.COMBO_BOX, CellTypes.COMBO_BOX, CellTypes.INTEGER, CellTypes.INTEGER, CellTypes.INTEGER, CellTypes.COMBO_BOX, CellTypes.COMBO_BOX, CellTypes.COMBO_BOX, CellTypes.COMBO_BOX, CellTypes.COMBO_BOX, CellTypes.INTEGER, CellTypes.INTEGER, CellTypes.CHECKBOX};
-        static final String[] personalNames = new String[] {"ID", "Name", "HP", "Atk", "Def", "Speed", "Sp. Atk", "Sp. Def", "Type 1", "Type 2", "Catch Rate", "Exp Drop", "HP EV", "Atk EV", "Def EV", "Speed EV", "Sp. Atk EV", "Sp. Def EV", "Uncommon Held Item", "Rare Held Item", "Gender Ratio", "Hatch Mult.", "Base Happiness", "Growth Rate", "Egg Group 1", "Egg Group 2", "Ability 1", "Ability 2", "Run Chance", "Color", "Flip"};
+        private static final String[] columnKeys = new String[] {"id", "name", "hp", "atk", "def", "speed", "spAtk", "spDef", "personal.type1", "personal.type2", "catchRate", "expDrop", "hpEvYield", "atkEvYield", "defEvYield", "speedEvYield", "spAtkEvYield", "spDefEvYield", "uncommonHeldItem", "rareHeldItem", "genderRatio", "hatchMultiplier", "baseHappiness", "growthRate", "personal.eggGroup1", "personal.eggGroup2", "personal.ability1", "personal.ability2", "runChance", "color", "flip"};
 
         public PersonalModel(List<PersonalData> data, List<TextBankData> textBankData)
         {
-            super(personalNames, data, textBankData);
+            super(columnKeys, data, textBankData);
         }
 
         @Override
@@ -144,7 +96,9 @@ public class PersonalTable extends DefaultTable<PersonalData>
                 case 20 -> entry.setGenderRatio((Integer) aValue);
                 case 21 -> entry.setHatchMultiplier((Integer) aValue);
                 case 22 -> entry.setBaseHappiness((Integer) aValue);
-                case 23, 24, 25 -> {}
+                case 23 -> entry.setExpRate((Integer) aValue);
+                case 24 -> entry.setEggGroup1((Integer) aValue);
+                case 25 -> entry.setEggGroup2((Integer) aValue);
                 case 26 -> entry.setAbility1((Integer) aValue);
                 case 27 -> entry.setAbility2((Integer) aValue);
                 case 28 -> entry.setRunChance((Integer) aValue);
@@ -232,8 +186,14 @@ public class PersonalTable extends DefaultTable<PersonalData>
                 case 22 -> {
                     return entry.getBaseHappiness();
                 }
-                case 23, 24, 25 -> {
-                    return 0;
+                case 23 -> {
+                    return entry.getExpRate();
+                }
+                case 24-> {
+                    return entry.getEggGroup1();
+                }
+                case 25 -> {
+                    return entry.getEggGroup2();
                 }
                 case 26 -> {
                     return entry.getAbility1();

@@ -29,6 +29,8 @@ public class PokeditorManager extends PanelManager
 
     public static final FlatSVGIcon sheetExportIcon;
     public static final FlatSVGIcon sheetImportIcon;
+    public static final FlatSVGIcon rowRemoveIcon;
+    public static final FlatSVGIcon rowInsertIcon;
 
     public static final Color[] typeColors = new Color[]{new Color(201, 201, 201),
             new Color(173, 96, 94),
@@ -54,9 +56,13 @@ public class PokeditorManager extends PanelManager
         try {
             sheetExportIcon = new FlatSVGIcon(PokeditorManager.class.getResourceAsStream("/icons/svg/table-export.svg"));
             sheetImportIcon = new FlatSVGIcon(PokeditorManager.class.getResourceAsStream("/icons/svg/table-import.svg"));
+            rowRemoveIcon = new FlatSVGIcon(PokeditorManager.class.getResourceAsStream("/icons/svg/row-remove.svg"));
+            rowInsertIcon = new FlatSVGIcon(PokeditorManager.class.getResourceAsStream("/icons/svg/row-insert-bottom.svg"));
 
             sheetExportIcon.setColorFilter(ThemeUtils.iconColorFilter);
             sheetImportIcon.setColorFilter(ThemeUtils.iconColorFilter);
+            rowRemoveIcon.setColorFilter(ThemeUtils.iconColorFilter);
+            rowInsertIcon.setColorFilter(ThemeUtils.iconColorFilter);
         }
         catch(IOException e) {
             throw new RuntimeException(e);

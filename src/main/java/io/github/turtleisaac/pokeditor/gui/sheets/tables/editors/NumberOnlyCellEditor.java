@@ -11,6 +11,7 @@ import java.awt.*;
 public class NumberOnlyCellEditor extends AbstractCellEditor implements TableCellEditor
 {
     private final JTextField textField;
+    private Object lastValue;
 
     public NumberOnlyCellEditor()
     {
@@ -28,30 +29,12 @@ public class NumberOnlyCellEditor extends AbstractCellEditor implements TableCel
                 fb.replace(off, len, str.replaceAll("\\D++", ""), attr);
             }
         });
-
-//        this.spinner = new JSpinner();
-//        SpinnerNumberModel model = new SpinnerNumberModel();
-//        model.setMinimum(0);
-//        model.setMaximum(255);
-//        spinner.setModel(model);
-//
-//        Dimension d = spinner.getPreferredSize();
-//        d.width = 30;
-//        spinner.setUI(new FlatSpinnerUI() {
-//            protected Component createNextButton() {
-//                return null;
-//            }
-//
-//            protected Component createPreviousButton() {
-//                return null;
-//            }
-//        });
-//        spinner.setPreferredSize(d);
     }
 
     @Override
     public Component getTableCellEditorComponent(JTable table, Object value, boolean isSelected, int row, int column)
     {
+        lastValue = String.valueOf(value);
         if (value instanceof String)
             textField.setText((String) value);
         else if (value instanceof Integer)
@@ -62,6 +45,9 @@ public class NumberOnlyCellEditor extends AbstractCellEditor implements TableCel
     @Override
     public Object getCellEditorValue()
     {
-        return textField.getText();
+        int val = Integer.parseInt((String) lastValue);
+        if (val >= 0 || val <= 255)
+            return textField.getText();
+        return lastValue;
     }
 }

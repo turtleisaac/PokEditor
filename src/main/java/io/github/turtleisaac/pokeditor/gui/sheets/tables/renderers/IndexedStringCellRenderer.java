@@ -8,7 +8,7 @@ import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.TableCellRenderer;
 import java.awt.*;
 
-public class IndexedStringCellRenderer extends DefaultTableCellRenderer
+public class IndexedStringCellRenderer extends DefaultTableCellRenderer implements RenderedCellExporter
 {
     private final String[] items;
 
@@ -54,6 +54,12 @@ public class IndexedStringCellRenderer extends DefaultTableCellRenderer
 
 //        return panel;
         return this;
+    }
+
+    @Override
+    public String getString(int row)
+    {
+        return getText();
     }
 
     public static class ColoredIndexedStringCellRenderer extends IndexedStringCellRenderer
