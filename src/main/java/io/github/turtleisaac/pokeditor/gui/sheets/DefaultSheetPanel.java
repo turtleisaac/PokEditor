@@ -9,28 +9,17 @@ import javax.swing.*;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumnModel;
 
-import com.google.inject.AbstractModule;
-import com.google.inject.Guice;
-import com.google.inject.Injector;
-import com.google.inject.TypeLiteral;
-import io.github.turtleisaac.nds4j.Narc;
-import io.github.turtleisaac.nds4j.NintendoDsRom;
 import io.github.turtleisaac.nds4j.ui.ThemeUtils;
-import io.github.turtleisaac.pokeditor.DataManager;
 import io.github.turtleisaac.pokeditor.formats.GenericFileData;
-import io.github.turtleisaac.pokeditor.formats.GenericParser;
-import io.github.turtleisaac.pokeditor.formats.personal.PersonalData;
-import io.github.turtleisaac.pokeditor.formats.text.TextBankData;
-import io.github.turtleisaac.pokeditor.gamedata.GameFiles;
 import io.github.turtleisaac.pokeditor.gui.PokeditorManager;
 import io.github.turtleisaac.pokeditor.gui.sheets.tables.DefaultTable;
 import io.github.turtleisaac.pokeditor.gui.sheets.tables.FormatModel;
-import io.github.turtleisaac.pokeditor.gui.sheets.tables.PersonalTable;
 import net.miginfocom.swing.*;
 
 import java.awt.*;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.lang.reflect.InvocationTargetException;
-import java.util.*;
 import java.util.List;
 
 /**
@@ -55,6 +44,17 @@ public class DefaultSheetPanel<E extends GenericFileData> extends JPanel
         scrollPane1.setViewportView(table);
 //        resizeColumnWidth(table1);
         setIcons();
+
+        table.addPropertyChangeListener(new PropertyChangeListener()
+        {
+            @Override
+            public void propertyChange(PropertyChangeEvent evt)
+            {
+                String property = evt.getPropertyName();
+                if (table.getSelectedColumn() == 1 && (property.equals("tableCellEditor") || property.equals("selectionBackground")))
+                    manager.resetAllIndexedCellRendererText();
+            }
+        });
     }
 
     private void setIcons()
@@ -143,7 +143,7 @@ public class DefaultSheetPanel<E extends GenericFileData> extends JPanel
     }
 
     private void reloadSheetButtonPressed(ActionEvent e) {
-        // TODO add your code here
+        manager.resetData(table.getDataClass());
     }
 
     private void initComponents() {

@@ -1,28 +1,23 @@
 package io.github.turtleisaac.pokeditor.gui;
 
 import com.formdev.flatlaf.extras.FlatSVGIcon;
-import com.google.inject.util.Types;
-import io.github.turtleisaac.nds4j.Narc;
 import io.github.turtleisaac.nds4j.NintendoDsRom;
 import io.github.turtleisaac.nds4j.ui.PanelManager;
 import io.github.turtleisaac.nds4j.ui.ThemeUtils;
 import io.github.turtleisaac.nds4j.ui.Tool;
 import io.github.turtleisaac.pokeditor.DataManager;
 import io.github.turtleisaac.pokeditor.formats.GenericFileData;
-import io.github.turtleisaac.pokeditor.formats.GenericParser;
 import io.github.turtleisaac.pokeditor.formats.personal.PersonalData;
 import io.github.turtleisaac.pokeditor.formats.text.TextBankData;
 import io.github.turtleisaac.pokeditor.gamedata.Game;
 import io.github.turtleisaac.pokeditor.gamedata.GameFiles;
 import io.github.turtleisaac.pokeditor.gamedata.TextFiles;
 import io.github.turtleisaac.pokeditor.gui.sheets.DefaultSheetPanel;
-import io.github.turtleisaac.pokeditor.gui.sheets.tables.PersonalTable;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.io.IOException;
-import java.lang.reflect.ParameterizedType;
 import java.util.*;
 import java.util.List;
 
@@ -97,10 +92,32 @@ public class PokeditorManager extends PanelManager
         sheetPanels.put(PersonalData.class, personalPanel);
     }
 
-    public final <E extends GenericFileData> void saveData(Class<E> dataClass)
+    public <E extends GenericFileData> void saveData(Class<E> dataClass)
     {
         DataManager.saveData(rom, dataClass);
         DataManager.saveData(rom, TextBankData.class);
+
+        if (!wipeAndWriteUnpacked())
+            throw new RuntimeException("An error occurred while deleting or writing a file, please check write permissions");
+
+        /**
+         * at this point, there are a few things which need to happen:
+         * 1. all other tables need to have their text data source updated so changes to strings will propagate
+         * 2. need to save all staged changes in the rom to disk
+         */
+    }
+
+    public <E extends GenericFileData> void resetData(Class<E> dataClass)
+    {
+        DataManager.resetData(rom, dataClass);
+    }
+
+    public void resetAllIndexedCellRendererText()
+    {
+        for (DefaultSheetPanel<?> panel : sheetPanels.values())
+        {
+            panel.getTable().resetIndexedCellRendererText();
+        }
     }
 
     @Override

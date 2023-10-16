@@ -1,10 +1,8 @@
 package io.github.turtleisaac.pokeditor.gui.sheets.tables;
 
-import com.google.inject.Inject;
 import io.github.turtleisaac.pokeditor.formats.personal.PersonalData;
 import io.github.turtleisaac.pokeditor.formats.text.TextBankData;
 import io.github.turtleisaac.pokeditor.gamedata.TextFiles;
-import io.github.turtleisaac.pokeditor.gui.PokeditorManager;
 
 import java.util.*;
 

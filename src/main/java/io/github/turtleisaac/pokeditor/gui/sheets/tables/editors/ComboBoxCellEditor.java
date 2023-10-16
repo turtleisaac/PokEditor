@@ -16,6 +16,11 @@ public class ComboBoxCellEditor extends AbstractCellEditor implements TableCellE
         comboBox = new EditorComboBox(items);
     }
 
+    public void setItems(String[] items)
+    {
+        comboBox = new EditorComboBox(items);
+    }
+
     @Override
     public Object getCellEditorValue()
     {

@@ -1,10 +1,7 @@
 package io.github.turtleisaac.pokeditor.gui.sheets.tables;
 
-import com.google.inject.Inject;
 import io.github.turtleisaac.pokeditor.formats.GenericFileData;
-import io.github.turtleisaac.pokeditor.formats.personal.PersonalData;
 import io.github.turtleisaac.pokeditor.formats.text.TextBankData;
-import io.github.turtleisaac.pokeditor.gamedata.TextFiles;
 import io.github.turtleisaac.pokeditor.gui.PokeditorManager;
 import io.github.turtleisaac.pokeditor.gui.sheets.tables.editors.ComboBoxCellEditor;
 import io.github.turtleisaac.pokeditor.gui.sheets.tables.editors.NumberOnlyCellEditor;
@@ -14,7 +11,6 @@ import javax.swing.*;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumn;
-import javax.swing.table.TableModel;
 import java.awt.*;
 import java.util.*;
 import java.util.List;
@@ -23,6 +19,7 @@ public abstract class DefaultTable<E extends GenericFileData> extends JTable
 {
     private final CellTypes[] cellTypes;
     private final int[] widths;
+    private final List<TextBankData> textData;
 
     public DefaultTable(CellTypes[] cellTypes, FormatModel<E> model, List<TextBankData> textData, int[] widths)
     {
@@ -30,6 +27,7 @@ public abstract class DefaultTable<E extends GenericFileData> extends JTable
 
         this.cellTypes = cellTypes;
         this.widths = widths;
+        this.textData = textData;
         setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
 
         setShowGrid(true);
@@ -80,6 +78,25 @@ public abstract class DefaultTable<E extends GenericFileData> extends JTable
 //            {
 //                col.setCellRenderer(new ButtonRenderer());
 //            }
+        }
+    }
+
+    public void resetIndexedCellRendererText()
+    {
+        Queue<String[]> textSources = obtainTextSources(textData);
+        for (int i = 0; i < cellTypes.length; i++)
+        {
+            CellTypes c = cellTypes[i];
+            TableColumn col = getColumnModel().getColumn(i);
+
+            if (c == CellTypes.COMBO_BOX || c == CellTypes.COLORED_COMBO_BOX)
+            {
+                String[] text = textSources.remove();
+                if (text == null)
+                    text = new String[] {""};
+                ((ComboBoxCellEditor) col.getCellEditor()).setItems(text);
+                ((IndexedStringCellRenderer) col.getCellRenderer()).setItems(text);
+            }
         }
     }
 

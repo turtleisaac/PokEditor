@@ -64,7 +64,7 @@ public class DataManager
         return (GenericParser<E>) injector.getInstance(Key.get(TypeLiteral.get(type)));
     }
 
-    private static final Map<Class<? extends GenericFileData>, List<GenericFileData>> dataMap = new HashMap<>();
+    private static final Map<Class<? extends GenericFileData>, List<? extends GenericFileData>> dataMap = new HashMap<>();
 
     public static <E extends GenericFileData> List<E> getData(NintendoDsRom rom, Class<E> eClass)
     {
@@ -78,7 +78,10 @@ public class DataManager
             input.put(gameFile, new Narc(rom.getFileByName(gameFile.getPath())));
         }
 
-        return parser.generateDataList(input);
+        List<E> data = parser.generateDataList(input);
+        dataMap.put(eClass, data);
+
+        return data;
     }
 
     public static <E extends GenericFileData> void saveData(NintendoDsRom rom, Class<E> eClass)
@@ -94,10 +97,19 @@ public class DataManager
         }
     }
 
-    public static <E extends GenericFileData> DefaultTable<E> getTable(Class<E> eClass)
+    public static <E extends GenericFileData> void resetData(NintendoDsRom rom, Class<E> eClass)
     {
-        ParameterizedType type = Types.newParameterizedType(DefaultTable.class, eClass);
-        return (DefaultTable<E>) injector.getInstance(Key.get(TypeLiteral.get(type)));
+        if (!dataMap.containsKey(eClass))
+            return;
+
+        List<E> list = (List<E>) dataMap.get(eClass);
+        list.clear();
+        dataMap.remove(eClass);
+        List<E> newList = getData(rom, eClass);
+        dataMap.remove(newList);
+
+        list.addAll(newList);
+        dataMap.put(eClass, list);
     }
 
     static class PersonalModule extends AbstractModule

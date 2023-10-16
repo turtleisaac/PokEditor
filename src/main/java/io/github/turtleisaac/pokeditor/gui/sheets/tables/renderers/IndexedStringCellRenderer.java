@@ -8,11 +8,16 @@ import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.TableCellRenderer;
 import java.awt.*;
 
-public class IndexedStringCellRenderer extends DefaultTableCellRenderer implements RenderedCellExporter
+public class IndexedStringCellRenderer extends DefaultTableCellRenderer
 {
-    private final String[] items;
+    private String[] items;
 
     public IndexedStringCellRenderer(String[] items)
+    {
+        this.items = items;
+    }
+
+    public void setItems(String[] items)
     {
         this.items = items;
     }
@@ -25,26 +30,10 @@ public class IndexedStringCellRenderer extends DefaultTableCellRenderer implemen
         table.setShowGrid(true);
 
         super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
-//        JLabel label = new JLabel();
-
-//        JPanel panel = new JPanel(new GridBagLayout());
-//        panel.add(label);
-//        if (isSelected)
-//        {
-//            label.setForeground(table.getForeground());
-//            label.setBackground(table.getSelectionBackground());
-//            panel.setBackground(table.getSelectionBackground());
-//        }
-//        else
-//        {
-//            label.setForeground(table.getForeground());
-//            label.setBackground(table.getBackground());
-//        }
 
         if (value != null) {
             if (value instanceof Integer)
                 if ((Integer) value < items.length) {
-//                    comboBox.setSelectedIndex((Integer) value);
                     int num = (int) value;
                     this.setText(items[num]);
                 }
@@ -54,12 +43,6 @@ public class IndexedStringCellRenderer extends DefaultTableCellRenderer implemen
 
 //        return panel;
         return this;
-    }
-
-    @Override
-    public String getString(int row)
-    {
-        return getText();
     }
 
     public static class ColoredIndexedStringCellRenderer extends IndexedStringCellRenderer
