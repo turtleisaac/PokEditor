@@ -33,6 +33,7 @@ public class DefaultSheetPanel extends JPanel
         table.setRowSelectionAllowed(true);
 //        table.setColumnSelectionAllowed(true);
         table.setSelectionMode(ListSelectionModel.SINGLE_INTERVAL_SELECTION);
+        table.getTableHeader().setReorderingAllowed(false);
         scrollPane1.setViewportView(table);
 //        resizeColumnWidth(table1);
         setIcons();

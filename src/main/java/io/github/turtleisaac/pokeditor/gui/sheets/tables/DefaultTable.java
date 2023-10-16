@@ -1,17 +1,15 @@
 package io.github.turtleisaac.pokeditor.gui.sheets.tables;
 
 import io.github.turtleisaac.pokeditor.formats.GenericFileData;
-import io.github.turtleisaac.pokeditor.formats.personal.PersonalData;
 import io.github.turtleisaac.pokeditor.formats.text.TextBankData;
 import io.github.turtleisaac.pokeditor.gamedata.TextFiles;
 import io.github.turtleisaac.pokeditor.gui.PokeditorManager;
-import io.github.turtleisaac.pokeditor.gui.sheets.tables.editors.EditorComboBoxEditor;
-import io.github.turtleisaac.pokeditor.gui.sheets.tables.editors.SpinnerCellEditor;
+import io.github.turtleisaac.pokeditor.gui.sheets.tables.editors.ComboBoxCellEditor;
+import io.github.turtleisaac.pokeditor.gui.sheets.tables.editors.NumberOnlyCellEditor;
 import io.github.turtleisaac.pokeditor.gui.sheets.tables.renderers.*;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableCellRenderer;
-import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableColumn;
 import javax.swing.table.TableModel;
 import java.awt.*;
@@ -20,15 +18,15 @@ import java.util.List;
 
 public abstract class DefaultTable<E extends GenericFileData> extends JTable
 {
-    private final Class<?>[] classes;
+    private final CellTypes[] cellTypes;
     private final List<TextBankData> textData;
     private final int[] widths;
 
-    public DefaultTable(Class<?>[] classes, int[] widths, List<E> data, List<TextBankData> textData, TextFiles[] textSources, TableModel model)
+    public DefaultTable(CellTypes[] cellTypes, int[] widths, List<E> data, List<TextBankData> textData, TextFiles[] textSources, TableModel model)
     {
         super(model);
 
-        this.classes = classes;
+        this.cellTypes = cellTypes;
         this.textData = textData;
         this.widths = widths;
         setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
@@ -48,19 +46,19 @@ public abstract class DefaultTable<E extends GenericFileData> extends JTable
 
     public void loadCellRenderers(Queue<TextFiles> textSources)
     {
-        for (int i = 0; i < classes.length; i++)
+        for (int i = 0; i < cellTypes.length; i++)
         {
-            Class<?> c = classes[i];
+            CellTypes c = cellTypes[i];
             TableColumn col = getColumnModel().getColumn(i);
             col.setWidth(widths[i]);
             col.setPreferredWidth(widths[i]);
 
-            if (c == JCheckBox.class)
+            if (c == CellTypes.CHECKBOX)
             {
                 col.setCellRenderer(new CheckBoxRenderer());
 //                col.setCellRenderer(new CheckBoxRenderer());
             }
-            else if (c == JComboBox.class)
+            else if (c == CellTypes.COMBO_BOX || c == CellTypes.COLORED_COMBO_BOX)
             {
                 TextFiles bank = textSources.remove();
                 String[] text;
@@ -68,17 +66,21 @@ public abstract class DefaultTable<E extends GenericFileData> extends JTable
                     text = textData.get(bank.getValue()).getStringList().toArray(String[]::new);
                 else
                     text = new String[] {""};
-                col.setCellEditor(new EditorComboBoxEditor(text));
-                col.setCellRenderer(new EditorComboBoxRenderer(text, PokeditorManager.typeColors));
+                col.setCellEditor(new ComboBoxCellEditor(text));
+                
+                if (c == CellTypes.COMBO_BOX)
+                    col.setCellRenderer(new IndexedStringCellRenderer(text));
+                else
+                    col.setCellRenderer(new IndexedStringCellRenderer.ColoredIndexedStringCellRenderer(text, PokeditorManager.typeColors));
             }
-            else if (c == JSpinner.class)
+            else if (c == CellTypes.INTEGER)
             {
-                col.setCellEditor(new SpinnerCellEditor());
+                col.setCellEditor(new NumberOnlyCellEditor());
             }
-            else if (c == JButton.class)
-            {
-                col.setCellRenderer(new ButtonRenderer());
-            }
+//            else if (c == JButton.class)
+//            {
+//                col.setCellRenderer(new ButtonRenderer());
+//            }
         }
     }
 

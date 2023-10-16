@@ -94,7 +94,7 @@ public class PersonalTable extends DefaultTable<PersonalData>
 
     static class PersonalModel extends FormatModel<PersonalData>
     {
-        static final Class<?>[] personalClasses = new Class<?>[] {Integer.class, String.class, JSpinner.class, JSpinner.class, JSpinner.class, JSpinner.class, JSpinner.class, JSpinner.class, JComboBox.class, JComboBox.class, JSpinner.class, JSpinner.class, JSpinner.class, JSpinner.class, JSpinner.class, JSpinner.class, JSpinner.class, JSpinner.class, JComboBox.class, JComboBox.class, JSpinner.class, JSpinner.class, JSpinner.class, JComboBox.class, JComboBox.class, JComboBox.class, JComboBox.class, JComboBox.class, JSpinner.class, JSpinner.class, JCheckBox.class};
+        static final CellTypes[] personalClasses = new CellTypes[] {CellTypes.INTEGER, CellTypes.STRING, CellTypes.INTEGER, CellTypes.INTEGER, CellTypes.INTEGER, CellTypes.INTEGER, CellTypes.INTEGER, CellTypes.INTEGER, CellTypes.COLORED_COMBO_BOX, CellTypes.COLORED_COMBO_BOX, CellTypes.INTEGER, CellTypes.INTEGER, CellTypes.INTEGER, CellTypes.INTEGER, CellTypes.INTEGER, CellTypes.INTEGER, CellTypes.INTEGER, CellTypes.INTEGER, CellTypes.COMBO_BOX, CellTypes.COMBO_BOX, CellTypes.INTEGER, CellTypes.INTEGER, CellTypes.INTEGER, CellTypes.COMBO_BOX, CellTypes.COMBO_BOX, CellTypes.COMBO_BOX, CellTypes.COMBO_BOX, CellTypes.COMBO_BOX, CellTypes.INTEGER, CellTypes.INTEGER, CellTypes.CHECKBOX};
         static final String[] personalNames = new String[] {"ID", "Name", "HP", "Atk", "Def", "Speed", "Sp. Atk", "Sp. Def", "Type 1", "Type 2", "Catch Rate", "Exp Drop", "HP EV", "Atk EV", "Def EV", "Speed EV", "Sp. Atk EV", "Sp. Def EV", "Uncommon Held Item", "Rare Held Item", "Gender Ratio", "Hatch Mult.", "Base Happiness", "Growth Rate", "Egg Group 1", "Egg Group 2", "Ability 1", "Ability 2", "Run Chance", "Color", "Flip"};
 
         public PersonalModel(List<PersonalData> data, List<TextBankData> textBankData)
@@ -108,8 +108,14 @@ public class PersonalTable extends DefaultTable<PersonalData>
             PersonalData entry = getData().get(rowIndex);
             TextBankData speciesNames = getTextBankData().get(TextFiles.SPECIES_NAMES.getValue());
 
-            if (columnIndex != 1 && columnIndex != 30 && aValue instanceof String)
-                aValue = Integer.parseInt(((String) aValue).trim());
+            if (aValue instanceof String)
+            {
+                if (columnIndex != 1 && columnIndex != 30)
+                    aValue = Integer.parseInt(((String) aValue).trim());
+                else if (columnIndex == 30)
+                    aValue = Boolean.parseBoolean(((String) aValue).trim());
+            }
+
 
             switch (columnIndex) {
                 case 0 -> {}

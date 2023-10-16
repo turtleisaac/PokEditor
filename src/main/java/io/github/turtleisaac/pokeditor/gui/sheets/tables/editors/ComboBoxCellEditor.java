@@ -5,15 +5,13 @@ import io.github.turtleisaac.pokeditor.gui_old.EditorComboBox;
 import javax.swing.*;
 import javax.swing.table.TableCellEditor;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 
-public class EditorComboBoxEditor extends AbstractCellEditor implements TableCellEditor
+public class ComboBoxCellEditor extends AbstractCellEditor implements TableCellEditor
 {
 
     EditorComboBox comboBox;
 
-    public EditorComboBoxEditor(String[] items)
+    public ComboBoxCellEditor(String[] items)
     {
         comboBox = new EditorComboBox(items);
     }
