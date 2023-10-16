@@ -8,11 +8,10 @@ import javax.swing.*;
 
 import com.formdev.flatlaf.intellijthemes.FlatArcOrangeIJTheme;
 import com.formdev.flatlaf.intellijthemes.FlatDarkPurpleIJTheme;
-import io.github.turtleisaac.NdsCommonBase.ProgramType;
-import io.github.turtleisaac.NdsCommonBase.Tool;
-import io.github.turtleisaac.NdsCommonBase.ToolPanel;
-import io.github.turtleisaac.NdsCommonBase.exceptions.ToolCreationException;
-import io.github.turtleisaac.pokeditor.gui.PokeditorPanel;
+import io.github.turtleisaac.nds4j.ui.ProgramType;
+import io.github.turtleisaac.nds4j.ui.Tool;
+import io.github.turtleisaac.nds4j.ui.exceptions.ToolCreationException;
+import io.github.turtleisaac.pokeditor.gui.PokeditorManager;
 import io.github.turtleisaac.pokeditor.gui_old.projects.projectwindow.console.ConsoleWindow;
 
 import java.util.function.Supplier;
@@ -34,15 +33,16 @@ public class Main
         tool.setType(ProgramType.PROJECT)
                 .setName("PokEditor")
                 .setVersion("3.0.0-SNAPSHOT")
-                .setFlavorText(mainMenuJokes[(int) (Math.random()*(mainMenuJokes.length))])
+                .setFlavorText("Did you know that Jay likes Moemon?")
+//                .setFlavorText(mainMenuJokes[(int) (Math.random()*(mainMenuJokes.length))])
                 .setAuthor("Developed by Turtleisaac")
-//                .addLookAndFeel(new FlatDarkPurpleIJTheme())
+                .addLookAndFeel(new FlatDarkPurpleIJTheme())
                 .addLookAndFeel(new FlatArcOrangeIJTheme())
 //                .addLookAndFeel(new javax.swing.plaf.metal.MetalLookAndFeel())
                 .addGame("Pokémon Platinum", "CPU")
                 .addGame("Pokémon HeartGold","IPK")
                 .addGame("Pokémon SoulSilver","IPG")
-                .addToolPanel(() -> new PokeditorPanel(tool))
+                .addPanelManager(() -> new PokeditorManager(tool))
                 .init();
 
 

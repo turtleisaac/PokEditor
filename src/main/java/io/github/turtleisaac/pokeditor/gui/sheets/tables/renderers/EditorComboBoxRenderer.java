@@ -6,12 +6,13 @@ import javax.swing.*;
 import javax.swing.table.TableCellRenderer;
 import java.awt.*;
 
-public class EditorComboBoxRenderer extends EditorComboBox implements TableCellRenderer
+public class EditorComboBoxRenderer implements TableCellRenderer
 {
+    private final String[] items;
 
     public EditorComboBoxRenderer(String[] items)
     {
-        super(items);
+        this.items = items;
     }
 
     @Override
@@ -21,17 +22,25 @@ public class EditorComboBoxRenderer extends EditorComboBox implements TableCellR
         table.setShowHorizontalLines(true);
         table.setShowGrid(true);
 
+        EditorComboBox comboBox = new EditorComboBox(items);
+
         if (isSelected)
         {
-            setForeground(table.getSelectionForeground());
-            super.setBackground(table.getSelectionBackground());
+            comboBox.setForeground(table.getSelectionForeground());
+            comboBox.setBackground(table.getSelectionBackground());
         }
         else
         {
-            setForeground(table.getForeground());
-            setBackground(table.getBackground());
+            comboBox.setForeground(table.getForeground());
+            comboBox.setBackground(table.getBackground());
         }
-        setSelectedItem(value);
-        return this;
+
+        if (value != null) {
+            if (value instanceof Integer)
+                if ((Integer) value < comboBox.getItemCount())
+                    comboBox.setSelectedIndex((Integer) value);
+        }
+
+        return comboBox;
     }
 }

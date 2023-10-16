@@ -1,5 +1,9 @@
 package io.github.turtleisaac.pokeditor.gui.sheets.tables;
 
+import io.github.turtleisaac.pokeditor.formats.GenericFileData;
+import io.github.turtleisaac.pokeditor.formats.personal.PersonalData;
+import io.github.turtleisaac.pokeditor.formats.text.TextBankData;
+import io.github.turtleisaac.pokeditor.gamedata.TextFiles;
 import io.github.turtleisaac.pokeditor.gui.sheets.tables.editors.EditorComboBoxEditor;
 import io.github.turtleisaac.pokeditor.gui.sheets.tables.renderers.*;
 
@@ -7,74 +11,78 @@ import javax.swing.*;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableColumn;
+import javax.swing.table.TableModel;
 import java.awt.*;
-import java.util.ArrayList;
-import java.util.Enumeration;
+import java.util.*;
+import java.util.List;
 
-public class DefaultTable extends JTable
+public abstract class DefaultTable<E extends GenericFileData> extends JTable
 {
     private final Class<?>[] classes;
-    private final String[] names;
+    private final List<TextBankData> textData;
+    private final int[] widths;
 
-    public DefaultTable(Class<?>[] classes, String[] names, int[] widths, Object[][] data)
+    public DefaultTable(Class<?>[] classes, int[] widths, List<E> data, List<TextBankData> textData, TextFiles[] textSources, TableModel model)
     {
-        super();
+        super(model);
 
         this.classes = classes;
-        this.names = names;
-        DefaultTableModel model= (DefaultTableModel) getModel();
+        this.textData = textData;
+        this.widths = widths;
         setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
 
         setShowGrid(true);
-        setGridColor(Color.black);
+//        setGridColor(Color.black);
+
 //        setBackground(Color.WHITE);
 //        setForeground(Color.black);
 
-        for(int col= 0; col < data[0].length; col++)
-        {
-            ArrayList<Object> column = new ArrayList<>();
-            for(Object[] datum : data)
-            {
-                column.add(datum[col]);
-            }
-            model.addColumn(names[col], column.toArray());
-        }
+        Queue<TextFiles> textSourceQueue = new LinkedList<>(Arrays.asList(textSources));
 
-        for(int i= 0; i < classes.length; i++)
+        loadCellRenderers(textSourceQueue, data.size());
+
+        moo();
+    }
+
+    public void loadCellRenderers(Queue<TextFiles> textSources, int numRows)
+    {
+        for (int i = 0; i < classes.length; i++)
         {
             Class<?> c = classes[i];
             TableColumn col = getColumnModel().getColumn(i);
             col.setWidth(widths[i]);
             col.setPreferredWidth(widths[i]);
 
-            if(c == JCheckBox.class)
+            if (c == JCheckBox.class)
             {
                 col.setCellRenderer(new CheckBoxRenderer());
-                col.setCellRenderer(new CheckBoxRenderer());
+//                col.setCellRenderer(new CheckBoxRenderer());
             }
-            else if(c == JComboBox.class)
+            else if (c == JComboBox.class)
             {
-                col.setCellEditor(new EditorComboBoxEditor(new String[] {"Moo1", "Moo2", "Moo3"}));
-                col.setCellRenderer(new EditorComboBoxRenderer(new String[] {"Moo1", "Moo2", "Moo3"}));
+                TextFiles bank = textSources.remove();
+                String[] text;
+                if (bank != null)
+                    text = textData.get(bank.getValue()).getStringList().toArray(String[]::new);
+                else
+                    text = new String[] {};
+                col.setCellEditor(new EditorComboBoxEditor(text, numRows));
+                col.setCellRenderer(new EditorComboBoxRenderer(text));
             }
-            else if(c == JSpinner.class)
+            else if (c == JSpinner.class)
             {
                 col.setCellRenderer(new SpinnerRenderer());
             }
-            else if(c == JButton.class)
+            else if (c == JButton.class)
             {
                 col.setCellRenderer(new ButtonRenderer());
             }
         }
+    }
+    public abstract void setValues(List<E> data, List<TextBankData> textData);
 
-        for(int row= 0; row < data.length; row++)
-        {
-            for(int col= 0; col < data[row].length; col++)
-            {
-                model.setValueAt(data[row][col], row, col);
-            }
-        }
-
+    private void moo()
+    {
         MultiLineTableHeaderRenderer renderer = new MultiLineTableHeaderRenderer();
         Enumeration<?> enumK = getColumnModel().getColumns();
         while (enumK.hasMoreElements())
