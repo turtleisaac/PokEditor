@@ -1,12 +1,14 @@
 package io.github.turtleisaac.pokeditor.gui;
 
 import com.formdev.flatlaf.extras.FlatSVGIcon;
+import com.google.inject.util.Types;
 import io.github.turtleisaac.nds4j.Narc;
 import io.github.turtleisaac.nds4j.NintendoDsRom;
 import io.github.turtleisaac.nds4j.ui.PanelManager;
 import io.github.turtleisaac.nds4j.ui.ThemeUtils;
 import io.github.turtleisaac.nds4j.ui.Tool;
 import io.github.turtleisaac.pokeditor.DataManager;
+import io.github.turtleisaac.pokeditor.formats.GenericFileData;
 import io.github.turtleisaac.pokeditor.formats.GenericParser;
 import io.github.turtleisaac.pokeditor.formats.personal.PersonalData;
 import io.github.turtleisaac.pokeditor.formats.text.TextBankData;
@@ -20,6 +22,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.io.IOException;
+import java.lang.reflect.ParameterizedType;
 import java.util.*;
 import java.util.List;
 
@@ -69,7 +72,7 @@ public class PokeditorManager extends PanelManager
         }
     }
 
-    private Map<GameFiles, DefaultSheetPanel> sheetPanels;
+    private Map<Class<? extends GenericFileData>, DefaultSheetPanel> sheetPanels;
     private JPanel placeholder;
 
     private NintendoDsRom rom;
@@ -88,17 +91,16 @@ public class PokeditorManager extends PanelManager
         placeholder = new JPanel();
         placeholder.setName("Test panel");
 
-        GenericParser<PersonalData> parser = DataManager.getParser(PersonalData.class);
-        List<PersonalData> data = parser.generateDataList(Collections.singletonMap(GameFiles.PERSONAL, new Narc(rom.getFileByName(GameFiles.PERSONAL.getPath()))));
-
-        GenericParser<TextBankData> textParser = DataManager.getParser(TextBankData.class);
-        List<TextBankData> textData = textParser.generateDataList(Collections.singletonMap(GameFiles.TEXT, new Narc(rom.getFileByName(GameFiles.TEXT.getPath()))));
-
-        PersonalTable personalTable = new PersonalTable(data, textData);
-        DefaultSheetPanel personalPanel = new DefaultSheetPanel(personalTable);
+        DefaultSheetPanel<PersonalData> personalPanel = DataManager.createPersonal(this, rom);
         personalPanel.setName("Personal");
 
-        sheetPanels.put(GameFiles.PERSONAL, personalPanel);
+        sheetPanels.put(PersonalData.class, personalPanel);
+    }
+
+    public final <E extends GenericFileData> void saveData(Class<E> dataClass)
+    {
+        DataManager.saveData(rom, dataClass);
+        DataManager.saveData(rom, TextBankData.class);
     }
 
     @Override

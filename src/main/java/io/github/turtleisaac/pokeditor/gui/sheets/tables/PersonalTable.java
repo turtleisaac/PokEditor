@@ -1,8 +1,10 @@
 package io.github.turtleisaac.pokeditor.gui.sheets.tables;
 
+import com.google.inject.Inject;
 import io.github.turtleisaac.pokeditor.formats.personal.PersonalData;
 import io.github.turtleisaac.pokeditor.formats.text.TextBankData;
 import io.github.turtleisaac.pokeditor.gamedata.TextFiles;
+import io.github.turtleisaac.pokeditor.gui.PokeditorManager;
 
 import java.util.*;
 
@@ -11,7 +13,6 @@ public class PersonalTable extends DefaultTable<PersonalData>
     public static final int[] columnWidths = new int[] {40, 100, 65, 65, 65, 65, 65, 65, 100, 100, 65, 65, 65, 65, 65, 65, 65, 65, 140, 140, 65, 65, 70, 120, 120, 120, 140, 140, 65, 65, 65};
     private static final String[] growthRateKeys = new String[] {"growthRate.mediumFast", "growthRate.erratic",  "growthRate.fluctuating", "growthRate.mediumSlow", "growthRate.fast", "growthRate.slow", "growthRate.mediumFast", "growthRate.mediumFast"};
     private static final String[] eggGroupKeys = new String[] {"eggGroup.null", "eggGroup.monster", "eggGroup.water1", "eggGroup.bug", "eggGroup.flying", "eggGroup.field", "eggGroup.fairy", "eggGroup.grass", "eggGroup.humanLike", "eggGroup.water3", "eggGroup.mineral", "eggGroup.amorphous", "eggGroup.water2", "eggGroup.ditto", "eggGroup.dragon", "eggGroup.undiscovered"};
-
 
     public PersonalTable(List<PersonalData> data, List<TextBankData> textData)
     {
@@ -42,6 +43,12 @@ public class PersonalTable extends DefaultTable<PersonalData>
         textSources.add(temp);
 
         return textSources;
+    }
+
+    @Override
+    public Class<PersonalData> getDataClass()
+    {
+        return PersonalData.class;
     }
 
     static class PersonalModel extends FormatModel<PersonalData>

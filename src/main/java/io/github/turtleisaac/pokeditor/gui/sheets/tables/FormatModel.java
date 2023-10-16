@@ -1,11 +1,13 @@
 package io.github.turtleisaac.pokeditor.gui.sheets.tables;
 
+import io.github.turtleisaac.pokeditor.formats.GenericFileData;
+import io.github.turtleisaac.pokeditor.formats.GenericParser;
 import io.github.turtleisaac.pokeditor.formats.text.TextBankData;
 import javax.swing.table.AbstractTableModel;
 import java.util.List;
 import java.util.ResourceBundle;
 
-public abstract class FormatModel<E> extends AbstractTableModel
+public abstract class FormatModel<E extends GenericFileData> extends AbstractTableModel
 {
     private final List<E> data;
     private final List<TextBankData> textBankData;

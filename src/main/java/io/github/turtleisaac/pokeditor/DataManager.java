@@ -2,6 +2,8 @@ package io.github.turtleisaac.pokeditor;
 
 import com.google.inject.*;
 import com.google.inject.util.Types;
+import io.github.turtleisaac.nds4j.Narc;
+import io.github.turtleisaac.nds4j.NintendoDsRom;
 import io.github.turtleisaac.pokeditor.formats.GenericFileData;
 import io.github.turtleisaac.pokeditor.formats.GenericParser;
 import io.github.turtleisaac.pokeditor.formats.encounters.JohtoEncounterData;
@@ -22,11 +24,29 @@ import io.github.turtleisaac.pokeditor.formats.text.TextBankData;
 import io.github.turtleisaac.pokeditor.formats.text.TextBankParser;
 import io.github.turtleisaac.pokeditor.formats.trainers.TrainerData;
 import io.github.turtleisaac.pokeditor.formats.trainers.TrainerParser;
+import io.github.turtleisaac.pokeditor.gamedata.GameFiles;
+import io.github.turtleisaac.pokeditor.gui.PokeditorManager;
+import io.github.turtleisaac.pokeditor.gui.sheets.DefaultSheetPanel;
+import io.github.turtleisaac.pokeditor.gui.sheets.tables.DefaultTable;
+import io.github.turtleisaac.pokeditor.gui.sheets.tables.PersonalTable;
 
 import java.lang.reflect.ParameterizedType;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class DataManager
 {
+    public static DefaultSheetPanel<PersonalData> createPersonal(PokeditorManager manager, NintendoDsRom rom)
+    {
+        List<TextBankData> textData = DataManager.getData(rom, TextBankData.class);
+        List<PersonalData> data = DataManager.getData(rom, PersonalData.class);
+        return new DefaultSheetPanel<>(manager, new PersonalTable(data, textData));
+    }
+
+
+
+
     private static final Injector injector = Guice.createInjector(
             new PersonalModule(),
             new LearnsetsModule(),
@@ -42,6 +62,42 @@ public class DataManager
     {
         ParameterizedType type = Types.newParameterizedType(GenericParser.class, eClass);
         return (GenericParser<E>) injector.getInstance(Key.get(TypeLiteral.get(type)));
+    }
+
+    private static final Map<Class<? extends GenericFileData>, List<GenericFileData>> dataMap = new HashMap<>();
+
+    public static <E extends GenericFileData> List<E> getData(NintendoDsRom rom, Class<E> eClass)
+    {
+        if (dataMap.containsKey(eClass))
+            return (List<E>) dataMap.get(eClass);
+
+        GenericParser<E> parser = DataManager.getParser(eClass);
+        Map<GameFiles, Narc> input = new HashMap<>();
+        for (GameFiles gameFile : parser.getRequirements())
+        {
+            input.put(gameFile, new Narc(rom.getFileByName(gameFile.getPath())));
+        }
+
+        return parser.generateDataList(input);
+    }
+
+    public static <E extends GenericFileData> void saveData(NintendoDsRom rom, Class<E> eClass)
+    {
+        if (!dataMap.containsKey(eClass))
+            return;
+
+        GenericParser<E> parser = DataManager.getParser(eClass);
+        Map<GameFiles, Narc> map = parser.processDataList(getData(rom, eClass));
+        for (GameFiles gameFile : map.keySet())
+        {
+            rom.setFileByName(gameFile.getPath(), map.get(gameFile).save());
+        }
+    }
+
+    public static <E extends GenericFileData> DefaultTable<E> getTable(Class<E> eClass)
+    {
+        ParameterizedType type = Types.newParameterizedType(DefaultTable.class, eClass);
+        return (DefaultTable<E>) injector.getInstance(Key.get(TypeLiteral.get(type)));
     }
 
     static class PersonalModule extends AbstractModule

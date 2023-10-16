@@ -14,6 +14,7 @@ new FormModel {
 				add( new FormComponent( "javax.swing.JButton" ) {
 					name: "saveSheetButton"
 					"text": "Save Changes"
+					addEvent( new FormEvent( "java.awt.event.ActionListener", "actionPerformed", "saveSheetButtonPressed", true ) )
 				} )
 				add( new FormComponent( "javax.swing.JToolBar$Separator" ) {
 					name: "separator1"
@@ -21,6 +22,7 @@ new FormModel {
 				add( new FormComponent( "javax.swing.JButton" ) {
 					name: "reloadSheetButton"
 					"text": "Reset Changes"
+					addEvent( new FormEvent( "java.awt.event.ActionListener", "actionPerformed", "reloadSheetButtonPressed", true ) )
 				} )
 				add( new FormComponent( "javax.swing.JToolBar$Separator" ) {
 					name: "separator2"

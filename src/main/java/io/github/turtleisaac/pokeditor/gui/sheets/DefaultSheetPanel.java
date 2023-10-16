@@ -9,26 +9,44 @@ import javax.swing.*;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumnModel;
 
+import com.google.inject.AbstractModule;
+import com.google.inject.Guice;
+import com.google.inject.Injector;
+import com.google.inject.TypeLiteral;
+import io.github.turtleisaac.nds4j.Narc;
+import io.github.turtleisaac.nds4j.NintendoDsRom;
 import io.github.turtleisaac.nds4j.ui.ThemeUtils;
+import io.github.turtleisaac.pokeditor.DataManager;
+import io.github.turtleisaac.pokeditor.formats.GenericFileData;
+import io.github.turtleisaac.pokeditor.formats.GenericParser;
+import io.github.turtleisaac.pokeditor.formats.personal.PersonalData;
+import io.github.turtleisaac.pokeditor.formats.text.TextBankData;
+import io.github.turtleisaac.pokeditor.gamedata.GameFiles;
 import io.github.turtleisaac.pokeditor.gui.PokeditorManager;
 import io.github.turtleisaac.pokeditor.gui.sheets.tables.DefaultTable;
+import io.github.turtleisaac.pokeditor.gui.sheets.tables.FormatModel;
+import io.github.turtleisaac.pokeditor.gui.sheets.tables.PersonalTable;
 import net.miginfocom.swing.*;
 
 import java.awt.*;
-import java.awt.event.ComponentAdapter;
-import java.awt.event.ComponentEvent;
+import java.lang.reflect.InvocationTargetException;
+import java.util.*;
+import java.util.List;
 
 /**
  * @author turtleisaac
  */
-public class DefaultSheetPanel extends JPanel
+public class DefaultSheetPanel<E extends GenericFileData> extends JPanel
 {
     private Dimension lastSize;
 
-    private DefaultTable<?> table;
+    private final PokeditorManager manager;
 
-    public DefaultSheetPanel(DefaultTable<?> table) {
+    private final DefaultTable<E> table;
+
+    public DefaultSheetPanel(PokeditorManager manager, DefaultTable<E> table) {
         initComponents();
+        this.manager = manager;
         this.table = table;
         table.setRowSelectionAllowed(true);
 //        table.setColumnSelectionAllowed(true);
@@ -49,6 +67,11 @@ public class DefaultSheetPanel extends JPanel
         importSheetButton.setIcon(PokeditorManager.sheetImportIcon);
         addRowButton.setIcon(PokeditorManager.rowInsertIcon);
         deleteRowButton.setIcon(PokeditorManager.rowRemoveIcon);
+    }
+
+    public DefaultTable<E> getTable()
+    {
+        return table;
     }
 
     private void resizeColumnWidth(JTable table) {
@@ -90,11 +113,19 @@ public class DefaultSheetPanel extends JPanel
     }
 
     private void addRowButtonPressed(ActionEvent e) {
-        // TODO add your code here
+        List<GenericFileData> data = (List<GenericFileData>) ((FormatModel<?>) table.getModel()).getData();
+        try
+        {
+            GenericFileData v = data.get(0).getClass().getDeclaredConstructor().newInstance();
+            data.add(v);
+        }
+        catch (InvocationTargetException | InstantiationException | IllegalAccessException | NoSuchMethodException ex) {
+            throw new RuntimeException(ex);
+        }
     }
 
     private void deleteRowButtonPressed(ActionEvent e) {
-        // TODO add your code here
+        ((FormatModel<?>) table.getModel()).getData().remove(table.getSelectedRow());
     }
 
     private void exportSheetButtonPressed(ActionEvent e) {
@@ -105,6 +136,14 @@ public class DefaultSheetPanel extends JPanel
     private void importSheetButtonPressed(ActionEvent e) {
         // TODO add your code here
         JOptionPane.showMessageDialog(this, "Lol you wish", "Nope", JOptionPane.ERROR_MESSAGE);
+    }
+
+    private void saveSheetButtonPressed(ActionEvent e) {
+        manager.saveData(table.getDataClass());
+    }
+
+    private void reloadSheetButtonPressed(ActionEvent e) {
+        // TODO add your code here
     }
 
     private void initComponents() {
@@ -135,11 +174,13 @@ public class DefaultSheetPanel extends JPanel
 
             //---- saveSheetButton ----
             saveSheetButton.setText("Save Changes");
+            saveSheetButton.addActionListener(e -> saveSheetButtonPressed(e));
             toolBar1.add(saveSheetButton);
             toolBar1.addSeparator();
 
             //---- reloadSheetButton ----
             reloadSheetButton.setText("Reset Changes");
+            reloadSheetButton.addActionListener(e -> reloadSheetButtonPressed(e));
             toolBar1.add(reloadSheetButton);
             toolBar1.addSeparator();
 

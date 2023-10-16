@@ -1,6 +1,8 @@
 package io.github.turtleisaac.pokeditor.gui.sheets.tables;
 
+import com.google.inject.Inject;
 import io.github.turtleisaac.pokeditor.formats.GenericFileData;
+import io.github.turtleisaac.pokeditor.formats.personal.PersonalData;
 import io.github.turtleisaac.pokeditor.formats.text.TextBankData;
 import io.github.turtleisaac.pokeditor.gamedata.TextFiles;
 import io.github.turtleisaac.pokeditor.gui.PokeditorManager;
@@ -22,7 +24,7 @@ public abstract class DefaultTable<E extends GenericFileData> extends JTable
     private final CellTypes[] cellTypes;
     private final int[] widths;
 
-    public DefaultTable(CellTypes[] cellTypes, TableModel model, List<TextBankData> textData, int[] widths)
+    public DefaultTable(CellTypes[] cellTypes, FormatModel<E> model, List<TextBankData> textData, int[] widths)
     {
         super(model);
 
@@ -42,6 +44,8 @@ public abstract class DefaultTable<E extends GenericFileData> extends JTable
     }
 
     abstract Queue<String[]> obtainTextSources(List<TextBankData> textData);
+
+    public abstract Class<E> getDataClass();
 
     public void loadCellRenderers(Queue<String[]> textSources)
     {
