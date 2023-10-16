@@ -9,10 +9,12 @@ import java.awt.*;
 public class EditorComboBoxRenderer implements TableCellRenderer
 {
     private final String[] items;
+    private final Color[] colors;
 
-    public EditorComboBoxRenderer(String[] items)
+    public EditorComboBoxRenderer(String[] items, Color[] colors)
     {
         this.items = items;
+        this.colors = colors;
     }
 
     @Override
@@ -23,24 +25,36 @@ public class EditorComboBoxRenderer implements TableCellRenderer
         table.setShowGrid(true);
 
         EditorComboBox comboBox = new EditorComboBox(items);
+        JLabel label = new JLabel();
 
+        JPanel panel = new JPanel(new GridBagLayout());
+        panel.add(label);
         if (isSelected)
         {
-            comboBox.setForeground(table.getSelectionForeground());
-            comboBox.setBackground(table.getSelectionBackground());
+            label.setForeground(table.getForeground());
+            label.setBackground(table.getSelectionBackground());
+            panel.setBackground(table.getSelectionBackground());
         }
         else
         {
-            comboBox.setForeground(table.getForeground());
-            comboBox.setBackground(table.getBackground());
+            label.setForeground(table.getForeground());
+            label.setBackground(table.getBackground());
         }
 
         if (value != null) {
             if (value instanceof Integer)
-                if ((Integer) value < comboBox.getItemCount())
-                    comboBox.setSelectedIndex((Integer) value);
+                if ((Integer) value < items.length) {
+//                    comboBox.setSelectedIndex((Integer) value);
+                    int num = (int) value;
+                    label.setText(items[num]);
+                    if (!isSelected && num < colors.length)
+                        panel.setBackground(colors[num]);
+                }
+
         }
 
-        return comboBox;
+        panel.setBorder(BorderFactory.createLineBorder(table.getGridColor()));
+
+        return panel;
     }
 }

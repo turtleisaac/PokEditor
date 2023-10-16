@@ -1,8 +1,10 @@
 package io.github.turtleisaac.pokeditor.gui;
 
+import com.formdev.flatlaf.extras.FlatSVGIcon;
 import io.github.turtleisaac.nds4j.Narc;
 import io.github.turtleisaac.nds4j.NintendoDsRom;
 import io.github.turtleisaac.nds4j.ui.PanelManager;
+import io.github.turtleisaac.nds4j.ui.ThemeUtils;
 import io.github.turtleisaac.nds4j.ui.Tool;
 import io.github.turtleisaac.pokeditor.DataManager;
 import io.github.turtleisaac.pokeditor.formats.GenericParser;
@@ -17,12 +19,49 @@ import io.github.turtleisaac.pokeditor.gui.sheets.tables.PersonalTable;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
+import java.io.IOException;
 import java.util.*;
 import java.util.List;
 
 public class PokeditorManager extends PanelManager
 {
     private static final Dimension dimension = new Dimension(1200, 714);
+
+    public static final FlatSVGIcon sheetExportIcon;
+    public static final FlatSVGIcon sheetImportIcon;
+
+    public static final Color[] typeColors = new Color[]{new Color(201, 201, 201),
+            new Color(141, 47, 47),
+            new Color(165, 218, 218),
+            new Color(165, 84, 213),
+            new Color(196, 144, 105),
+            new Color(133, 98, 62),
+            new Color(184, 208, 90),
+            new Color(71, 62, 145),
+            new Color(129, 129, 129),
+            new Color(230, 199, 255),
+            new Color(255, 29, 29),
+            new Color(73, 103, 255),
+            new Color(14, 189, 11),
+            new Color(227, 182, 22),
+            new Color(213, 189, 227),
+            new Color(70, 185, 185),
+            new Color(84, 94, 201),
+            new Color(63, 63, 66),
+    };
+
+    static {
+        try {
+            sheetExportIcon = new FlatSVGIcon(PokeditorManager.class.getResourceAsStream("/icons/svg/table-export.svg"));
+            sheetImportIcon = new FlatSVGIcon(PokeditorManager.class.getResourceAsStream("/icons/svg/table-import.svg"));
+
+            sheetExportIcon.setColorFilter(ThemeUtils.iconColorFilter);
+            sheetImportIcon.setColorFilter(ThemeUtils.iconColorFilter);
+        }
+        catch(IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
 
     private Map<GameFiles, DefaultSheetPanel> sheetPanels;
     private JPanel placeholder;

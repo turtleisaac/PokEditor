@@ -4,7 +4,9 @@ import io.github.turtleisaac.pokeditor.formats.GenericFileData;
 import io.github.turtleisaac.pokeditor.formats.personal.PersonalData;
 import io.github.turtleisaac.pokeditor.formats.text.TextBankData;
 import io.github.turtleisaac.pokeditor.gamedata.TextFiles;
+import io.github.turtleisaac.pokeditor.gui.PokeditorManager;
 import io.github.turtleisaac.pokeditor.gui.sheets.tables.editors.EditorComboBoxEditor;
+import io.github.turtleisaac.pokeditor.gui.sheets.tables.editors.SpinnerCellEditor;
 import io.github.turtleisaac.pokeditor.gui.sheets.tables.renderers.*;
 
 import javax.swing.*;
@@ -39,12 +41,12 @@ public abstract class DefaultTable<E extends GenericFileData> extends JTable
 
         Queue<TextFiles> textSourceQueue = new LinkedList<>(Arrays.asList(textSources));
 
-        loadCellRenderers(textSourceQueue, data.size());
+        loadCellRenderers(textSourceQueue);
 
         moo();
     }
 
-    public void loadCellRenderers(Queue<TextFiles> textSources, int numRows)
+    public void loadCellRenderers(Queue<TextFiles> textSources)
     {
         for (int i = 0; i < classes.length; i++)
         {
@@ -65,13 +67,13 @@ public abstract class DefaultTable<E extends GenericFileData> extends JTable
                 if (bank != null)
                     text = textData.get(bank.getValue()).getStringList().toArray(String[]::new);
                 else
-                    text = new String[] {};
-                col.setCellEditor(new EditorComboBoxEditor(text, numRows));
-                col.setCellRenderer(new EditorComboBoxRenderer(text));
+                    text = new String[] {""};
+                col.setCellEditor(new EditorComboBoxEditor(text));
+                col.setCellRenderer(new EditorComboBoxRenderer(text, PokeditorManager.typeColors));
             }
             else if (c == JSpinner.class)
             {
-                col.setCellRenderer(new SpinnerRenderer());
+                col.setCellEditor(new SpinnerCellEditor());
             }
             else if (c == JButton.class)
             {
@@ -79,7 +81,6 @@ public abstract class DefaultTable<E extends GenericFileData> extends JTable
             }
         }
     }
-    public abstract void setValues(List<E> data, List<TextBankData> textData);
 
     private void moo()
     {
