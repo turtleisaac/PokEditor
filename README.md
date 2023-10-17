@@ -36,6 +36,9 @@ Currently not in a usable state.
 
 <img width="403" alt="image" src="https://github.com/turtleisaac/PokEditor/assets/7987859/8165bcd7-e9af-4056-991a-d61cc5783fe7">
 
+<img width="1312" alt="image" src="https://github.com/turtleisaac/PokEditor/assets/7987859/e668281b-bb6a-4155-8fff-bc0d0a5a67e8">
+
+
 
 [//]: # (# List of Spreadsheet-Based Editors)
 
