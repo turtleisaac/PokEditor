@@ -37,6 +37,8 @@ import java.util.Map;
 
 public class DataManager
 {
+    public static final String SHEET_STRINGS_PATH = "/pokeditor/sheet_strings";
+
     public static DefaultSheetPanel<PersonalData> createPersonal(PokeditorManager manager, NintendoDsRom rom)
     {
         List<TextBankData> textData = DataManager.getData(rom, TextBankData.class);

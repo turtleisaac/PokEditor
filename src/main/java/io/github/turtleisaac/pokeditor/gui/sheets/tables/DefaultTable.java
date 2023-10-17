@@ -1,5 +1,6 @@
 package io.github.turtleisaac.pokeditor.gui.sheets.tables;
 
+import io.github.turtleisaac.pokeditor.DataManager;
 import io.github.turtleisaac.pokeditor.formats.GenericFileData;
 import io.github.turtleisaac.pokeditor.formats.text.TextBankData;
 import io.github.turtleisaac.pokeditor.gui.PokeditorManager;
@@ -166,7 +167,7 @@ public abstract class DefaultTable<E extends GenericFileData> extends JTable
 
     public static String[] loadStringsFromKeys(String... keys)
     {
-        ResourceBundle bundle = ResourceBundle.getBundle("sheet_strings");
+        ResourceBundle bundle = ResourceBundle.getBundle(DataManager.SHEET_STRINGS_PATH);
         String[] result = new String[keys.length];
         int idx = 0;
         for (String s : keys) {

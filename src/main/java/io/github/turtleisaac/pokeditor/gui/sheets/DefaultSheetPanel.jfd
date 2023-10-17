@@ -1,6 +1,10 @@
 JFDML JFormDesigner: "8.0.5.0.268" Java: "17.0.8" encoding: "UTF-8"
 
 new FormModel {
+	"i18n.bundlePackage": "pokeditor"
+	"i18n.bundleName": "sheet_panel"
+	"i18n.keyPrefix": "DefaultSheetPanel"
+	"i18n.autoExternalize": true
 	contentType: "form/swing"
 	root: new FormRoot {
 		add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class net.miginfocom.swing.MigLayout ) {
@@ -13,7 +17,7 @@ new FormModel {
 				name: "toolBar1"
 				add( new FormComponent( "javax.swing.JButton" ) {
 					name: "saveSheetButton"
-					"text": "Save Changes"
+					"text": new FormMessage( null, "DefaultSheetPanel.saveSheetButton.text" )
 					addEvent( new FormEvent( "java.awt.event.ActionListener", "actionPerformed", "saveSheetButtonPressed", true ) )
 				} )
 				add( new FormComponent( "javax.swing.JToolBar$Separator" ) {
@@ -21,7 +25,7 @@ new FormModel {
 				} )
 				add( new FormComponent( "javax.swing.JButton" ) {
 					name: "reloadSheetButton"
-					"text": "Reset Changes"
+					"text": new FormMessage( null, "DefaultSheetPanel.reloadSheetButton.text" )
 					addEvent( new FormEvent( "java.awt.event.ActionListener", "actionPerformed", "reloadSheetButtonPressed", true ) )
 				} )
 				add( new FormComponent( "javax.swing.JToolBar$Separator" ) {
@@ -29,7 +33,7 @@ new FormModel {
 				} )
 				add( new FormComponent( "javax.swing.JButton" ) {
 					name: "addRowButton"
-					"text": "Add Row"
+					"text": new FormMessage( null, "DefaultSheetPanel.addRowButton.text" )
 					addEvent( new FormEvent( "java.awt.event.ActionListener", "actionPerformed", "addRowButtonPressed", true ) )
 				} )
 				add( new FormComponent( "javax.swing.JToolBar$Separator" ) {
@@ -37,7 +41,7 @@ new FormModel {
 				} )
 				add( new FormComponent( "javax.swing.JButton" ) {
 					name: "deleteRowButton"
-					"text": "Delete Row"
+					"text": new FormMessage( null, "DefaultSheetPanel.deleteRowButton.text" )
 					addEvent( new FormEvent( "java.awt.event.ActionListener", "actionPerformed", "deleteRowButtonPressed", true ) )
 				} )
 				add( new FormComponent( "javax.swing.JToolBar$Separator" ) {
@@ -45,7 +49,7 @@ new FormModel {
 				} )
 				add( new FormComponent( "javax.swing.JButton" ) {
 					name: "exportSheetButton"
-					"text": "Export"
+					"text": new FormMessage( null, "DefaultSheetPanel.exportSheetButton.text" )
 					addEvent( new FormEvent( "java.awt.event.ActionListener", "actionPerformed", "exportSheetButtonPressed", true ) )
 				} )
 				add( new FormComponent( "javax.swing.JToolBar$Separator" ) {
@@ -53,7 +57,7 @@ new FormModel {
 				} )
 				add( new FormComponent( "javax.swing.JButton" ) {
 					name: "importSheetButton"
-					"text": "Import"
+					"text": new FormMessage( null, "DefaultSheetPanel.importSheetButton.text" )
 					addEvent( new FormEvent( "java.awt.event.ActionListener", "actionPerformed", "importSheetButtonPressed", true ) )
 				} )
 				add( new FormComponent( "javax.swing.JToolBar$Separator" ) {
@@ -88,4 +92,3 @@ new FormModel {
 		} )
 	}
 }
-
