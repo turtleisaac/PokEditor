@@ -41,7 +41,6 @@ public class IndexedStringCellRenderer extends DefaultTableCellRenderer
 
         setBorder(BorderFactory.createLineBorder(table.getGridColor()));
 
-//        return panel;
         return this;
     }
 
@@ -65,6 +64,7 @@ public class IndexedStringCellRenderer extends DefaultTableCellRenderer
                 if (value instanceof Integer)
                 {
                     this.setBackground(colors[(int) value]); // always in bounds because of earlier check
+                    this.setForeground(Color.black);
 //                    setBorder(border);
                 }
             }

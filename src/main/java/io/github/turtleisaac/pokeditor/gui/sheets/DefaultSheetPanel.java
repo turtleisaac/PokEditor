@@ -125,6 +125,7 @@ public class DefaultSheetPanel<E extends GenericFileData> extends JPanel
     }
 
     private void deleteRowButtonPressed(ActionEvent e) {
+        // todo figure out how I'm going to remove the name of the species when a row is deleted (because right now the name just stays at that index and the data moves up)
         ((FormatModel<?>) table.getModel()).getData().remove(table.getSelectedRow());
     }
 

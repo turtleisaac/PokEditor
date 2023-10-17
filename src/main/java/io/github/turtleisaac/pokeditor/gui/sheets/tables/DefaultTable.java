@@ -38,7 +38,30 @@ public abstract class DefaultTable<E extends GenericFileData> extends JTable
 
         loadCellRenderers(obtainTextSources(textData));
 
-        moo();
+        MultiLineTableHeaderRenderer renderer = new MultiLineTableHeaderRenderer();
+        Enumeration<?> enumK = getColumnModel().getColumns();
+        while (enumK.hasMoreElements())
+        {
+            ((TableColumn) enumK.nextElement()).setHeaderRenderer(renderer);
+        }
+
+
+        setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
+        setDragEnabled(false);
+
+        setDefaultRenderer(Object.class, new DefaultTableCellRenderer() {
+
+            @Override
+            public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column)
+            {
+                Component c = super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
+//                if (isSelected)
+//                    c.setForeground(Color.black);
+                return c;
+            }
+        });
+
+        setRowSelectionAllowed(false);
     }
 
     abstract Queue<String[]> obtainTextSources(List<TextBankData> textData);
@@ -139,34 +162,6 @@ public abstract class DefaultTable<E extends GenericFileData> extends JTable
         }
 
         return output;
-    }
-
-    private void moo()
-    {
-        MultiLineTableHeaderRenderer renderer = new MultiLineTableHeaderRenderer();
-        Enumeration<?> enumK = getColumnModel().getColumns();
-        while (enumK.hasMoreElements())
-        {
-            ((TableColumn) enumK.nextElement()).setHeaderRenderer(renderer);
-        }
-
-
-        setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
-        setDragEnabled(false);
-
-        setDefaultRenderer(Object.class, new DefaultTableCellRenderer() {
-
-            @Override
-            public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column)
-            {
-                Component c = super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
-                if (isSelected)
-                    c.setForeground(Color.black);
-                return c;
-            }
-        });
-
-        setRowSelectionAllowed(false);
     }
 
     public static String[] loadStringsFromKeys(String... keys)
