@@ -25,10 +25,6 @@ public class IndexedStringCellRenderer extends DefaultTableCellRenderer
     @Override
     public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column)
     {
-        table.setShowVerticalLines(true);
-        table.setShowHorizontalLines(true);
-        table.setShowGrid(true);
-
         super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
 
         if (value != null) {
@@ -39,7 +35,15 @@ public class IndexedStringCellRenderer extends DefaultTableCellRenderer
                 }
         }
 
-        setBorder(BorderFactory.createLineBorder(table.getGridColor()));
+        if (isSelected) {
+            setBackground(table.getSelectionBackground());
+        } else {
+            setForeground(getForeground());
+            if (row % 2 == 0)
+                setBackground(table.getBackground());
+            else
+                setBackground(new Color(248, 221, 231));
+        }
 
         return this;
     }

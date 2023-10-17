@@ -15,6 +15,7 @@ import io.github.turtleisaac.pokeditor.formats.GenericFileData;
 import io.github.turtleisaac.pokeditor.gui.PokeditorManager;
 import io.github.turtleisaac.pokeditor.gui.sheets.tables.DefaultTable;
 import io.github.turtleisaac.pokeditor.gui.sheets.tables.FormatModel;
+import io.github.turtleisaac.pokeditor.gui.sheets.tables.FrozenColumnTable;
 import net.miginfocom.swing.*;
 
 import java.awt.*;
@@ -38,13 +39,14 @@ public class DefaultSheetPanel<E extends GenericFileData> extends JPanel
         initComponents();
         this.manager = manager;
         this.table = table;
-        table.setRowSelectionAllowed(true);
 //        table.setColumnSelectionAllowed(true);
-        table.setSelectionMode(ListSelectionModel.SINGLE_INTERVAL_SELECTION);
-        table.getTableHeader().setReorderingAllowed(false);
         scrollPane1.setViewportView(table);
 //        resizeColumnWidth(table1);
         setIcons();
+
+        JTable frozenColumns = new JTable(((FormatModel<E>) table.getModel()).getFrozenColumnModel());
+
+//        scrollPane1.setRowHeaderView(frozenColumns);
 
         table.addPropertyChangeListener(new PropertyChangeListener()
         {

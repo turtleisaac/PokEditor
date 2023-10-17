@@ -2,7 +2,6 @@ package io.github.turtleisaac.pokeditor.gui.sheets.tables;
 
 import io.github.turtleisaac.pokeditor.DataManager;
 import io.github.turtleisaac.pokeditor.formats.GenericFileData;
-import io.github.turtleisaac.pokeditor.formats.GenericParser;
 import io.github.turtleisaac.pokeditor.formats.text.TextBankData;
 import javax.swing.table.AbstractTableModel;
 import java.util.List;
@@ -61,4 +60,6 @@ public abstract class FormatModel<E extends GenericFileData> extends AbstractTab
     {
         return textBankData;
     }
+
+    public abstract FormatModel<E> getFrozenColumnModel();
 }

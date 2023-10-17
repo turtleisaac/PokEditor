@@ -9,10 +9,14 @@ import io.github.turtleisaac.pokeditor.gui.sheets.tables.editors.NumberOnlyCellE
 import io.github.turtleisaac.pokeditor.gui.sheets.tables.renderers.*;
 
 import javax.swing.*;
+import javax.swing.border.Border;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumn;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
 import java.util.*;
 import java.util.List;
 
@@ -31,8 +35,12 @@ public abstract class DefaultTable<E extends GenericFileData> extends JTable
         this.textData = textData;
         setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
 
+        setRowMargin(1);
+        getColumnModel().setColumnMargin(1);
         setShowGrid(true);
-//        setGridColor(Color.black);
+        setGridColor(Color.black);
+        setShowHorizontalLines(true);
+        setShowVerticalLines(true);
 
 //        setBackground(Color.WHITE);
 //        setForeground(Color.black);
@@ -48,6 +56,7 @@ public abstract class DefaultTable<E extends GenericFileData> extends JTable
 
 
         setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
+        getTableHeader().setReorderingAllowed(false);
         setDragEnabled(false);
 
         setDefaultRenderer(Object.class, new DefaultTableCellRenderer() {
@@ -56,13 +65,48 @@ public abstract class DefaultTable<E extends GenericFileData> extends JTable
             public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column)
             {
                 Component c = super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
-//                if (isSelected)
-//                    c.setForeground(Color.black);
+                if (isSelected) {
+//                    c.setForeground(getSelectionForeground());
+                    c.setBackground(getSelectionBackground());
+                } else {
+                    c.setForeground(getForeground());
+                    if (row % 2 == 0)
+                        setBackground(table.getBackground());
+                    else
+                        setBackground(new Color(248, 221, 231));
+                }
+
                 return c;
             }
         });
 
-        setRowSelectionAllowed(false);
+        setRowSelectionAllowed(true);
+        setColumnSelectionAllowed(true);
+        setSelectionMode(ListSelectionModel.SINGLE_INTERVAL_SELECTION);
+
+        InputMap inputMap = getInputMap(JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
+//        inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0), new AbstractAction()
+//        {
+//            @Override
+//            public void actionPerformed(ActionEvent e)
+//            {
+//                System.out.println("moo");
+//                editingCanceled(null);
+//            }
+//        });
+
+                inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0), "cancel");
+
+//        addKeyListener(new KeyAdapter()
+//        {
+//            @Override
+//            public void keyPressed(KeyEvent e)
+//            {
+////                super.keyPressed(e);
+//                if (e.getKeyCode() == KeyEvent.VK_ESCAPE)
+//                    clearSelection();
+//            }
+//        });
     }
 
     abstract Queue<String[]> obtainTextSources(List<TextBankData> textData);
@@ -71,7 +115,7 @@ public abstract class DefaultTable<E extends GenericFileData> extends JTable
 
     public void loadCellRenderers(Queue<String[]> textSources)
     {
-        for (int i = 0; i < cellTypes.length; i++)
+        for (int i = 0; i < getColumnCount(); i++)
         {
             CellTypes c = cellTypes[i];
             TableColumn col = getColumnModel().getColumn(i);

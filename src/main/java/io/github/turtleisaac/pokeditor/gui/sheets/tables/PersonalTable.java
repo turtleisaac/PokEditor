@@ -219,5 +219,29 @@ public class PersonalTable extends DefaultTable<PersonalData>
 
             return null;
         }
+
+        @Override
+        public FormatModel<PersonalData> getFrozenColumnModel()
+        {
+            return new PersonalModel(getData(), getTextBankData()) {
+                @Override
+                public int getColumnCount()
+                {
+                    return 2;
+                }
+
+                @Override
+                public Object getValueAt(int rowIndex, int columnIndex)
+                {
+                    return super.getValueAt(rowIndex, columnIndex - 2);
+                }
+
+                @Override
+                public void setValueAt(Object aValue, int rowIndex, int columnIndex)
+                {
+                    super.setValueAt(aValue, rowIndex, columnIndex - 2);
+                }
+            };
+        }
     }
 }
