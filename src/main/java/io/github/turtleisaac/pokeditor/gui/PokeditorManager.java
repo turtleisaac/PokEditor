@@ -2,6 +2,7 @@ package io.github.turtleisaac.pokeditor.gui;
 
 import com.formdev.flatlaf.extras.FlatSVGIcon;
 import io.github.turtleisaac.nds4j.NintendoDsRom;
+import io.github.turtleisaac.nds4j.ui.FileUtils;
 import io.github.turtleisaac.nds4j.ui.PanelManager;
 import io.github.turtleisaac.nds4j.ui.ThemeUtils;
 import io.github.turtleisaac.nds4j.ui.Tool;
@@ -15,8 +16,12 @@ import io.github.turtleisaac.pokeditor.gamedata.TextFiles;
 import io.github.turtleisaac.pokeditor.gui.sheets.DefaultSheetPanel;
 
 import javax.swing.*;
+import javax.swing.filechooser.FileFilter;
 import java.awt.*;
 import java.awt.event.ActionEvent;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.util.*;
 import java.util.List;
@@ -99,12 +104,6 @@ public class PokeditorManager extends PanelManager
 
         if (!wipeAndWriteUnpacked())
             throw new RuntimeException("An error occurred while deleting or writing a file, please check write permissions");
-
-        /**
-         * at this point, there are a few things which need to happen:
-         * 1. all other tables need to have their text data source updated so changes to strings will propagate
-         * 2. need to save all staged changes in the rom to disk
-         */
     }
 
     public <E extends GenericFileData> void resetData(Class<E> dataClass)
@@ -117,6 +116,53 @@ public class PokeditorManager extends PanelManager
         for (DefaultSheetPanel<?> panel : sheetPanels.values())
         {
             panel.getTable().resetIndexedCellRendererText();
+        }
+    }
+
+    public void writeSheet(String[][] data)
+    {
+        JFileChooser fc = new JFileChooser(System.getProperty("user.dir"));
+        fc.setDialogTitle("Open Project");
+        fc.setAcceptAllFileFilterUsed(false);
+
+        fc.setFileSelectionMode(JFileChooser.FILES_ONLY);
+        fc.addChoosableFileFilter(new FileFilter()
+        {
+            @Override
+            public boolean accept(File f)
+            {
+                return f.isDirectory() || f.getName().endsWith(".csv");
+            }
+
+            @Override
+            public String getDescription()
+            {
+                return "CSV file (*.csv)";
+            }
+        });
+
+        int returnVal = fc.showSaveDialog(null);
+
+        if (returnVal == JFileChooser.APPROVE_OPTION) {
+            File selected = fc.getSelectedFile();
+            String path = selected.getAbsolutePath();
+            if (!path.endsWith(".csv"))
+                path = path + ".csv";
+            try
+            {
+                BufferedWriter writer = new BufferedWriter(new FileWriter(path));
+                for (String[] row : data) {
+                    for (String s : row)
+                        writer.write(s + ",");
+                    writer.write("\n");
+                }
+
+                writer.close();
+            }
+            catch(IOException e) {
+                throw new RuntimeException(e);
+            }
+
         }
     }
 
@@ -133,24 +179,28 @@ public class PokeditorManager extends PanelManager
     @Override
     public boolean hasUnsavedChanges()
     {
+        //todo
         return false;
     }
 
     @Override
     public void doForwardsButtonAction(ActionEvent actionEvent)
     {
-
+        //todo
+        JOptionPane.showMessageDialog(null, "Not yet implemented", "Sorry", JOptionPane.ERROR_MESSAGE);
     }
 
     @Override
     public void doBackButtonAction(ActionEvent actionEvent)
     {
-
+        //todo
+        JOptionPane.showMessageDialog(null, "Not yet implemented", "Sorry", JOptionPane.ERROR_MESSAGE);
     }
 
     @Override
     public void doInfoButtonAction(ActionEvent actionEvent)
     {
-
+        //todo
+        JOptionPane.showMessageDialog(null, "Not yet implemented", "Sorry", JOptionPane.ERROR_MESSAGE);
     }
 }

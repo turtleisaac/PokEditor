@@ -130,7 +130,7 @@ public class DefaultSheetPanel<E extends GenericFileData> extends JPanel
 
     private void exportSheetButtonPressed(ActionEvent e) {
         // TODO add your code here
-        table.exportClean();
+        manager.writeSheet(table.exportClean());
     }
 
     private void importSheetButtonPressed(ActionEvent e) {
