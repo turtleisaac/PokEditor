@@ -34,6 +34,7 @@ public class DefaultSheetPanel<E extends GenericFileData> extends JPanel
     private final PokeditorManager manager;
 
     private final DefaultTable<E> table;
+    private final FrozenColumnTable<E> frozenColumns;
 
     public DefaultSheetPanel(PokeditorManager manager, DefaultTable<E> table) {
         initComponents();
@@ -44,9 +45,21 @@ public class DefaultSheetPanel<E extends GenericFileData> extends JPanel
 //        resizeColumnWidth(table1);
         setIcons();
 
-        JTable frozenColumns = new JTable(((FormatModel<E>) table.getModel()).getFrozenColumnModel());
+        frozenColumns = new FrozenColumnTable<>(((FormatModel<E>) table.getModel()).getFrozenColumnModel());
+        scrollPane1.setRowHeaderView(frozenColumns);
+        resizeColumnWidth(frozenColumns);
+        scrollPane1.getRowHeader().setMaximumSize(new Dimension(frozenColumns.getPreferredSize().width, scrollPane1.getRowHeader().getMaximumSize().height));
+        scrollPane1.getRowHeader().setPreferredSize(new Dimension(frozenColumns.getPreferredSize().width, scrollPane1.getRowHeader().getMaximumSize().height));
+//        scrollPane1.getRowHeader().setMinimumSize(new Dimension(50, scrollPane1.getRowHeader().getMaximumSize().height));
+//        frozenColumns.setMaximumSize(new Dimension(50, frozenColumns.getMaximumSize().height));
+//        frozenColumns.setPreferredSize(new Dimension(50, frozenColumns.getMaximumSize().height));
+//        frozenColumns.setMinimumSize(new Dimension(50, frozenColumns.getMaximumSize().height));
 
-//        scrollPane1.setRowHeaderView(frozenColumns);
+
+        JTable corner = new JTable();
+        corner.
+
+        scrollPane1.setCorner(JScrollPane.UPPER_LEFT_CORNER, p);
 
         table.addPropertyChangeListener(new PropertyChangeListener()
         {
@@ -91,7 +104,7 @@ public class DefaultSheetPanel<E extends GenericFileData> extends JPanel
             }
             if (width > 300)
                 width = 300;
-            columnModel.getColumn(column).setPreferredWidth(width);
+            columnModel.getColumn(column).setPreferredWidth(width + 5);
         }
     }
 

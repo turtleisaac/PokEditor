@@ -8,6 +8,7 @@ import java.util.*;
 
 public class PersonalTable extends DefaultTable<PersonalData>
 {
+    private static final int NUM_FROZEN_COLUMNS = 2;
     public static final int[] columnWidths = new int[] {40, 100, 65, 65, 65, 65, 65, 65, 100, 100, 65, 65, 65, 65, 65, 65, 65, 65, 140, 140, 65, 65, 70, 120, 120, 120, 140, 140, 65, 65, 65};
     private static final String[] growthRateKeys = new String[] {"growthRate.mediumFast", "growthRate.erratic",  "growthRate.fluctuating", "growthRate.mediumSlow", "growthRate.fast", "growthRate.slow", "growthRate.mediumFast", "growthRate.mediumFast"};
     private static final String[] eggGroupKeys = new String[] {"eggGroup.null", "eggGroup.monster", "eggGroup.water1", "eggGroup.bug", "eggGroup.flying", "eggGroup.field", "eggGroup.fairy", "eggGroup.grass", "eggGroup.humanLike", "eggGroup.water3", "eggGroup.mineral", "eggGroup.amorphous", "eggGroup.water2", "eggGroup.ditto", "eggGroup.dragon", "eggGroup.undiscovered"};
@@ -49,6 +50,12 @@ public class PersonalTable extends DefaultTable<PersonalData>
         return PersonalData.class;
     }
 
+    @Override
+    public int getNumFrozenColumns()
+    {
+        return NUM_FROZEN_COLUMNS;
+    }
+
     static class PersonalModel extends FormatModel<PersonalData>
     {
         static final CellTypes[] personalClasses = new CellTypes[] {CellTypes.INTEGER, CellTypes.STRING, CellTypes.INTEGER, CellTypes.INTEGER, CellTypes.INTEGER, CellTypes.INTEGER, CellTypes.INTEGER, CellTypes.INTEGER, CellTypes.COLORED_COMBO_BOX, CellTypes.COLORED_COMBO_BOX, CellTypes.INTEGER, CellTypes.INTEGER, CellTypes.INTEGER, CellTypes.INTEGER, CellTypes.INTEGER, CellTypes.INTEGER, CellTypes.INTEGER, CellTypes.INTEGER, CellTypes.COMBO_BOX, CellTypes.COMBO_BOX, CellTypes.INTEGER, CellTypes.INTEGER, CellTypes.INTEGER, CellTypes.COMBO_BOX, CellTypes.COMBO_BOX, CellTypes.COMBO_BOX, CellTypes.COMBO_BOX, CellTypes.COMBO_BOX, CellTypes.INTEGER, CellTypes.INTEGER, CellTypes.CHECKBOX};
@@ -56,7 +63,7 @@ public class PersonalTable extends DefaultTable<PersonalData>
 
         public PersonalModel(List<PersonalData> data, List<TextBankData> textBankData)
         {
-            super(columnKeys, data, textBankData);
+            super(columnKeys, data, textBankData, NUM_FROZEN_COLUMNS);
         }
 
         @Override
@@ -67,14 +74,14 @@ public class PersonalTable extends DefaultTable<PersonalData>
 
             if (aValue instanceof String)
             {
-                if (columnIndex != 1 && columnIndex != 30)
+                if (columnIndex != -1 && columnIndex != 30)
                     aValue = Integer.parseInt(((String) aValue).trim());
                 else if (columnIndex == 30)
                     aValue = Boolean.parseBoolean(((String) aValue).trim());
             }
 
 
-            switch (columnIndex) {
+            switch (columnIndex + NUM_FROZEN_COLUMNS) {
                 case 0 -> {}
                 case 1 -> {
                     TextBankData.Message message = speciesNames.get(rowIndex);
@@ -118,7 +125,7 @@ public class PersonalTable extends DefaultTable<PersonalData>
             TextBankData speciesNames = getTextBankData().get(TextFiles.SPECIES_NAMES.getValue());
             PersonalData entry = getData().get(rowIndex);
 
-            switch(columnIndex) {
+            switch(columnIndex + NUM_FROZEN_COLUMNS) {
                 case 0 -> {
                     return rowIndex;
                 }
@@ -227,7 +234,7 @@ public class PersonalTable extends DefaultTable<PersonalData>
                 @Override
                 public int getColumnCount()
                 {
-                    return 2;
+                    return NUM_FROZEN_COLUMNS;
                 }
 
                 @Override

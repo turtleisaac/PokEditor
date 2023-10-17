@@ -1,6 +1,11 @@
 package io.github.turtleisaac.pokeditor.gui.sheets.tables;
 
 import io.github.turtleisaac.pokeditor.formats.GenericFileData;
+import io.github.turtleisaac.pokeditor.gui.PokeditorManager;
+import io.github.turtleisaac.pokeditor.gui.sheets.tables.editors.ComboBoxCellEditor;
+import io.github.turtleisaac.pokeditor.gui.sheets.tables.editors.NumberOnlyCellEditor;
+import io.github.turtleisaac.pokeditor.gui.sheets.tables.renderers.CheckBoxRenderer;
+import io.github.turtleisaac.pokeditor.gui.sheets.tables.renderers.IndexedStringCellRenderer;
 import io.github.turtleisaac.pokeditor.gui.sheets.tables.renderers.MultiLineTableHeaderRenderer;
 
 import javax.swing.*;
@@ -24,7 +29,19 @@ public class FrozenColumnTable<E extends GenericFileData> extends JTable
         setGridColor(Color.black);
         setShowHorizontalLines(true);
         setShowVerticalLines(true);
-        setBackground(Color.GREEN);
+
+        TableColumn col = getColumnModel().getColumn(0);
+        col.setWidth(40);
+        col.setPreferredWidth(40);
+
+
+//        for (int i = 0; i < getColumnCount(); i++)
+//        {
+//            CellTypes c = cellTypes[i];
+//            TableColumn col = getColumnModel().getColumn(i);
+//            col.setWidth(widths[i]);
+//            col.setPreferredWidth(widths[i]);
+//        }
 
         MultiLineTableHeaderRenderer renderer = new MultiLineTableHeaderRenderer();
         Enumeration<?> enumK = getColumnModel().getColumns();
@@ -33,10 +50,12 @@ public class FrozenColumnTable<E extends GenericFileData> extends JTable
             ((TableColumn) enumK.nextElement()).setHeaderRenderer(renderer);
         }
 
-
-        setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
+//        setAutoResizeMode(JTable.AUTO_RESIZE_LAST_COLUMN);
         getTableHeader().setReorderingAllowed(false);
         setDragEnabled(false);
+        setRowSelectionAllowed(true);
+        setColumnSelectionAllowed(true);
+        setSelectionMode(ListSelectionModel.SINGLE_INTERVAL_SELECTION);
 
         setDefaultRenderer(Object.class, new DefaultTableCellRenderer() {
 
@@ -58,9 +77,5 @@ public class FrozenColumnTable<E extends GenericFileData> extends JTable
                 return c;
             }
         });
-
-        setRowSelectionAllowed(true);
-        setColumnSelectionAllowed(true);
-        setSelectionMode(ListSelectionModel.SINGLE_INTERVAL_SELECTION);
     }
 }

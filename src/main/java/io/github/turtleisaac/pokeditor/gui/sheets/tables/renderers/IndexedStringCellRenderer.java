@@ -63,7 +63,7 @@ public class IndexedStringCellRenderer extends DefaultTableCellRenderer
         {
             super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
 //            Border border = getBorder();
-            if ((column == 8 || column == 9) && !isSelected && value != null)
+            if ((column == 6 || column == 7) && !isSelected && value != null)
             {
                 if (value instanceof Integer)
                 {
