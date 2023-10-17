@@ -57,10 +57,10 @@ public class PokeditorManager extends PanelManager
 
     static {
         try {
-            sheetExportIcon = new FlatSVGIcon(PokeditorManager.class.getResourceAsStream("/icons/svg/table-export.svg"));
-            sheetImportIcon = new FlatSVGIcon(PokeditorManager.class.getResourceAsStream("/icons/svg/table-import.svg"));
-            rowRemoveIcon = new FlatSVGIcon(PokeditorManager.class.getResourceAsStream("/icons/svg/row-remove.svg"));
-            rowInsertIcon = new FlatSVGIcon(PokeditorManager.class.getResourceAsStream("/icons/svg/row-insert-bottom.svg"));
+            sheetExportIcon = new FlatSVGIcon(PokeditorManager.class.getResourceAsStream("/pokeditor/icons/svg/table-export.svg"));
+            sheetImportIcon = new FlatSVGIcon(PokeditorManager.class.getResourceAsStream("/pokeditor/icons/svg/table-import.svg"));
+            rowRemoveIcon = new FlatSVGIcon(PokeditorManager.class.getResourceAsStream("/pokeditor/icons/svg/row-remove.svg"));
+            rowInsertIcon = new FlatSVGIcon(PokeditorManager.class.getResourceAsStream("/pokeditor/icons/svg/row-insert-bottom.svg"));
 
             sheetExportIcon.setColorFilter(ThemeUtils.iconColorFilter);
             sheetImportIcon.setColorFilter(ThemeUtils.iconColorFilter);
@@ -181,20 +181,6 @@ public class PokeditorManager extends PanelManager
     {
         //todo
         return false;
-    }
-
-    @Override
-    public void doForwardsButtonAction(ActionEvent actionEvent)
-    {
-        //todo
-        JOptionPane.showMessageDialog(null, "Not yet implemented", "Sorry", JOptionPane.ERROR_MESSAGE);
-    }
-
-    @Override
-    public void doBackButtonAction(ActionEvent actionEvent)
-    {
-        //todo
-        JOptionPane.showMessageDialog(null, "Not yet implemented", "Sorry", JOptionPane.ERROR_MESSAGE);
     }
 
     @Override

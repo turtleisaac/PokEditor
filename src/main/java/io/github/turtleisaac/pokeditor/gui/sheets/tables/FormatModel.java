@@ -1,5 +1,6 @@
 package io.github.turtleisaac.pokeditor.gui.sheets.tables;
 
+import io.github.turtleisaac.pokeditor.DataManager;
 import io.github.turtleisaac.pokeditor.formats.GenericFileData;
 import io.github.turtleisaac.pokeditor.formats.GenericParser;
 import io.github.turtleisaac.pokeditor.formats.text.TextBankData;
@@ -20,7 +21,7 @@ public abstract class FormatModel<E extends GenericFileData> extends AbstractTab
         this.textBankData = textBankData;
         this.columnNames = new String[columnNameKeys.length];
 
-        ResourceBundle bundle = ResourceBundle.getBundle("sheet_strings");
+        ResourceBundle bundle = ResourceBundle.getBundle(DataManager.SHEET_STRINGS_PATH);
 
         int idx = 0;
         for(String key : columnNameKeys)

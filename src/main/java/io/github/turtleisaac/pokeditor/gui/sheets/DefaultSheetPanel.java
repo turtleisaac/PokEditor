@@ -5,6 +5,7 @@
 package io.github.turtleisaac.pokeditor.gui.sheets;
 
 import java.awt.event.*;
+import java.util.*;
 import javax.swing.*;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumnModel;
@@ -150,6 +151,7 @@ public class DefaultSheetPanel<E extends GenericFileData> extends JPanel
     private void initComponents() {
         // JFormDesigner - Component initialization - DO NOT MODIFY  //GEN-BEGIN:initComponents
         // Generated using JFormDesigner non-commercial license
+        ResourceBundle bundle = ResourceBundle.getBundle("pokeditor.sheet_panel");
         toolBar1 = new JToolBar();
         saveSheetButton = new JButton();
         reloadSheetButton = new JButton();
@@ -174,37 +176,37 @@ public class DefaultSheetPanel<E extends GenericFileData> extends JPanel
         {
 
             //---- saveSheetButton ----
-            saveSheetButton.setText("Save Changes");
+            saveSheetButton.setText(bundle.getString("DefaultSheetPanel.saveSheetButton.text"));
             saveSheetButton.addActionListener(e -> saveSheetButtonPressed(e));
             toolBar1.add(saveSheetButton);
             toolBar1.addSeparator();
 
             //---- reloadSheetButton ----
-            reloadSheetButton.setText("Reset Changes");
+            reloadSheetButton.setText(bundle.getString("DefaultSheetPanel.reloadSheetButton.text"));
             reloadSheetButton.addActionListener(e -> reloadSheetButtonPressed(e));
             toolBar1.add(reloadSheetButton);
             toolBar1.addSeparator();
 
             //---- addRowButton ----
-            addRowButton.setText("Add Row");
+            addRowButton.setText(bundle.getString("DefaultSheetPanel.addRowButton.text"));
             addRowButton.addActionListener(e -> addRowButtonPressed(e));
             toolBar1.add(addRowButton);
             toolBar1.addSeparator();
 
             //---- deleteRowButton ----
-            deleteRowButton.setText("Delete Row");
+            deleteRowButton.setText(bundle.getString("DefaultSheetPanel.deleteRowButton.text"));
             deleteRowButton.addActionListener(e -> deleteRowButtonPressed(e));
             toolBar1.add(deleteRowButton);
             toolBar1.addSeparator();
 
             //---- exportSheetButton ----
-            exportSheetButton.setText("Export");
+            exportSheetButton.setText(bundle.getString("DefaultSheetPanel.exportSheetButton.text"));
             exportSheetButton.addActionListener(e -> exportSheetButtonPressed(e));
             toolBar1.add(exportSheetButton);
             toolBar1.addSeparator();
 
             //---- importSheetButton ----
-            importSheetButton.setText("Import");
+            importSheetButton.setText(bundle.getString("DefaultSheetPanel.importSheetButton.text"));
             importSheetButton.addActionListener(e -> importSheetButtonPressed(e));
             toolBar1.add(importSheetButton);
             toolBar1.addSeparator();
