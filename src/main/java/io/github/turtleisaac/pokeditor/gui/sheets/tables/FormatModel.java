@@ -26,20 +26,20 @@ public abstract class FormatModel<E extends GenericFileData> extends AbstractTab
         ResourceBundle bundle = ResourceBundle.getBundle(DataManager.SHEET_STRINGS_PATH);
 
         int idx = 0;
-        for (String key : Arrays.copyOfRange(columnNameKeys, numFrozenColumns, columnNameKeys.length))
+        for (String key : columnNameKeys)
             columnNames[idx++] = bundle.getString(key);
     }
 
     @Override
     public String getColumnName(int column)
     {
-        return columnNames[column];
+        return columnNames[column + numFrozenColumns];
     }
 
     @Override
     public boolean isCellEditable(int rowIndex, int columnIndex)
     {
-        return columnIndex != 0;
+        return true;
     }
 
     @Override

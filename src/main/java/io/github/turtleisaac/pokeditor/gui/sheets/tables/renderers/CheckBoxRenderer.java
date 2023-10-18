@@ -15,20 +15,20 @@ public class CheckBoxRenderer extends JCheckBox implements TableCellRenderer
     @Override
     public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column)
     {
-        table.setShowVerticalLines(true);
-        table.setShowHorizontalLines(true);
-        table.setShowGrid(true);
-
-        if (isSelected)
-        {
-            setForeground(table.getSelectionForeground());
-            super.setBackground(table.getSelectionBackground());
+        setForeground(Color.black);
+        if (isSelected) {
+            setBackground(table.getSelectionBackground());
+        } else if (table.getSelectedRow() == row) {
+            setBackground(table.getSelectionBackground());
         }
-        else
-        {
-            setForeground(table.getForeground());
-            setBackground(table.getBackground());
+        else {
+            if (row % 2 == 0)
+                setBackground(table.getBackground());
+            else
+                setBackground(new Color(248, 221, 231));
         }
+        validate();
+        repaint();
         setSelected((Boolean) value);
         return this;
     }

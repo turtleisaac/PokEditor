@@ -4,6 +4,7 @@ import io.github.turtleisaac.pokeditor.DataManager;
 import io.github.turtleisaac.pokeditor.formats.GenericFileData;
 import io.github.turtleisaac.pokeditor.formats.text.TextBankData;
 import io.github.turtleisaac.pokeditor.gui.PokeditorManager;
+import io.github.turtleisaac.pokeditor.gui.sheets.tables.editors.CheckBoxEditor;
 import io.github.turtleisaac.pokeditor.gui.sheets.tables.editors.ComboBoxCellEditor;
 import io.github.turtleisaac.pokeditor.gui.sheets.tables.editors.NumberOnlyCellEditor;
 import io.github.turtleisaac.pokeditor.gui.sheets.tables.renderers.*;
@@ -62,27 +63,6 @@ public abstract class DefaultTable<E extends GenericFileData> extends JTable
         getTableHeader().setReorderingAllowed(false);
         setDragEnabled(false);
 
-        setDefaultRenderer(Object.class, new DefaultTableCellRenderer() {
-
-            @Override
-            public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column)
-            {
-                Component c = super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
-                if (isSelected) {
-//                    c.setForeground(getSelectionForeground());
-                    c.setBackground(getSelectionBackground());
-                } else {
-                    c.setForeground(getForeground());
-                    if (row % 2 == 0)
-                        setBackground(table.getBackground());
-                    else
-                        setBackground(new Color(248, 221, 231));
-                }
-
-                return c;
-            }
-        });
-
         setRowSelectionAllowed(true);
         setColumnSelectionAllowed(true);
         setSelectionMode(ListSelectionModel.SINGLE_INTERVAL_SELECTION);
@@ -130,6 +110,7 @@ public abstract class DefaultTable<E extends GenericFileData> extends JTable
             if (c == CellTypes.CHECKBOX)
             {
                 col.setCellRenderer(new CheckBoxRenderer());
+                col.setCellEditor(new CheckBoxEditor());
             }
             else if (c == CellTypes.COMBO_BOX || c == CellTypes.COLORED_COMBO_BOX)
             {

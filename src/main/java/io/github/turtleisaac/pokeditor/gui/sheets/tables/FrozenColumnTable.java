@@ -10,6 +10,7 @@ import io.github.turtleisaac.pokeditor.gui.sheets.tables.renderers.MultiLineTabl
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableCellRenderer;
+import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableColumn;
 import javax.swing.table.TableModel;
 import java.awt.*;
@@ -31,8 +32,8 @@ public class FrozenColumnTable<E extends GenericFileData> extends JTable
         setShowVerticalLines(true);
 
         TableColumn col = getColumnModel().getColumn(0);
-        col.setWidth(40);
-        col.setPreferredWidth(40);
+        col.setWidth(35);
+        col.setPreferredWidth(35);
 
 
 //        for (int i = 0; i < getColumnCount(); i++)
@@ -56,26 +57,60 @@ public class FrozenColumnTable<E extends GenericFileData> extends JTable
         setRowSelectionAllowed(true);
         setColumnSelectionAllowed(true);
         setSelectionMode(ListSelectionModel.SINGLE_INTERVAL_SELECTION);
+    }
 
-        setDefaultRenderer(Object.class, new DefaultTableCellRenderer() {
+    public JTable getCornerTableHeader()
+    {
+        TableModel model = new DefaultTableModel() {
+            @Override
+            public int getColumnCount()
+            {
+                return getColumnModel().getColumnCount();
+            }
 
             @Override
-            public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column)
+            public int getRowCount()
             {
-                Component c = super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
-                if (isSelected) {
-//                    c.setForeground(getSelectionForeground());
-                    c.setBackground(getSelectionBackground());
-                } else {
-                    c.setForeground(getForeground());
-                    if (row % 2 == 0)
-                        setBackground(table.getBackground());
-                    else
-                        setBackground(new Color(248, 221, 231));
-                }
-
-                return c;
+                return 1;
             }
-        });
+
+            @Override
+            public Object getValueAt(int row, int column)
+            {
+                return getModel().getColumnName(column - getColumnModel().getColumnCount());
+            }
+
+            @Override
+            public boolean isCellEditable(int rowIndex, int columnIndex)
+            {
+                return false;
+            }
+        };
+
+        JTable corner = new JTable(model);
+        corner.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
+        corner.setRowMargin(1);
+        corner.getColumnModel().setColumnMargin(1);
+        corner.setShowGrid(true);
+        corner.setShowHorizontalLines(true);
+        corner.setShowVerticalLines(true);
+        corner.setRowSelectionAllowed(false);
+        corner.getColumnModel().setColumnSelectionAllowed(false);
+        corner.getTableHeader().setReorderingAllowed(false);
+        corner.setDragEnabled(false);
+
+        corner.setRowHeight(39);
+
+        MultiLineTableHeaderRenderer renderer = new MultiLineTableHeaderRenderer();
+        Enumeration<?> enumK = corner.getColumnModel().getColumns();
+        while (enumK.hasMoreElements())
+        {
+            TableColumn c = ((TableColumn) enumK.nextElement());
+            c.setCellRenderer(renderer);
+        }
+        corner.getColumnModel().getColumn(0).setWidth(21);
+        corner.getColumnModel().getColumn(0).setPreferredWidth(21);
+
+        return corner;
     }
 }

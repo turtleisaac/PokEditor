@@ -74,9 +74,9 @@ public class PersonalTable extends DefaultTable<PersonalData>
 
             if (aValue instanceof String)
             {
-                if (columnIndex != -1 && columnIndex != 30)
+                if (columnIndex != -1 && columnIndex != 28)
                     aValue = Integer.parseInt(((String) aValue).trim());
-                else if (columnIndex == 30)
+                else if (columnIndex == 28)
                     aValue = Boolean.parseBoolean(((String) aValue).trim());
             }
 
@@ -247,6 +247,12 @@ public class PersonalTable extends DefaultTable<PersonalData>
                 public void setValueAt(Object aValue, int rowIndex, int columnIndex)
                 {
                     super.setValueAt(aValue, rowIndex, columnIndex - 2);
+                }
+
+                @Override
+                public boolean isCellEditable(int rowIndex, int columnIndex)
+                {
+                    return columnIndex != 0;
                 }
             };
         }

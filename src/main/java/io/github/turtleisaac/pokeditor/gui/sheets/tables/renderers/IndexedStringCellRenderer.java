@@ -35,7 +35,7 @@ public class IndexedStringCellRenderer extends DefaultTableCellRenderer
                 }
         }
 
-        if (isSelected) {
+        if (isSelected || table.getSelectedRow() == row) {
             setBackground(table.getSelectionBackground());
         } else {
             setForeground(getForeground());

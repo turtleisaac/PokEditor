@@ -7,8 +7,10 @@ package io.github.turtleisaac.pokeditor.gui.sheets;
 import java.awt.event.*;
 import java.util.*;
 import javax.swing.*;
-import javax.swing.table.TableCellRenderer;
-import javax.swing.table.TableColumnModel;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
+import javax.swing.event.TableModelListener;
+import javax.swing.table.*;
 
 import io.github.turtleisaac.nds4j.ui.ThemeUtils;
 import io.github.turtleisaac.pokeditor.formats.GenericFileData;
@@ -16,6 +18,7 @@ import io.github.turtleisaac.pokeditor.gui.PokeditorManager;
 import io.github.turtleisaac.pokeditor.gui.sheets.tables.DefaultTable;
 import io.github.turtleisaac.pokeditor.gui.sheets.tables.FormatModel;
 import io.github.turtleisaac.pokeditor.gui.sheets.tables.FrozenColumnTable;
+import io.github.turtleisaac.pokeditor.gui.sheets.tables.renderers.MultiLineTableHeaderRenderer;
 import net.miginfocom.swing.*;
 
 import java.awt.*;
@@ -45,29 +48,27 @@ public class DefaultSheetPanel<E extends GenericFileData> extends JPanel
 //        resizeColumnWidth(table1);
         setIcons();
 
-        frozenColumns = new FrozenColumnTable<>(((FormatModel<E>) table.getModel()).getFrozenColumnModel());
+        frozenColumns = new FrozenColumnTable<>(((FormatModel<?>) table.getModel()).getFrozenColumnModel());
         scrollPane1.setRowHeaderView(frozenColumns);
         resizeColumnWidth(frozenColumns);
         scrollPane1.getRowHeader().setMaximumSize(new Dimension(frozenColumns.getPreferredSize().width, scrollPane1.getRowHeader().getMaximumSize().height));
         scrollPane1.getRowHeader().setPreferredSize(new Dimension(frozenColumns.getPreferredSize().width, scrollPane1.getRowHeader().getMaximumSize().height));
-//        scrollPane1.getRowHeader().setMinimumSize(new Dimension(50, scrollPane1.getRowHeader().getMaximumSize().height));
-//        frozenColumns.setMaximumSize(new Dimension(50, frozenColumns.getMaximumSize().height));
-//        frozenColumns.setPreferredSize(new Dimension(50, frozenColumns.getMaximumSize().height));
-//        frozenColumns.setMinimumSize(new Dimension(50, frozenColumns.getMaximumSize().height));
 
+        scrollPane1.setCorner(JScrollPane.UPPER_LEFT_CORNER, frozenColumns.getCornerTableHeader());
 
-        JTable corner = new JTable();
-        corner.
+        table.getSelectionModel().addListSelectionListener(e -> frozenColumns.clearSelection());
+        frozenColumns.getSelectionModel().addListSelectionListener(e -> table.clearSelection());
 
-        scrollPane1.setCorner(JScrollPane.UPPER_LEFT_CORNER, p);
+        linkTableSelectionIndicators(table, frozenColumns);
+        linkTableSelectionIndicators(frozenColumns, table);
 
-        table.addPropertyChangeListener(new PropertyChangeListener()
+        frozenColumns.addPropertyChangeListener(new PropertyChangeListener()
         {
             @Override
             public void propertyChange(PropertyChangeEvent evt)
             {
                 String property = evt.getPropertyName();
-                if (table.getSelectedColumn() == 1 && (property.equals("tableCellEditor") || property.equals("selectionBackground")))
+                if (frozenColumns.getSelectedColumn() == 1 && (property.equals("tableCellEditor") || property.equals("selectionBackground")))
                     manager.resetAllIndexedCellRendererText();
             }
         });
@@ -106,6 +107,33 @@ public class DefaultSheetPanel<E extends GenericFileData> extends JPanel
                 width = 300;
             columnModel.getColumn(column).setPreferredWidth(width + 5);
         }
+    }
+
+    private void linkTableSelectionIndicators(JTable table, JTable otherTable)
+    {
+        table.setDefaultRenderer(Object.class, new DefaultTableCellRenderer() {
+
+            @Override
+            public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column)
+            {
+                Component c = super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
+                c.setForeground(Color.black);
+                if (isSelected) {
+                    c.setBackground(table.getSelectionBackground());
+                } else if (table.getSelectedRow() == row || otherTable.getSelectedRow() == row) {
+                    c.setBackground(table.getSelectionBackground());
+                }
+                else {
+                    if (row % 2 == 0)
+                        c.setBackground(table.getBackground());
+                    else
+                        c.setBackground(new Color(248, 221, 231));
+                }
+                c.validate();
+                c.repaint();
+                return c;
+            }
+        });
     }
 
     private void zoomOutButtonPressed(ActionEvent e) {
