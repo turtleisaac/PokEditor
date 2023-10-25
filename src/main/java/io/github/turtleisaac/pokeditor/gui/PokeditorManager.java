@@ -8,6 +8,7 @@ import io.github.turtleisaac.nds4j.ui.ThemeUtils;
 import io.github.turtleisaac.nds4j.ui.Tool;
 import io.github.turtleisaac.pokeditor.DataManager;
 import io.github.turtleisaac.pokeditor.formats.GenericFileData;
+import io.github.turtleisaac.pokeditor.formats.evolutions.EvolutionData;
 import io.github.turtleisaac.pokeditor.formats.personal.PersonalData;
 import io.github.turtleisaac.pokeditor.formats.text.TextBankData;
 import io.github.turtleisaac.pokeditor.gamedata.Game;
@@ -72,7 +73,7 @@ public class PokeditorManager extends PanelManager
         }
     }
 
-    private Map<Class<? extends GenericFileData>, DefaultSheetPanel> sheetPanels;
+    private Map<Class<? extends GenericFileData>, DefaultSheetPanel<? extends GenericFileData>> sheetPanels;
     private JPanel placeholder;
 
     private NintendoDsRom rom;
@@ -93,8 +94,11 @@ public class PokeditorManager extends PanelManager
 
         DefaultSheetPanel<PersonalData> personalPanel = DataManager.createPersonal(this, rom);
         personalPanel.setName("Personal");
-
         sheetPanels.put(PersonalData.class, personalPanel);
+
+        DefaultSheetPanel<EvolutionData> evolutionsPanel = DataManager.createEvolutions(this, rom);
+        evolutionsPanel.setName("Evolutions");
+        sheetPanels.put(EvolutionData.class, evolutionsPanel);
     }
 
     public <E extends GenericFileData> void saveData(Class<E> dataClass)

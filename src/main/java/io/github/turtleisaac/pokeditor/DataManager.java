@@ -28,6 +28,7 @@ import io.github.turtleisaac.pokeditor.gamedata.GameFiles;
 import io.github.turtleisaac.pokeditor.gui.PokeditorManager;
 import io.github.turtleisaac.pokeditor.gui.sheets.DefaultSheetPanel;
 import io.github.turtleisaac.pokeditor.gui.sheets.tables.DefaultTable;
+import io.github.turtleisaac.pokeditor.gui.sheets.tables.EvolutionsTable;
 import io.github.turtleisaac.pokeditor.gui.sheets.tables.PersonalTable;
 
 import java.lang.reflect.ParameterizedType;
@@ -46,8 +47,12 @@ public class DataManager
         return new DefaultSheetPanel<>(manager, new PersonalTable(data, textData));
     }
 
-
-
+    public static DefaultSheetPanel<EvolutionData> createEvolutions(PokeditorManager manager, NintendoDsRom rom)
+    {
+        List<TextBankData> textData = DataManager.getData(rom, TextBankData.class);
+        List<EvolutionData> data = DataManager.getData(rom, EvolutionData.class);
+        return new DefaultSheetPanel<>(manager, new EvolutionsTable(data, textData));
+    }
 
     private static final Injector injector = Guice.createInjector(
             new PersonalModule(),

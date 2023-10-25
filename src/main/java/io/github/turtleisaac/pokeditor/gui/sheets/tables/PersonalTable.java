@@ -15,7 +15,7 @@ public class PersonalTable extends DefaultTable<PersonalData>
 
     public PersonalTable(List<PersonalData> data, List<TextBankData> textData)
     {
-        super(PersonalModel.personalClasses, new PersonalModel(data, textData), textData, columnWidths);
+        super(PersonalModel.personalClasses, new PersonalModel(data, textData), textData, columnWidths, null);
     }
 
     @Override

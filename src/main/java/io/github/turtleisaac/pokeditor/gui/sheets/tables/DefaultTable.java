@@ -12,6 +12,7 @@ import io.github.turtleisaac.pokeditor.gui.sheets.tables.renderers.*;
 import javax.swing.*;
 import javax.swing.border.Border;
 import javax.swing.table.DefaultTableCellRenderer;
+import javax.swing.table.TableCellEditor;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumn;
 import java.awt.*;
@@ -20,6 +21,7 @@ import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.util.*;
 import java.util.List;
+import java.util.function.Supplier;
 
 public abstract class DefaultTable<E extends GenericFileData> extends JTable
 {
@@ -27,7 +29,9 @@ public abstract class DefaultTable<E extends GenericFileData> extends JTable
     private final int[] widths;
     private final List<TextBankData> textData;
 
-    public DefaultTable(CellTypes[] cellTypes, FormatModel<E> model, List<TextBankData> textData, int[] widths)
+    private final CellTypes.CustomCellFunctionSupplier customCellSupplier;
+
+    public DefaultTable(CellTypes[] cellTypes, FormatModel<E> model, List<TextBankData> textData, int[] widths, CellTypes.CustomCellFunctionSupplier customCellSupplier)
     {
         super(model);
 
@@ -37,6 +41,7 @@ public abstract class DefaultTable<E extends GenericFileData> extends JTable
         this.cellTypes = cellTypes;
         this.widths = widths;
         this.textData = textData;
+        this.customCellSupplier = customCellSupplier;
         setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
 
         setRowMargin(1);
@@ -100,6 +105,9 @@ public abstract class DefaultTable<E extends GenericFileData> extends JTable
 
     public void loadCellRenderers(Queue<String[]> textSources)
     {
+        TableCellEditor customEditor = null;
+        TableCellRenderer customRenderer = null;
+
         for (int i = 0; i < getColumnCount(); i++)
         {
             CellTypes c = cellTypes[i];
@@ -114,9 +122,7 @@ public abstract class DefaultTable<E extends GenericFileData> extends JTable
             }
             else if (c == CellTypes.COMBO_BOX || c == CellTypes.COLORED_COMBO_BOX)
             {
-                String[] text = textSources.remove();
-                if (text == null)
-                    text = new String[] {""};
+                String[] text = getTextFromSource(textSources);
                 col.setCellEditor(new ComboBoxCellEditor(text));
 
                 if (c == CellTypes.COMBO_BOX)
@@ -128,11 +134,34 @@ public abstract class DefaultTable<E extends GenericFileData> extends JTable
             {
                 col.setCellEditor(new NumberOnlyCellEditor());
             }
-//            else if (c == JButton.class)
-//            {
-//                col.setCellRenderer(new ButtonRenderer());
-//            }
+            else if (c == CellTypes.CUSTOM)
+            {
+                if (customEditor == null || customRenderer == null)
+                {
+                    String[] speciesNames = getTextFromSource(textSources);
+                    String[] itemNames = getTextFromSource(textSources);
+                    String[] moveNames = getTextFromSource(textSources);
+
+                    customEditor = customCellSupplier.getEditor(speciesNames, itemNames, moveNames);
+                    customRenderer = customCellSupplier.getRenderer(speciesNames, itemNames, moveNames);
+                }
+
+                if (customEditor != null)
+                    col.setCellEditor(customEditor);
+
+                if (customRenderer != null)
+                    col.setCellRenderer(customRenderer);
+            }
         }
+    }
+
+    private String[] getTextFromSource(Queue<String[]> textSources)
+    {
+        String[] text = textSources.remove();
+        if (text == null)
+            text = new String[] {""};
+
+        return text;
     }
 
     public void resetIndexedCellRendererText()
