@@ -63,6 +63,14 @@ new FormModel {
 				add( new FormComponent( "javax.swing.JToolBar$Separator" ) {
 					name: "separator4"
 				} )
+				add( new FormComponent( "javax.swing.JButton" ) {
+					name: "findButton"
+					"text": new FormMessage( null, "DefaultSheetPanel.findButton.text" )
+					addEvent( new FormEvent( "java.awt.event.ActionListener", "actionPerformed", "findButtonPressed", true ) )
+				} )
+				add( new FormComponent( "javax.swing.JToolBar$Separator" ) {
+					name: "separator7"
+				} )
 				add( new FormComponent( "com.jformdesigner.designer.wrapper.HSpacer" ) {
 					name: "hSpacer1"
 				} )

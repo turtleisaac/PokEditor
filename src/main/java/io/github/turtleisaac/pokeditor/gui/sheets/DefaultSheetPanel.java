@@ -84,6 +84,7 @@ public class DefaultSheetPanel<E extends GenericFileData> extends JPanel
         importSheetButton.setIcon(PokeditorManager.sheetImportIcon);
         addRowButton.setIcon(PokeditorManager.rowInsertIcon);
         deleteRowButton.setIcon(PokeditorManager.rowRemoveIcon);
+        findButton.setIcon(PokeditorManager.searchIcon);
     }
 
     public DefaultTable<E> getTable()
@@ -191,6 +192,10 @@ public class DefaultSheetPanel<E extends GenericFileData> extends JPanel
         manager.resetData(table.getDataClass());
     }
 
+    private void findButtonPressed(ActionEvent e) {
+        // TODO add your code here
+    }
+
     private void initComponents() {
         // JFormDesigner - Component initialization - DO NOT MODIFY  //GEN-BEGIN:initComponents
         // Generated using JFormDesigner non-commercial license
@@ -202,6 +207,7 @@ public class DefaultSheetPanel<E extends GenericFileData> extends JPanel
         deleteRowButton = new JButton();
         exportSheetButton = new JButton();
         importSheetButton = new JButton();
+        findButton = new JButton();
         hSpacer1 = new JPanel(null);
         zoomOutButton = new JButton();
         zoomInButton = new JButton();
@@ -253,6 +259,12 @@ public class DefaultSheetPanel<E extends GenericFileData> extends JPanel
             importSheetButton.addActionListener(e -> importSheetButtonPressed(e));
             toolBar1.add(importSheetButton);
             toolBar1.addSeparator();
+
+            //---- findButton ----
+            findButton.setText(bundle.getString("DefaultSheetPanel.findButton.text"));
+            findButton.addActionListener(e -> findButtonPressed(e));
+            toolBar1.add(findButton);
+            toolBar1.addSeparator();
             toolBar1.add(hSpacer1);
 
             //---- zoomOutButton ----
@@ -285,6 +297,7 @@ public class DefaultSheetPanel<E extends GenericFileData> extends JPanel
     private JButton deleteRowButton;
     private JButton exportSheetButton;
     private JButton importSheetButton;
+    private JButton findButton;
     private JPanel hSpacer1;
     private JButton zoomOutButton;
     private JButton zoomInButton;
