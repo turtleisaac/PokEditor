@@ -48,7 +48,7 @@ public class DefaultSheetPanel<E extends GenericFileData> extends JPanel
 //        resizeColumnWidth(table1);
         setIcons();
 
-        frozenColumns = new FrozenColumnTable<>(((FormatModel<?>) table.getModel()).getFrozenColumnModel());
+        frozenColumns = new FrozenColumnTable<>(table.getFormatModel().getFrozenColumnModel());
         scrollPane1.setRowHeaderView(frozenColumns);
         resizeColumnWidth(frozenColumns);
         scrollPane1.getRowHeader().setMaximumSize(new Dimension(frozenColumns.getPreferredSize().width, scrollPane1.getRowHeader().getMaximumSize().height));
@@ -85,6 +85,7 @@ public class DefaultSheetPanel<E extends GenericFileData> extends JPanel
         addRowButton.setIcon(PokeditorManager.rowInsertIcon);
         deleteRowButton.setIcon(PokeditorManager.rowRemoveIcon);
         findButton.setIcon(PokeditorManager.searchIcon);
+        copyModeButton.setIcon(PokeditorManager.clipboardIcon);
     }
 
     public DefaultTable<E> getTable()
@@ -158,7 +159,7 @@ public class DefaultSheetPanel<E extends GenericFileData> extends JPanel
     }
 
     private void addRowButtonPressed(ActionEvent e) {
-        List<GenericFileData> data = (List<GenericFileData>) ((FormatModel<?>) table.getModel()).getData();
+        List<GenericFileData> data = (List<GenericFileData>) table.getFormatModel().getData();
         try
         {
             GenericFileData v = data.get(0).getClass().getDeclaredConstructor().newInstance();
@@ -171,7 +172,7 @@ public class DefaultSheetPanel<E extends GenericFileData> extends JPanel
 
     private void deleteRowButtonPressed(ActionEvent e) {
         // todo figure out how I'm going to remove the name of the species when a row is deleted (because right now the name just stays at that index and the data moves up)
-        ((FormatModel<?>) table.getModel()).getData().remove(table.getSelectedRow());
+        table.getFormatModel().getData().remove(table.getSelectedRow());
     }
 
     private void exportSheetButtonPressed(ActionEvent e) {
@@ -194,6 +195,12 @@ public class DefaultSheetPanel<E extends GenericFileData> extends JPanel
 
     private void findButtonPressed(ActionEvent e) {
         // TODO add your code here
+        FindDialog findDialog = new FindDialog(this);
+    }
+
+    private void copyModeButtonPressed(ActionEvent e) {
+        // TODO add your code here
+        table.getFormatModel().toggleCopyPasteMode(copyModeButton.isSelected());
     }
 
     private void initComponents() {
@@ -205,9 +212,10 @@ public class DefaultSheetPanel<E extends GenericFileData> extends JPanel
         reloadSheetButton = new JButton();
         addRowButton = new JButton();
         deleteRowButton = new JButton();
+        findButton = new JButton();
+        copyModeButton = new JToggleButton();
         exportSheetButton = new JButton();
         importSheetButton = new JButton();
-        findButton = new JButton();
         hSpacer1 = new JPanel(null);
         zoomOutButton = new JButton();
         zoomInButton = new JButton();
@@ -248,6 +256,18 @@ public class DefaultSheetPanel<E extends GenericFileData> extends JPanel
             toolBar1.add(deleteRowButton);
             toolBar1.addSeparator();
 
+            //---- findButton ----
+            findButton.setText(bundle.getString("DefaultSheetPanel.findButton.text"));
+            findButton.addActionListener(e -> findButtonPressed(e));
+            toolBar1.add(findButton);
+            toolBar1.addSeparator();
+
+            //---- copyModeButton ----
+            copyModeButton.setText(bundle.getString("DefaultSheetPanel.copyModeButton.text"));
+            copyModeButton.addActionListener(e -> copyModeButtonPressed(e));
+            toolBar1.add(copyModeButton);
+            toolBar1.addSeparator();
+
             //---- exportSheetButton ----
             exportSheetButton.setText(bundle.getString("DefaultSheetPanel.exportSheetButton.text"));
             exportSheetButton.addActionListener(e -> exportSheetButtonPressed(e));
@@ -258,12 +278,6 @@ public class DefaultSheetPanel<E extends GenericFileData> extends JPanel
             importSheetButton.setText(bundle.getString("DefaultSheetPanel.importSheetButton.text"));
             importSheetButton.addActionListener(e -> importSheetButtonPressed(e));
             toolBar1.add(importSheetButton);
-            toolBar1.addSeparator();
-
-            //---- findButton ----
-            findButton.setText(bundle.getString("DefaultSheetPanel.findButton.text"));
-            findButton.addActionListener(e -> findButtonPressed(e));
-            toolBar1.add(findButton);
             toolBar1.addSeparator();
             toolBar1.add(hSpacer1);
 
@@ -295,9 +309,10 @@ public class DefaultSheetPanel<E extends GenericFileData> extends JPanel
     private JButton reloadSheetButton;
     private JButton addRowButton;
     private JButton deleteRowButton;
+    private JButton findButton;
+    private JToggleButton copyModeButton;
     private JButton exportSheetButton;
     private JButton importSheetButton;
-    private JButton findButton;
     private JPanel hSpacer1;
     private JButton zoomOutButton;
     private JButton zoomInButton;

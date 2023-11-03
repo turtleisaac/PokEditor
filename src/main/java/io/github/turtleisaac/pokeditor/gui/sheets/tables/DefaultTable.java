@@ -1,5 +1,6 @@
 package io.github.turtleisaac.pokeditor.gui.sheets.tables;
 
+import com.formdev.flatlaf.util.SystemInfo;
 import io.github.turtleisaac.pokeditor.DataManager;
 import io.github.turtleisaac.pokeditor.formats.GenericFileData;
 import io.github.turtleisaac.pokeditor.formats.text.TextBankData;
@@ -10,18 +11,20 @@ import io.github.turtleisaac.pokeditor.gui.sheets.tables.editors.NumberOnlyCellE
 import io.github.turtleisaac.pokeditor.gui.sheets.tables.renderers.*;
 
 import javax.swing.*;
-import javax.swing.border.Border;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.TableCellEditor;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumn;
 import java.awt.*;
+import java.awt.datatransfer.Clipboard;
+import java.awt.datatransfer.DataFlavor;
+import java.awt.datatransfer.Transferable;
+import java.awt.datatransfer.UnsupportedFlavorException;
 import java.awt.event.ActionEvent;
-import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
+import java.io.IOException;
 import java.util.*;
 import java.util.List;
-import java.util.function.Supplier;
 
 public abstract class DefaultTable<E extends GenericFileData> extends JTable
 {
@@ -29,11 +32,14 @@ public abstract class DefaultTable<E extends GenericFileData> extends JTable
     private final int[] widths;
     private final List<TextBankData> textData;
 
+    private final FormatModel<E> formatModel;
+
     private final CellTypes.CustomCellFunctionSupplier customCellSupplier;
 
     public DefaultTable(CellTypes[] cellTypes, FormatModel<E> model, List<TextBankData> textData, int[] widths, CellTypes.CustomCellFunctionSupplier customCellSupplier)
     {
         super(model);
+        this.formatModel = model;
 
         cellTypes = Arrays.copyOfRange(cellTypes, getNumFrozenColumns(), cellTypes.length);
         widths = Arrays.copyOfRange(widths, getNumFrozenColumns(), widths.length);
@@ -73,6 +79,18 @@ public abstract class DefaultTable<E extends GenericFileData> extends JTable
         setSelectionMode(ListSelectionModel.SINGLE_INTERVAL_SELECTION);
 
         InputMap inputMap = getInputMap(JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
+
+        PasteAction action = new PasteAction(this);
+
+        KeyStroke stroke;
+        if (!SystemInfo.isMacOS) {
+            stroke = KeyStroke.getKeyStroke(KeyEvent.VK_V, ActionEvent.CTRL_MASK, false);
+        } else {
+            stroke = KeyStroke.getKeyStroke(KeyEvent.VK_V, ActionEvent.META_MASK, false);
+        }
+
+        inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_PASTE, 0), action);
+        registerKeyboardAction(action, "Paste", stroke, JComponent.WHEN_FOCUSED);
 //        inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0), new AbstractAction()
 //        {
 //            @Override
@@ -83,7 +101,7 @@ public abstract class DefaultTable<E extends GenericFileData> extends JTable
 //            }
 //        });
 
-                inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0), "cancel");
+//                inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0), "cancel");
 
 //        addKeyListener(new KeyAdapter()
 //        {
@@ -98,6 +116,11 @@ public abstract class DefaultTable<E extends GenericFileData> extends JTable
     }
 
     abstract Queue<String[]> obtainTextSources(List<TextBankData> textData);
+
+    public FormatModel<E> getFormatModel()
+    {
+        return formatModel;
+    }
 
     public abstract Class<E> getDataClass();
 
@@ -233,5 +256,78 @@ public abstract class DefaultTable<E extends GenericFileData> extends JTable
             result[idx++] = bundle.getString(s);
         }
         return result;
+    }
+
+    public static class PasteAction extends AbstractAction {
+
+        private final DefaultTable<? extends GenericFileData> table;
+
+        public PasteAction(DefaultTable<? extends GenericFileData> table)
+        {
+            this.table = table;
+        }
+
+        @Override
+        public void actionPerformed(ActionEvent e)
+        {
+            int[] rows = table.getSelectedRows();
+            System.out.println("rows: " + Arrays.toString(rows));
+            int[] cols = table.getSelectedColumns();
+
+            Clipboard cb = Toolkit.getDefaultToolkit().getSystemClipboard();
+            if (cb.isDataFlavorAvailable(DataFlavor.stringFlavor))
+            {
+                try
+                {
+                    String value = (String) cb.getData(DataFlavor.stringFlavor);
+                    String[] lines = value.split("\n");
+                    String[][] pastedCells = new String[lines.length][];
+                    int idx = 0;
+                    for (String line : lines) {
+                        pastedCells[idx++] = line.split("\t");
+                    }
+
+                    int numVerticalCopies = (int) Math.round(((double) rows.length) / pastedCells.length);
+                    int numHorizontalCopies = (int) Math.round(((double) cols.length) / pastedCells[0].length);
+
+                    for (int verticalCopyIdx = 0; verticalCopyIdx < numVerticalCopies; verticalCopyIdx++)
+                    {
+                        for (int horizontalCopyIdx = 0; horizontalCopyIdx < numHorizontalCopies; horizontalCopyIdx++)
+                        {
+                            for (int rowIdx = 0; rowIdx < pastedCells.length; rowIdx++)
+                            {
+                                for (int colIdx = 0; colIdx < pastedCells[0].length; colIdx++)
+                                {
+                                    int destRow = rows[0] + verticalCopyIdx * pastedCells.length + rowIdx;
+                                    int destCol = cols[0] + horizontalCopyIdx * pastedCells[0].length + colIdx;
+
+//                                    System.out.println("Setting value at (" + destRow + "," + destCol + ") to: " + pastedCells[rowIdx][colIdx]);
+                                    table.setValueAt(pastedCells[rowIdx][colIdx], destRow, destCol);
+                                    table.getFormatModel().fireTableCellUpdated(destRow, destCol);
+                                }
+                            }
+                        }
+                    }
+
+//                    for (int userSelectedRow : rows)
+//                    {
+//                        for (int rowIdx = 0; rowIdx < pastedCells.length; rowIdx++)
+//                        {
+//                            for (int colIdx = 0; colIdx < pastedCells[0].length; colIdx++)
+//                            {
+//                                table.setValueAt(pastedCells[rowIdx][colIdx], userSelectedRow + rowIdx, cols[0] + colIdx);
+//                                table.getFormatModel().fireTableCellUpdated(userSelectedRow + rowIdx, cols[0] + colIdx);
+//                            }
+//                        }
+//                    }
+
+//                    table.setValueAt(value, row, col);
+                }
+                catch (UnsupportedFlavorException | IOException ex)
+                {
+                    ex.printStackTrace();
+                }
+            }
+        }
     }
 }

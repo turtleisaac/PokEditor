@@ -16,6 +16,8 @@ public abstract class FormatModel<E extends GenericFileData> extends AbstractTab
 
     private final String[] columnNames;
 
+    private boolean copyPasteModeEnabled;
+
     public FormatModel(String[] columnNameKeys, List<E> data, List<TextBankData> textBankData, int numFrozenColumns)
     {
         this.data = data;
@@ -28,6 +30,8 @@ public abstract class FormatModel<E extends GenericFileData> extends AbstractTab
         int idx = 0;
         for (String key : columnNameKeys)
             columnNames[idx++] = bundle.getString(key);
+
+        copyPasteModeEnabled = false;
     }
 
     @Override
@@ -36,10 +40,15 @@ public abstract class FormatModel<E extends GenericFileData> extends AbstractTab
         return columnNames[column + numFrozenColumns];
     }
 
+    public void toggleCopyPasteMode(boolean state)
+    {
+        copyPasteModeEnabled = state;
+    }
+
     @Override
     public boolean isCellEditable(int rowIndex, int columnIndex)
     {
-        return true;
+        return !copyPasteModeEnabled;
     }
 
     @Override

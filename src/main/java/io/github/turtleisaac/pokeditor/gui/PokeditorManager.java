@@ -2,7 +2,6 @@ package io.github.turtleisaac.pokeditor.gui;
 
 import com.formdev.flatlaf.extras.FlatSVGIcon;
 import io.github.turtleisaac.nds4j.NintendoDsRom;
-import io.github.turtleisaac.nds4j.ui.FileUtils;
 import io.github.turtleisaac.nds4j.ui.PanelManager;
 import io.github.turtleisaac.nds4j.ui.ThemeUtils;
 import io.github.turtleisaac.nds4j.ui.Tool;
@@ -17,6 +16,7 @@ import io.github.turtleisaac.pokeditor.gamedata.TextFiles;
 import io.github.turtleisaac.pokeditor.gui.sheets.DefaultSheetPanel;
 
 import javax.swing.*;
+import javax.swing.event.ChangeEvent;
 import javax.swing.filechooser.FileFilter;
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -36,6 +36,7 @@ public class PokeditorManager extends PanelManager
     public static final FlatSVGIcon rowRemoveIcon;
     public static final FlatSVGIcon rowInsertIcon;
     public static final FlatSVGIcon searchIcon;
+    public static final FlatSVGIcon clipboardIcon;
 
     public static final Color[] typeColors = new Color[]{new Color(201, 201, 201),
             new Color(173, 96, 94),
@@ -64,12 +65,14 @@ public class PokeditorManager extends PanelManager
             rowRemoveIcon = new FlatSVGIcon(PokeditorManager.class.getResourceAsStream("/pokeditor/icons/svg/row-remove.svg"));
             rowInsertIcon = new FlatSVGIcon(PokeditorManager.class.getResourceAsStream("/pokeditor/icons/svg/row-insert-bottom.svg"));
             searchIcon = new FlatSVGIcon(PokeditorManager.class.getResourceAsStream("/pokeditor/icons/svg/list-search.svg"));
+            clipboardIcon = new FlatSVGIcon(PokeditorManager.class.getResourceAsStream("/pokeditor/icons/svg/clipboard-copy.svg"));
 
             sheetExportIcon.setColorFilter(ThemeUtils.iconColorFilter);
             sheetImportIcon.setColorFilter(ThemeUtils.iconColorFilter);
             rowRemoveIcon.setColorFilter(ThemeUtils.iconColorFilter);
             rowInsertIcon.setColorFilter(ThemeUtils.iconColorFilter);
             searchIcon.setColorFilter(ThemeUtils.iconColorFilter);
+            clipboardIcon.setColorFilter(ThemeUtils.iconColorFilter);
         }
         catch(IOException e) {
             throw new RuntimeException(e);
@@ -77,7 +80,7 @@ public class PokeditorManager extends PanelManager
     }
 
     private Map<Class<? extends GenericFileData>, DefaultSheetPanel<? extends GenericFileData>> sheetPanels;
-    private JPanel placeholder;
+    private List<JPanel> panels;
 
     private NintendoDsRom rom;
     private Game baseRom;
@@ -92,16 +95,36 @@ public class PokeditorManager extends PanelManager
         TextFiles.initialize(baseRom);
 
         sheetPanels = new HashMap<>();
-        placeholder = new JPanel();
+        panels = new ArrayList<>();
+        JPanel placeholder = new JPanel();
         placeholder.setName("Test panel");
 
+        placeholder.setPreferredSize(dimension);
+        placeholder.setMinimumSize(dimension);
+
         DefaultSheetPanel<PersonalData> personalPanel = DataManager.createPersonal(this, rom);
-        personalPanel.setName("Personal");
+        personalPanel.setName("Personal Sheet");
         sheetPanels.put(PersonalData.class, personalPanel);
+//        panels.add(personalPanel);
 
         DefaultSheetPanel<EvolutionData> evolutionsPanel = DataManager.createEvolutions(this, rom);
-        evolutionsPanel.setName("Evolutions");
+        evolutionsPanel.setName("Evolutions Sheet");
         sheetPanels.put(EvolutionData.class, evolutionsPanel);
+//        panels.add(evolutionsPanel);
+
+        JPanel spritesPanel = new JPanel();
+        spritesPanel.setName("Battle Sprites");
+
+        JPanel fieldPanel = new JPanel();
+        fieldPanel.setName("Field");
+        JPanel waterPanel = new JPanel();
+        waterPanel.setName("Water");
+        PanelGroup encounters = new PanelGroup("Encounters", fieldPanel, waterPanel);
+
+        PanelGroup pokemonGroup = new PanelGroup("Pokémon Editing", personalPanel, evolutionsPanel, spritesPanel);
+        panels.add(pokemonGroup);
+        panels.add(encounters);
+        panels.add(placeholder);
     }
 
     public <E extends GenericFileData> void saveData(Class<E> dataClass)
@@ -176,10 +199,6 @@ public class PokeditorManager extends PanelManager
     @Override
     public List<JPanel> getPanels()
     {
-        placeholder.setPreferredSize(dimension);
-        placeholder.setMinimumSize(dimension);
-        List<JPanel> panels = new ArrayList<>(sheetPanels.values());
-        panels.add(placeholder);
         return panels;
     }
 
