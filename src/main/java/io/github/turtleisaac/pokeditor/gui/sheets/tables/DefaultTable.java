@@ -5,6 +5,7 @@ import io.github.turtleisaac.pokeditor.DataManager;
 import io.github.turtleisaac.pokeditor.formats.GenericFileData;
 import io.github.turtleisaac.pokeditor.formats.text.TextBankData;
 import io.github.turtleisaac.pokeditor.gui.PokeditorManager;
+import io.github.turtleisaac.pokeditor.gui.sheets.tables.editors.BitfieldComboBoxEditor;
 import io.github.turtleisaac.pokeditor.gui.sheets.tables.editors.CheckBoxEditor;
 import io.github.turtleisaac.pokeditor.gui.sheets.tables.editors.ComboBoxCellEditor;
 import io.github.turtleisaac.pokeditor.gui.sheets.tables.editors.NumberOnlyCellEditor;
@@ -115,7 +116,7 @@ public abstract class DefaultTable<E extends GenericFileData> extends JTable
 //        });
     }
 
-    abstract Queue<String[]> obtainTextSources(List<TextBankData> textData);
+    public abstract Queue<String[]> obtainTextSources(List<TextBankData> textData);
 
     public FormatModel<E> getFormatModel()
     {
@@ -143,15 +144,21 @@ public abstract class DefaultTable<E extends GenericFileData> extends JTable
                 col.setCellRenderer(new CheckBoxRenderer());
                 col.setCellEditor(new CheckBoxEditor());
             }
-            else if (c == CellTypes.COMBO_BOX || c == CellTypes.COLORED_COMBO_BOX)
+            else if (c == CellTypes.COMBO_BOX || c == CellTypes.COLORED_COMBO_BOX || c == CellTypes.BITFIELD_COMBO_BOX)
             {
                 String[] text = getTextFromSource(textSources);
-                col.setCellEditor(new ComboBoxCellEditor(text));
+
+                if (c != CellTypes.BITFIELD_COMBO_BOX) //normal and colored
+                    col.setCellEditor(new ComboBoxCellEditor(text));
+                else // bitfield combo box
+                    col.setCellEditor(new BitfieldComboBoxEditor(text));
 
                 if (c == CellTypes.COMBO_BOX)
                     col.setCellRenderer(new IndexedStringCellRenderer(text));
-                else
+                else if (c == CellTypes.COLORED_COMBO_BOX)
                     col.setCellRenderer(new IndexedStringCellRenderer.ColoredIndexedStringCellRenderer(text, PokeditorManager.typeColors));
+                else
+                    col.setCellRenderer(new BitfieldStringCellRenderer(text));
             }
             else if (c == CellTypes.INTEGER)
             {
@@ -195,7 +202,7 @@ public abstract class DefaultTable<E extends GenericFileData> extends JTable
             CellTypes c = cellTypes[i];
             TableColumn col = getColumnModel().getColumn(i);
 
-            if (c == CellTypes.COMBO_BOX || c == CellTypes.COLORED_COMBO_BOX)
+            if (c == CellTypes.COMBO_BOX || c == CellTypes.COLORED_COMBO_BOX || c == CellTypes.BITFIELD_COMBO_BOX)
             {
                 String[] text = textSources.remove();
                 if (text == null)

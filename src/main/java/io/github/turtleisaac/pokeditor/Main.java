@@ -16,6 +16,7 @@ import io.github.turtleisaac.nds4j.ui.exceptions.ToolCreationException;
 import io.github.turtleisaac.pokeditor.gui.PokeditorManager;
 import io.github.turtleisaac.pokeditor.gui_old.projects.projectwindow.console.ConsoleWindow;
 
+import java.util.Locale;
 import java.util.function.Supplier;
 
 /**
@@ -31,6 +32,7 @@ public class Main
 
     public static void main(String[] args) throws ToolCreationException
     {
+//        Locale.setDefault(Locale.FRANCE);
         Tool tool = Tool.create();
         tool.setType(ProgramType.PROJECT)
                 .setName("PokEditor")

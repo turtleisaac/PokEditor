@@ -1,20 +1,19 @@
-package io.github.turtleisaac.pokeditor.gui.sheets.tables;
+package io.github.turtleisaac.pokeditor.gui.sheets.tables.formats;
 
 import io.github.turtleisaac.pokeditor.formats.evolutions.EvolutionData;
 import io.github.turtleisaac.pokeditor.formats.text.TextBankData;
 import io.github.turtleisaac.pokeditor.gamedata.TextFiles;
-import io.github.turtleisaac.pokeditor.gui.PokeditorManager;
-import io.github.turtleisaac.pokeditor.gui.sheets.tables.editors.CheckBoxEditor;
+import io.github.turtleisaac.pokeditor.gui.sheets.tables.CellTypes;
+import io.github.turtleisaac.pokeditor.gui.sheets.tables.DefaultTable;
+import io.github.turtleisaac.pokeditor.gui.sheets.tables.FormatModel;
 import io.github.turtleisaac.pokeditor.gui.sheets.tables.editors.ComboBoxCellEditor;
 import io.github.turtleisaac.pokeditor.gui.sheets.tables.editors.NumberOnlyCellEditor;
-import io.github.turtleisaac.pokeditor.gui.sheets.tables.renderers.CheckBoxRenderer;
 import io.github.turtleisaac.pokeditor.gui.sheets.tables.renderers.IndexedStringCellRenderer;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.TableCellEditor;
 import javax.swing.table.TableCellRenderer;
-import javax.swing.table.TableColumn;
 import java.awt.*;
 import java.util.LinkedList;
 import java.util.List;
@@ -28,11 +27,11 @@ public class EvolutionsTable extends DefaultTable<EvolutionData>
 
     public EvolutionsTable(List<EvolutionData> data, List<TextBankData> textData)
     {
-        super(EvolutionsTable.EvolutionsModel.evolutionsClasses, new EvolutionsTable.EvolutionsModel(data, textData), textData, columnWidths, new EvolutionRequirementCellSupplier());
+        super(EvolutionsModel.evolutionsClasses, new EvolutionsModel(data, textData), textData, columnWidths, new EvolutionRequirementCellSupplier());
     }
 
     @Override
-    Queue<String[]> obtainTextSources(List<TextBankData> textData)
+    public Queue<String[]> obtainTextSources(List<TextBankData> textData)
     {
         Queue<String[]> textSources = new LinkedList<>();
 
@@ -84,7 +83,10 @@ public class EvolutionsTable extends DefaultTable<EvolutionData>
 
             if (aValue instanceof String)
             {
-                if (columnIndex != -1)
+                CellTypes cellType = evolutionsClasses[columnIndex + NUM_FROZEN_COLUMNS];
+                if (cellType == CellTypes.CHECKBOX)
+                    aValue = Boolean.parseBoolean(((String) aValue).trim());
+                else if (cellType != CellTypes.STRING)
                     aValue = Integer.parseInt(((String) aValue).trim());
             }
 

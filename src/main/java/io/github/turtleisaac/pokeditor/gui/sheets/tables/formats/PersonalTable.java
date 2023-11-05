@@ -1,8 +1,11 @@
-package io.github.turtleisaac.pokeditor.gui.sheets.tables;
+package io.github.turtleisaac.pokeditor.gui.sheets.tables.formats;
 
 import io.github.turtleisaac.pokeditor.formats.personal.PersonalData;
 import io.github.turtleisaac.pokeditor.formats.text.TextBankData;
 import io.github.turtleisaac.pokeditor.gamedata.TextFiles;
+import io.github.turtleisaac.pokeditor.gui.sheets.tables.CellTypes;
+import io.github.turtleisaac.pokeditor.gui.sheets.tables.DefaultTable;
+import io.github.turtleisaac.pokeditor.gui.sheets.tables.FormatModel;
 
 import java.util.*;
 
@@ -19,7 +22,7 @@ public class PersonalTable extends DefaultTable<PersonalData>
     }
 
     @Override
-    Queue<String[]> obtainTextSources(List<TextBankData> textData)
+    public Queue<String[]> obtainTextSources(List<TextBankData> textData)
     {
         Queue<String[]> textSources = new LinkedList<>();
         String[] temp = textData.get(TextFiles.TYPE_NAMES.getValue()).getStringList().toArray(String[]::new);
@@ -74,12 +77,12 @@ public class PersonalTable extends DefaultTable<PersonalData>
 
             if (aValue instanceof String)
             {
-                if (columnIndex != -1 && columnIndex != 28)
-                    aValue = Integer.parseInt(((String) aValue).trim());
-                else if (columnIndex == 28)
+                CellTypes cellType = personalClasses[columnIndex + NUM_FROZEN_COLUMNS];
+                if (cellType == CellTypes.CHECKBOX)
                     aValue = Boolean.parseBoolean(((String) aValue).trim());
+                else if (cellType != CellTypes.STRING)
+                    aValue = Integer.parseInt(((String) aValue).trim());
             }
-
 
             switch (columnIndex + NUM_FROZEN_COLUMNS) {
                 case 0 -> {}

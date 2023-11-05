@@ -27,9 +27,10 @@ import io.github.turtleisaac.pokeditor.formats.trainers.TrainerParser;
 import io.github.turtleisaac.pokeditor.gamedata.GameFiles;
 import io.github.turtleisaac.pokeditor.gui.PokeditorManager;
 import io.github.turtleisaac.pokeditor.gui.sheets.DefaultSheetPanel;
-import io.github.turtleisaac.pokeditor.gui.sheets.tables.DefaultTable;
-import io.github.turtleisaac.pokeditor.gui.sheets.tables.EvolutionsTable;
-import io.github.turtleisaac.pokeditor.gui.sheets.tables.PersonalTable;
+import io.github.turtleisaac.pokeditor.gui.sheets.tables.formats.EvolutionsTable;
+import io.github.turtleisaac.pokeditor.gui.sheets.tables.formats.LearnsetsTable;
+import io.github.turtleisaac.pokeditor.gui.sheets.tables.formats.MovesTable;
+import io.github.turtleisaac.pokeditor.gui.sheets.tables.formats.PersonalTable;
 
 import java.lang.reflect.ParameterizedType;
 import java.util.HashMap;
@@ -52,6 +53,20 @@ public class DataManager
         List<TextBankData> textData = DataManager.getData(rom, TextBankData.class);
         List<EvolutionData> data = DataManager.getData(rom, EvolutionData.class);
         return new DefaultSheetPanel<>(manager, new EvolutionsTable(data, textData));
+    }
+
+    public static DefaultSheetPanel<LearnsetData> createLearnsets(PokeditorManager manager, NintendoDsRom rom)
+    {
+        List<TextBankData> textData = DataManager.getData(rom, TextBankData.class);
+        List<LearnsetData> data = DataManager.getData(rom, LearnsetData.class);
+        return new DefaultSheetPanel<>(manager, new LearnsetsTable(data, textData));
+    }
+
+    public static DefaultSheetPanel<MoveData> createMoves(PokeditorManager manager, NintendoDsRom rom)
+    {
+        List<TextBankData> textData = DataManager.getData(rom, TextBankData.class);
+        List<MoveData> data = DataManager.getData(rom, MoveData.class);
+        return new DefaultSheetPanel<>(manager, new MovesTable(data, textData));
     }
 
     private static final Injector injector = Guice.createInjector(

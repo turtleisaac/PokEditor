@@ -9,6 +9,7 @@ public enum CellTypes
     STRING,
     COMBO_BOX,
     COLORED_COMBO_BOX,
+    BITFIELD_COMBO_BOX,
     CHECKBOX,
     CUSTOM;
 

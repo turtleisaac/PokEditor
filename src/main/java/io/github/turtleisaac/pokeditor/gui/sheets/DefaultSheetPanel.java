@@ -191,6 +191,7 @@ public class DefaultSheetPanel<E extends GenericFileData> extends JPanel
 
     private void reloadSheetButtonPressed(ActionEvent e) {
         manager.resetData(table.getDataClass());
+        table.getFormatModel().fireTableDataChanged();
     }
 
     private void findButtonPressed(ActionEvent e) {

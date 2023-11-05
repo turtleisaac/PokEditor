@@ -10,7 +10,7 @@ import java.awt.*;
 
 public class IndexedStringCellRenderer extends DefaultTableCellRenderer
 {
-    private String[] items;
+    String[] items;
 
     public IndexedStringCellRenderer(String[] items)
     {
@@ -27,12 +27,15 @@ public class IndexedStringCellRenderer extends DefaultTableCellRenderer
     {
         super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
 
-        if (value != null) {
-            if (value instanceof Integer)
-                if ((Integer) value < items.length) {
-                    int num = (int) value;
-                    this.setText(items[num]);
+        if (value != null)
+        {
+            if (value instanceof Integer val)
+            {
+                if (val < items.length)
+                {
+                    this.setText(items[val]);
                 }
+            }
         }
 
         if (isSelected || table.getSelectedRow() == row) {
@@ -63,7 +66,7 @@ public class IndexedStringCellRenderer extends DefaultTableCellRenderer
         {
             super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
 //            Border border = getBorder();
-            if ((column == 6 || column == 7) && !isSelected && value != null)
+            if (!isSelected && value != null)
             {
                 if (value instanceof Integer)
                 {

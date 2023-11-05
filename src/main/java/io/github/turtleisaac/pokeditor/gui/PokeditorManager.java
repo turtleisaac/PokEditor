@@ -8,6 +8,8 @@ import io.github.turtleisaac.nds4j.ui.Tool;
 import io.github.turtleisaac.pokeditor.DataManager;
 import io.github.turtleisaac.pokeditor.formats.GenericFileData;
 import io.github.turtleisaac.pokeditor.formats.evolutions.EvolutionData;
+import io.github.turtleisaac.pokeditor.formats.learnsets.LearnsetData;
+import io.github.turtleisaac.pokeditor.formats.moves.MoveData;
 import io.github.turtleisaac.pokeditor.formats.personal.PersonalData;
 import io.github.turtleisaac.pokeditor.formats.text.TextBankData;
 import io.github.turtleisaac.pokeditor.gamedata.Game;
@@ -112,6 +114,15 @@ public class PokeditorManager extends PanelManager
         sheetPanels.put(EvolutionData.class, evolutionsPanel);
 //        panels.add(evolutionsPanel);
 
+        DefaultSheetPanel<LearnsetData> learnsetsPanel = DataManager.createLearnsets(this, rom);
+        learnsetsPanel.setName("Learnsets Sheet");
+        sheetPanels.put(LearnsetData.class, learnsetsPanel);
+//        panels.add(evolutionsPanel);
+
+        DefaultSheetPanel<MoveData> movesPanel = DataManager.createMoves(this, rom);
+        movesPanel.setName("Moves Sheet");
+        sheetPanels.put(MoveData.class, movesPanel);
+
         JPanel spritesPanel = new JPanel();
         spritesPanel.setName("Battle Sprites");
 
@@ -121,8 +132,9 @@ public class PokeditorManager extends PanelManager
         waterPanel.setName("Water");
         PanelGroup encounters = new PanelGroup("Encounters", fieldPanel, waterPanel);
 
-        PanelGroup pokemonGroup = new PanelGroup("Pokémon Editing", personalPanel, evolutionsPanel, spritesPanel);
+        PanelGroup pokemonGroup = new PanelGroup("Pokémon Editing", personalPanel, learnsetsPanel, evolutionsPanel, spritesPanel);
         panels.add(pokemonGroup);
+        panels.add(movesPanel);
         panels.add(encounters);
         panels.add(placeholder);
     }
