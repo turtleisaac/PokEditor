@@ -6,6 +6,8 @@ Multifunctional in-depth editor for Pokémon Gen IV (4) game data.
 
 Written entirely in Java and is completely OS-agnostic.
 
+Currently can be used in English and has partial French support.
+
 **Java 20 is required.** Newer versions may work, but if older classes have been deprecated or removed in those versions, then it may not work for those higher versions of Java.
 
 The majority of the backend can be found in my other library, [PokEditor-Core](https://github.com/turtleisaac/PokEditor-Core).
@@ -32,36 +34,35 @@ Also powered by my other libraries, [Nds4j](https://github.com/turtleisaac/Nds4j
 
 # Usage
 
-Currently not in a usable state.
+There is a dev build available in the [Releases page here on GitHub](https://github.com/turtleisaac/PokEditor/releases). Simply download it, unzip the zip file, and double click the file contained within with the name **PokEditor.jar**!
+
+Unlike prior versions of PokEditor, v3 is intended to fully be used within the tool. No more exporting sheets or editing them elsewhere. Additionally, there is very little effort required by the user to get it set up this time around. No more annoying sheets setup process, it should just automatically load everything into the sheets the instant you open a project.
+
 
 <img width="403" alt="image" src="https://github.com/turtleisaac/PokEditor/assets/7987859/8165bcd7-e9af-4056-991a-d61cc5783fe7">
 
-<img width="1312" alt="image" src="https://github.com/turtleisaac/PokEditor/assets/7987859/e668281b-bb6a-4155-8fff-bc0d0a5a67e8">
+<img width="1312" alt="image" src="https://github.com/turtleisaac/PokEditor/assets/7987859/1608d39f-3a29-4bbd-ab53-ea50d87ffff1">
 
 
 
-[//]: # (# List of Spreadsheet-Based Editors)
+# List of Spreadsheet-Based Editors
 
-[//]: # ()
-[//]: # (* Personal Data Editor &#40;stats, types, abilities, etc...&#41;)
+* Personal Data Editor
 
 [//]: # ()
 [//]: # (* TM Learnset Editor)
 
-[//]: # ()
-[//]: # (* Level-Up Learnset Editor)
+* Level-Up Learnset Editor
 
 [//]: # ()
 [//]: # (* Encounter Editor &#40;also has a GUI-based editor&#41; &#40;currently incomplete&#41;)
 
-[//]: # ()
-[//]: # (* Evolutions Editor)
+* Evolutions Editor
 
 [//]: # ()
 [//]: # (* Item Editor)
 
-[//]: # ()
-[//]: # (* Move Editor)
+* Move Editor
 
 [//]: # ()
 [//]: # (* Move Tutor Editor &#40;moves taught and compatibility&#41;)
