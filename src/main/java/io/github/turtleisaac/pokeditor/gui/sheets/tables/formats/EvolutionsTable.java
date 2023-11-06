@@ -27,7 +27,7 @@ public class EvolutionsTable extends DefaultTable<EvolutionData>
 
     public EvolutionsTable(List<EvolutionData> data, List<TextBankData> textData)
     {
-        super(EvolutionsModel.evolutionsClasses, new EvolutionsModel(data, textData), textData, columnWidths, new EvolutionRequirementCellSupplier());
+        super(new EvolutionsModel(data, textData), textData, columnWidths, new EvolutionRequirementCellSupplier());
     }
 
     @Override
@@ -68,7 +68,6 @@ public class EvolutionsTable extends DefaultTable<EvolutionData>
 
     static class EvolutionsModel extends FormatModel<EvolutionData>
     {
-        static final CellTypes[] evolutionsClasses = new CellTypes[] {CellTypes.INTEGER, CellTypes.STRING, CellTypes.COMBO_BOX, CellTypes.CUSTOM, CellTypes.CUSTOM, CellTypes.COMBO_BOX, CellTypes.CUSTOM, CellTypes.CUSTOM, CellTypes.COMBO_BOX, CellTypes.CUSTOM, CellTypes.CUSTOM, CellTypes.COMBO_BOX, CellTypes.CUSTOM, CellTypes.CUSTOM, CellTypes.COMBO_BOX, CellTypes.CUSTOM, CellTypes.CUSTOM, CellTypes.COMBO_BOX, CellTypes.CUSTOM, CellTypes.CUSTOM, CellTypes.COMBO_BOX, CellTypes.CUSTOM, CellTypes.CUSTOM, };
         private static final String[] columnKeys = new String[] {"id", "name", "evolutionMethod", "evolutionRequirement", "evolutionResultSpecies", "evolutionMethod", "evolutionRequirement", "evolutionResultSpecies", "evolutionMethod", "evolutionRequirement", "evolutionResultSpecies", "evolutionMethod", "evolutionRequirement", "evolutionResultSpecies", "evolutionMethod", "evolutionRequirement", "evolutionResultSpecies", "evolutionMethod", "evolutionRequirement", "evolutionResultSpecies", "evolutionMethod", "evolutionRequirement", "evolutionResultSpecies"};
 
         public EvolutionsModel(List<EvolutionData> data, List<TextBankData> textBankData)
@@ -81,14 +80,7 @@ public class EvolutionsTable extends DefaultTable<EvolutionData>
         {
             EvolutionData species = getData().get(rowIndex);
 
-            if (aValue instanceof String)
-            {
-                CellTypes cellType = evolutionsClasses[columnIndex + NUM_FROZEN_COLUMNS];
-                if (cellType == CellTypes.CHECKBOX)
-                    aValue = Boolean.parseBoolean(((String) aValue).trim());
-                else if (cellType != CellTypes.STRING)
-                    aValue = Integer.parseInt(((String) aValue).trim());
-            }
+            aValue = prepareObjectForWriting(aValue, columnIndex);
 
             if (columnIndex >= 0)
             {
@@ -147,6 +139,23 @@ public class EvolutionsTable extends DefaultTable<EvolutionData>
             }
 
             return null;
+        }
+
+        @Override
+        protected CellTypes getCellType(int columnIndex)
+        {
+            if (columnIndex >= 0)
+            {
+                switch (columnIndex % 3) {
+                    case 0 -> {
+                        return CellTypes.COMBO_BOX;
+                    }
+                    case 1, 2 -> {
+                        return CellTypes.CUSTOM;
+                    }
+                }
+            }
+            return super.getCellType(columnIndex);
         }
 
         @Override

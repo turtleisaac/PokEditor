@@ -6,10 +6,11 @@ package io.github.turtleisaac.pokeditor;
 
 import javax.swing.*;
 
-import com.formdev.flatlaf.intellijthemes.FlatArcOrangeIJTheme;
-import com.formdev.flatlaf.intellijthemes.FlatCobalt2IJTheme;
-import com.formdev.flatlaf.intellijthemes.FlatDarkPurpleIJTheme;
-import com.formdev.flatlaf.intellijthemes.FlatGradiantoNatureGreenIJTheme;
+import com.formdev.flatlaf.intellijthemes.*;
+import com.formdev.flatlaf.intellijthemes.materialthemeuilite.FlatAtomOneLightIJTheme;
+import com.formdev.flatlaf.intellijthemes.materialthemeuilite.FlatLightOwlIJTheme;
+import com.formdev.flatlaf.intellijthemes.materialthemeuilite.FlatMaterialLighterIJTheme;
+import com.formdev.flatlaf.intellijthemes.materialthemeuilite.FlatSolarizedLightIJTheme;
 import io.github.turtleisaac.nds4j.ui.ProgramType;
 import io.github.turtleisaac.nds4j.ui.Tool;
 import io.github.turtleisaac.nds4j.ui.exceptions.ToolCreationException;
@@ -40,7 +41,7 @@ public class Main
 //                .setFlavorText("Did you know that Jay likes Moemon?")
                 .setFlavorText(mainMenuJokes[(int) (Math.random()*(mainMenuJokes.length))])
                 .setAuthor("Developed by Turtleisaac")
-                .addLookAndFeel(new FlatDarkPurpleIJTheme())
+//                .addLookAndFeel(new FlatDarkPurpleIJTheme())
                 .addLookAndFeel(new FlatArcOrangeIJTheme())
 //                .addLookAndFeel(new javax.swing.plaf.metal.MetalLookAndFeel())
                 .addGame("Pokémon Platinum", "CPU")

@@ -21,7 +21,7 @@ public class LearnsetsTable extends DefaultTable<LearnsetData>
 
     public LearnsetsTable(List<LearnsetData> data, List<TextBankData> textData)
     {
-        super(LearnsetsModel.learnsetsClasses, new LearnsetsModel(data, textData), textData, columnWidths, null);
+        super(new LearnsetsModel(data, textData), textData, columnWidths, null);
     }
 
     @Override
@@ -53,7 +53,6 @@ public class LearnsetsTable extends DefaultTable<LearnsetData>
 
     static class LearnsetsModel extends FormatModel<LearnsetData>
     {
-        static final CellTypes[] learnsetsClasses = new CellTypes[] {CellTypes.INTEGER, CellTypes.STRING, CellTypes.COMBO_BOX, CellTypes.INTEGER, CellTypes.COMBO_BOX, CellTypes.INTEGER, CellTypes.COMBO_BOX, CellTypes.INTEGER, CellTypes.COMBO_BOX, CellTypes.INTEGER, CellTypes.COMBO_BOX, CellTypes.INTEGER, CellTypes.COMBO_BOX, CellTypes.INTEGER, CellTypes.COMBO_BOX, CellTypes.INTEGER, CellTypes.COMBO_BOX, CellTypes.INTEGER, CellTypes.COMBO_BOX, CellTypes.INTEGER, CellTypes.COMBO_BOX, CellTypes.INTEGER, CellTypes.COMBO_BOX, CellTypes.INTEGER, CellTypes.COMBO_BOX, CellTypes.INTEGER, CellTypes.COMBO_BOX, CellTypes.INTEGER, CellTypes.COMBO_BOX, CellTypes.INTEGER, CellTypes.COMBO_BOX, CellTypes.INTEGER, CellTypes.COMBO_BOX, CellTypes.INTEGER, CellTypes.COMBO_BOX, CellTypes.INTEGER, CellTypes.COMBO_BOX, CellTypes.INTEGER, CellTypes.COMBO_BOX, CellTypes.INTEGER, CellTypes.COMBO_BOX, CellTypes.INTEGER};
         private static final String[] columnKeys = new String[] {"id", "name", "move", "level", "move", "level", "move", "level", "move", "level", "move", "level", "move", "level", "move", "level", "move", "level", "move", "level", "move", "level", "move", "level", "move", "level", "move", "level", "move", "level", "move", "level", "move", "level", "move", "level", "move", "level", "move", "level", "move", "level"};
 
         public LearnsetsModel(List<LearnsetData> data, List<TextBankData> textBankData)
@@ -68,7 +67,7 @@ public class LearnsetsTable extends DefaultTable<LearnsetData>
 
             if (aValue instanceof String)
             {
-                CellTypes cellType = learnsetsClasses[columnIndex + NUM_FROZEN_COLUMNS];
+                CellTypes cellType = getCellType(columnIndex);
                 if (cellType == CellTypes.CHECKBOX)
                     aValue = Boolean.parseBoolean(((String) aValue).trim());
                 else if (cellType != CellTypes.STRING)
@@ -128,6 +127,24 @@ public class LearnsetsTable extends DefaultTable<LearnsetData>
             }
 
             return null;
+        }
+
+        @Override
+        protected CellTypes getCellType(int columnIndex)
+        {
+            if (columnIndex >= 0)
+            {
+                switch (columnIndex % 2) {
+                    case 0 -> {
+                        return CellTypes.COMBO_BOX;
+                    }
+                    case 1 -> {
+                        return CellTypes.INTEGER;
+                    }
+                }
+            }
+
+            return super.getCellType(columnIndex);
         }
 
         @Override

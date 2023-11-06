@@ -29,7 +29,7 @@ import java.util.List;
 
 public abstract class DefaultTable<E extends GenericFileData> extends JTable
 {
-    private final CellTypes[] cellTypes;
+    final CellTypes[] cellTypes;
     private final int[] widths;
     private final List<TextBankData> textData;
 
@@ -37,15 +37,20 @@ public abstract class DefaultTable<E extends GenericFileData> extends JTable
 
     private final CellTypes.CustomCellFunctionSupplier customCellSupplier;
 
-    public DefaultTable(CellTypes[] cellTypes, FormatModel<E> model, List<TextBankData> textData, int[] widths, CellTypes.CustomCellFunctionSupplier customCellSupplier)
+    public DefaultTable(FormatModel<E> model, List<TextBankData> textData, int[] widths, CellTypes.CustomCellFunctionSupplier customCellSupplier)
     {
         super(model);
         this.formatModel = model;
 
-        cellTypes = Arrays.copyOfRange(cellTypes, getNumFrozenColumns(), cellTypes.length);
+        cellTypes = new CellTypes[getColumnCount()];
+        for (int i = 0; i < cellTypes.length; i++)
+        {
+            cellTypes[i] = model.getCellType(i);
+        }
+//        cellTypes = Arrays.copyOfRange(cellTypes, getNumFrozenColumns(), cellTypes.length);
         widths = Arrays.copyOfRange(widths, getNumFrozenColumns(), widths.length);
 
-        this.cellTypes = cellTypes;
+//        this.cellTypes = cellTypes;
         this.widths = widths;
         this.textData = textData;
         this.customCellSupplier = customCellSupplier;
@@ -197,7 +202,7 @@ public abstract class DefaultTable<E extends GenericFileData> extends JTable
     public void resetIndexedCellRendererText()
     {
         Queue<String[]> textSources = obtainTextSources(textData);
-        for (int i = 0; i < cellTypes.length; i++)
+        for (int i = 0; i < getColumnCount(); i++)
         {
             CellTypes c = cellTypes[i];
             TableColumn col = getColumnModel().getColumn(i);

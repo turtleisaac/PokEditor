@@ -73,5 +73,23 @@ public abstract class FormatModel<E extends GenericFileData> extends AbstractTab
         return textBankData;
     }
 
+    protected CellTypes getCellType(int columnIndex)
+    {
+        return CellTypes.STRING;
+    }
+
     public abstract FormatModel<E> getFrozenColumnModel();
+
+    public Object prepareObjectForWriting(Object aValue, int columnIndex)
+    {
+        if (aValue instanceof String)
+        {
+            CellTypes cellType = getCellType(columnIndex);
+            if (cellType == CellTypes.CHECKBOX)
+                aValue = Boolean.parseBoolean(((String) aValue).trim());
+            else if (cellType != CellTypes.STRING)
+                aValue = Integer.parseInt(((String) aValue).trim());
+        }
+        return aValue;
+    }
 }
