@@ -1,9 +1,6 @@
 package io.github.turtleisaac.pokeditor.gui.sheets.tables.formats;
 
-import io.github.turtleisaac.pokeditor.formats.evolutions.EvolutionData;
 import io.github.turtleisaac.pokeditor.formats.learnsets.LearnsetData;
-import io.github.turtleisaac.pokeditor.formats.moves.MoveData;
-import io.github.turtleisaac.pokeditor.formats.personal.PersonalData;
 import io.github.turtleisaac.pokeditor.formats.text.TextBankData;
 import io.github.turtleisaac.pokeditor.gamedata.TextFiles;
 import io.github.turtleisaac.pokeditor.gui.sheets.tables.CellTypes;
@@ -16,7 +13,6 @@ import java.util.Queue;
 
 public class LearnsetsTable extends DefaultTable<LearnsetData>
 {
-    private static final int NUM_FROZEN_COLUMNS = 2;
     public static final int[] columnWidths = new int[] {40, 100, 140, 65, 140, 65, 140, 65, 140, 65, 140, 65, 140, 65, 140, 65, 140, 65, 140, 65, 140, 65, 140, 65, 140, 65, 140, 65, 140, 65, 140, 65, 140, 65, 140, 65, 140, 65, 140, 65, 140, 65};
 
     public LearnsetsTable(List<LearnsetData> data, List<TextBankData> textData)
@@ -45,19 +41,24 @@ public class LearnsetsTable extends DefaultTable<LearnsetData>
         return LearnsetData.class;
     }
 
-    @Override
-    public int getNumFrozenColumns()
-    {
-        return NUM_FROZEN_COLUMNS;
-    }
-
     static class LearnsetsModel extends FormatModel<LearnsetData>
     {
-        private static final String[] columnKeys = new String[] {"id", "name", "move", "level", "move", "level", "move", "level", "move", "level", "move", "level", "move", "level", "move", "level", "move", "level", "move", "level", "move", "level", "move", "level", "move", "level", "move", "level", "move", "level", "move", "level", "move", "level", "move", "level", "move", "level", "move", "level", "move", "level"};
 
         public LearnsetsModel(List<LearnsetData> data, List<TextBankData> textBankData)
         {
-            super(columnKeys, data, textBankData, NUM_FROZEN_COLUMNS);
+            super(data, textBankData);
+        }
+
+        @Override
+        public int getNumFrozenColumns()
+        {
+            return 2;
+        }
+
+        @Override
+        public String getColumnNameKey(int columnIndex)
+        {
+            return LearnsetsColumn.getColumn(columnIndex).key;
         }
 
         @Override
@@ -83,11 +84,17 @@ public class LearnsetsTable extends DefaultTable<LearnsetData>
                 }
                 LearnsetData.LearnsetEntry entry = learnset.get(entryIdx);
 
-                switch (columnIndex % 2) {
-                    case 0 -> entry.setMoveID((Integer) aValue);
-                    case 1 -> entry.setLevel((Integer) aValue);
+                switch (LearnsetsColumn.getColumn(columnIndex % 2)) {
+                    case MOVE -> entry.setMoveID((Integer) aValue);
+                    case LEVEL -> entry.setLevel((Integer) aValue);
                 }
             }
+        }
+
+        @Override
+        public int getColumnCount()
+        {
+            return LearnsetData.MAX_NUM_ENTRIES * 2;
         }
 
         @Override
@@ -105,20 +112,20 @@ public class LearnsetsTable extends DefaultTable<LearnsetData>
                 }
                 LearnsetData.LearnsetEntry entry = learnset.get(entryIdx);
 
-                switch (columnIndex % 2) {
-                    case 0 -> {
+                switch (LearnsetsColumn.getColumn(columnIndex % 2)) {
+                    case MOVE -> {
                         return entry.getMoveID();
                     }
-                    case 1 -> {
+                    case LEVEL -> {
                         return entry.getLevel();
                     }
                 }
             }
-            else if (columnIndex == -2)
+            else if (LearnsetsColumn.getColumn(columnIndex) == LearnsetsColumn.ID)
             {
                 return rowIndex;
             }
-            else if (columnIndex == -1)
+            else if (LearnsetsColumn.getColumn(columnIndex) == LearnsetsColumn.NAME)
             {
                 if(rowIndex < speciesNames.size())
                     return speciesNames.get(rowIndex).getText();
@@ -134,17 +141,10 @@ public class LearnsetsTable extends DefaultTable<LearnsetData>
         {
             if (columnIndex >= 0)
             {
-                switch (columnIndex % 2) {
-                    case 0 -> {
-                        return CellTypes.COMBO_BOX;
-                    }
-                    case 1 -> {
-                        return CellTypes.INTEGER;
-                    }
-                }
+                return LearnsetsColumn.getColumn(columnIndex % 2).cellType;
             }
 
-            return super.getCellType(columnIndex);
+            return LearnsetsColumn.getColumn(columnIndex).cellType;
         }
 
         @Override
@@ -154,19 +154,19 @@ public class LearnsetsTable extends DefaultTable<LearnsetData>
                 @Override
                 public int getColumnCount()
                 {
-                    return NUM_FROZEN_COLUMNS;
+                    return super.getNumFrozenColumns();
                 }
 
                 @Override
                 public Object getValueAt(int rowIndex, int columnIndex)
                 {
-                    return super.getValueAt(rowIndex, columnIndex - NUM_FROZEN_COLUMNS);
+                    return super.getValueAt(rowIndex, columnIndex - super.getNumFrozenColumns());
                 }
 
                 @Override
                 public void setValueAt(Object aValue, int rowIndex, int columnIndex)
                 {
-                    super.setValueAt(aValue, rowIndex, columnIndex - NUM_FROZEN_COLUMNS);
+                    super.setValueAt(aValue, rowIndex, columnIndex - super.getNumFrozenColumns());
                 }
 
                 @Override
@@ -175,6 +175,37 @@ public class LearnsetsTable extends DefaultTable<LearnsetData>
                     return false;
                 }
             };
+        }
+    }
+
+    enum LearnsetsColumn
+    {
+        ID(-2, "id", CellTypes.INTEGER),
+        NAME(-1, "name", CellTypes.STRING),
+        MOVE(0, "move", CellTypes.COMBO_BOX),
+        LEVEL(1, "level", CellTypes.INTEGER),
+        NUMBER_OF_COLUMNS(2, null, null);
+
+        private final int idx;
+        private final String key;
+        private final CellTypes cellType;
+
+        LearnsetsColumn(int idx, String key, CellTypes cellType)
+        {
+            this.idx = idx;
+            this.key = key;
+            this.cellType = cellType;
+        }
+
+        static LearnsetsColumn getColumn(int idx)
+        {
+            for (LearnsetsColumn column : LearnsetsColumn.values())
+            {
+                if (column.idx == idx) {
+                    return column;
+                }
+            }
+            return NUMBER_OF_COLUMNS;
         }
     }
 }

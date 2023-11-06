@@ -48,7 +48,7 @@ public abstract class DefaultTable<E extends GenericFileData> extends JTable
             cellTypes[i] = model.getCellType(i);
         }
 //        cellTypes = Arrays.copyOfRange(cellTypes, getNumFrozenColumns(), cellTypes.length);
-        widths = Arrays.copyOfRange(widths, getNumFrozenColumns(), widths.length);
+        widths = Arrays.copyOfRange(widths, model.getNumFrozenColumns(), widths.length);
 
 //        this.cellTypes = cellTypes;
         this.widths = widths;
@@ -130,7 +130,7 @@ public abstract class DefaultTable<E extends GenericFileData> extends JTable
 
     public abstract Class<E> getDataClass();
 
-    public abstract int getNumFrozenColumns();
+//    public abstract int getNumFrozenColumns();
 
     public void loadCellRenderers(Queue<String[]> textSources)
     {

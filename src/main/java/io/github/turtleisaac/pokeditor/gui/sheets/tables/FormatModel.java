@@ -12,32 +12,45 @@ public abstract class FormatModel<E extends GenericFileData> extends AbstractTab
 {
     private final List<E> data;
     private final List<TextBankData> textBankData;
-    private final int numFrozenColumns;
-
     private final String[] columnNames;
 
     private boolean copyPasteModeEnabled;
 
-    public FormatModel(String[] columnNameKeys, List<E> data, List<TextBankData> textBankData, int numFrozenColumns)
+    public FormatModel(List<E> data, List<TextBankData> textBankData)
     {
         this.data = data;
-        this.numFrozenColumns = numFrozenColumns;
         this.textBankData = textBankData;
-        this.columnNames = new String[columnNameKeys.length];
+        this.columnNames = new String[getColumnCount() + getNumFrozenColumns()];
 
         ResourceBundle bundle = ResourceBundle.getBundle(DataManager.SHEET_STRINGS_PATH);
 
-        int idx = 0;
-        for (String key : columnNameKeys)
-            columnNames[idx++] = bundle.getString(key);
+        int lastValid = 0;
+        for (int idx = 0; idx < columnNames.length; idx++)
+        {
+            int adjusted = idx-getNumFrozenColumns();
+            String columnNameKey = getColumnNameKey(adjusted);
+            if (columnNameKey == null)
+            {
+                columnNames[idx] = bundle.getString(getColumnNameKey(adjusted % (lastValid + 1)));
+            }
+            else {
+                columnNames[idx] = bundle.getString(columnNameKey);
+                lastValid = adjusted;
+            }
+
+        }
 
         copyPasteModeEnabled = false;
     }
 
+    public abstract int getNumFrozenColumns();
+
+    public abstract String getColumnNameKey(int columnIndex);
+
     @Override
     public String getColumnName(int column)
     {
-        return columnNames[column + numFrozenColumns];
+        return columnNames[column + getNumFrozenColumns()];
     }
 
     public void toggleCopyPasteMode(boolean state)
@@ -55,12 +68,6 @@ public abstract class FormatModel<E extends GenericFileData> extends AbstractTab
     public int getRowCount()
     {
         return data.size();
-    }
-
-    @Override
-    public int getColumnCount()
-    {
-        return columnNames.length - numFrozenColumns;
     }
 
     public List<E> getData()

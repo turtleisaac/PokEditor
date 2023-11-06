@@ -21,7 +21,6 @@ import java.util.Queue;
 
 public class EvolutionsTable extends DefaultTable<EvolutionData>
 {
-    private static final int NUM_FROZEN_COLUMNS = 2;
     public static final int[] columnWidths = new int[] {40, 100, 200, 140, 140, 200, 140, 140, 200, 140, 140, 200, 140, 140, 200, 140, 140, 200, 140, 140, 200, 140, 140};
     private static final String[] evolutionMethodKeys = new String[] {"evolutionMethod.none", "evolutionMethod.happiness", "evolutionMethod.happinessDay", "evolutionMethod.happinessNight", "evolutionMethod.reachLevel", "evolutionMethod.trade", "evolutionMethod.tradeItem", "evolutionMethod.useItem", "evolutionMethod.levelAttackGreaterThanDefense", "evolutionMethod.levelAttackEqualToDefense", "evolutionMethod.levelAttackLessThanDefense", "evolutionMethod.levelPIDLessThan5", "evolutionMethod.levelPIDGreaterThan5", "evolutionMethod.levelNincada1", "evolutionMethod.levelNincada2", "evolutionMethod.beauty", "evolutionMethod.useItemMale", "evolutionMethod.useItemFemale", "evolutionMethod.heldItemLevelUpDay", "evolutionMethod.heldItemLevelUpNight", "evolutionMethod.moveKnown", "evolutionMethod.speciesInParty", "evolutionMethod.levelMale", "evolutionMethod.levelFemale", "evolutionMethod.levelElectricField", "evolutionMethod.levelMossyRock", "evolutionMethod.levelIcyRock"};
 
@@ -60,19 +59,23 @@ public class EvolutionsTable extends DefaultTable<EvolutionData>
         return EvolutionData.class;
     }
 
-    @Override
-    public int getNumFrozenColumns()
-    {
-        return NUM_FROZEN_COLUMNS;
-    }
-
     static class EvolutionsModel extends FormatModel<EvolutionData>
     {
-        private static final String[] columnKeys = new String[] {"id", "name", "evolutionMethod", "evolutionRequirement", "evolutionResultSpecies", "evolutionMethod", "evolutionRequirement", "evolutionResultSpecies", "evolutionMethod", "evolutionRequirement", "evolutionResultSpecies", "evolutionMethod", "evolutionRequirement", "evolutionResultSpecies", "evolutionMethod", "evolutionRequirement", "evolutionResultSpecies", "evolutionMethod", "evolutionRequirement", "evolutionResultSpecies", "evolutionMethod", "evolutionRequirement", "evolutionResultSpecies"};
-
         public EvolutionsModel(List<EvolutionData> data, List<TextBankData> textBankData)
         {
-            super(columnKeys, data, textBankData, NUM_FROZEN_COLUMNS);
+            super(data, textBankData);
+        }
+
+        @Override
+        public int getNumFrozenColumns()
+        {
+            return 2;
+        }
+
+        @Override
+        public String getColumnNameKey(int columnIndex)
+        {
+            return EvolutionsColumn.getColumn(columnIndex).key;
         }
 
         @Override
@@ -91,12 +94,18 @@ public class EvolutionsTable extends DefaultTable<EvolutionData>
                 }
                 EvolutionData.EvolutionEntry entry = species.get(entryIdx);
 
-                switch (columnIndex % 3) {
-                    case 0 -> entry.setMethod((Integer) aValue);
-                    case 1 -> entry.setRequirement((Integer) aValue);
-                    case 2 -> entry.setResultSpecies((Integer) aValue);
+                switch (EvolutionsColumn.getColumn(columnIndex % 3)) {
+                    case METHOD -> entry.setMethod((Integer) aValue);
+                    case REQUIREMENT -> entry.setRequirement((Integer) aValue);
+                    case RESULT_SPECIES -> entry.setResultSpecies((Integer) aValue);
                 }
             }
+        }
+
+        @Override
+        public int getColumnCount()
+        {
+            return EvolutionData.MAX_NUM_ENTRIES * 3;
         }
 
         @Override
@@ -114,23 +123,23 @@ public class EvolutionsTable extends DefaultTable<EvolutionData>
                 }
                 EvolutionData.EvolutionEntry entry = species.get(entryIdx);
 
-                switch (columnIndex % 3) {
-                    case 0 -> {
+                switch (EvolutionsColumn.getColumn(columnIndex % 3)) {
+                    case METHOD -> {
                         return entry.getMethod();
                     }
-                    case 1 -> {
+                    case REQUIREMENT -> {
                         return entry.getRequirement();
                     }
-                    case 2 -> {
+                    case RESULT_SPECIES -> {
                         return entry.getResultSpecies();
                     }
                 }
             }
-            else if (columnIndex == -2)
+            else if (EvolutionsColumn.getColumn(columnIndex) == EvolutionsColumn.ID)
             {
                 return rowIndex;
             }
-            else if (columnIndex == -1)
+            else if (EvolutionsColumn.getColumn(columnIndex) == EvolutionsColumn.NAME)
             {
                 if(rowIndex < speciesNames.size())
                     return speciesNames.get(rowIndex).getText();
@@ -146,16 +155,10 @@ public class EvolutionsTable extends DefaultTable<EvolutionData>
         {
             if (columnIndex >= 0)
             {
-                switch (columnIndex % 3) {
-                    case 0 -> {
-                        return CellTypes.COMBO_BOX;
-                    }
-                    case 1, 2 -> {
-                        return CellTypes.CUSTOM;
-                    }
-                }
+                return EvolutionsColumn.getColumn(columnIndex % 3).cellType;
             }
-            return super.getCellType(columnIndex);
+
+            return EvolutionsColumn.getColumn(columnIndex).cellType;
         }
 
         @Override
@@ -165,19 +168,19 @@ public class EvolutionsTable extends DefaultTable<EvolutionData>
                 @Override
                 public int getColumnCount()
                 {
-                    return NUM_FROZEN_COLUMNS;
+                    return super.getNumFrozenColumns();
                 }
 
                 @Override
                 public Object getValueAt(int rowIndex, int columnIndex)
                 {
-                    return super.getValueAt(rowIndex, columnIndex - NUM_FROZEN_COLUMNS);
+                    return super.getValueAt(rowIndex, columnIndex - super.getNumFrozenColumns());
                 }
 
                 @Override
                 public void setValueAt(Object aValue, int rowIndex, int columnIndex)
                 {
-                    super.setValueAt(aValue, rowIndex, columnIndex - NUM_FROZEN_COLUMNS);
+                    super.setValueAt(aValue, rowIndex, columnIndex - super.getNumFrozenColumns());
                 }
 
                 @Override
@@ -371,6 +374,37 @@ public class EvolutionsTable extends DefaultTable<EvolutionData>
         public TableCellRenderer getRenderer(String[]... strings)
         {
             return new EvolutionRequirementCellRenderer(strings[0], strings[1], strings[2]);
+        }
+    }
+
+    enum EvolutionsColumn {
+        ID(-2, "id", CellTypes.INTEGER),
+        NAME(-1, "name", CellTypes.STRING),
+        METHOD(0, "evolutionMethod", CellTypes.COMBO_BOX),
+        REQUIREMENT(1, "evolutionRequirement", CellTypes.CUSTOM),
+        RESULT_SPECIES(2, "evolutionResultSpecies", CellTypes.CUSTOM),
+        NUMBER_OF_COLUMNS(3, null, null);
+
+        private final int idx;
+        private final String key;
+        private final CellTypes cellType;
+
+        EvolutionsColumn(int idx, String key, CellTypes cellType)
+        {
+            this.idx = idx;
+            this.key = key;
+            this.cellType = cellType;
+        }
+
+        static EvolutionsColumn getColumn(int idx)
+        {
+            for (EvolutionsColumn column : EvolutionsColumn.values())
+            {
+                if (column.idx == idx) {
+                    return column;
+                }
+            }
+            return NUMBER_OF_COLUMNS;
         }
     }
 }

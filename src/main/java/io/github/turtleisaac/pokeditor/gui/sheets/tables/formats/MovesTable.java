@@ -7,21 +7,19 @@ import io.github.turtleisaac.pokeditor.gui.sheets.tables.CellTypes;
 import io.github.turtleisaac.pokeditor.gui.sheets.tables.DefaultTable;
 import io.github.turtleisaac.pokeditor.gui.sheets.tables.FormatModel;
 
-import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Queue;
 
 public class MovesTable extends DefaultTable<MoveData>
 {
-    private static final int NUM_FROZEN_COLUMNS = 2;
     public static final int[] columnWidths = new int[] {40, 100, 500, 100, 65, 100, 65, 65, 120, 160, 65, 65, 80, 80, 80, 80, 80, 80, 80, 80, 65, 65};
     private static final String[] categoryKeys = new String[] {"category.physical", "category.special", "category.status"};
     private static final String[] targetKeys = new String[] {"target.selected", "target.automatic", "target.random", "target.bothFoes", "target.allExceptUser", "target.user", "target.userSide", "target.entireField", "target.foeSide", "target.ally", "target.userOrAlly", "target.MOVE_TARGET_ME_FIRST"};
 
     public MovesTable(List<MoveData> data, List<TextBankData> textData)
     {
-        super(MovesModel.movesClasses, new MovesModel(data, textData), textData, columnWidths, null);
+        super(new MovesModel(data, textData), textData, columnWidths, null);
     }
 
     @Override
@@ -52,20 +50,24 @@ public class MovesTable extends DefaultTable<MoveData>
         return MoveData.class;
     }
 
-    @Override
-    public int getNumFrozenColumns()
-    {
-        return NUM_FROZEN_COLUMNS;
-    }
-
     static class MovesModel extends FormatModel<MoveData>
     {
-        static final CellTypes[] movesClasses = new CellTypes[] {CellTypes.INTEGER, CellTypes.STRING, /*CellTypes.COMBO_BOX*/ CellTypes.INTEGER, CellTypes.COMBO_BOX, CellTypes.INTEGER, CellTypes.COLORED_COMBO_BOX, CellTypes.INTEGER, CellTypes.INTEGER, CellTypes.INTEGER, CellTypes.BITFIELD_COMBO_BOX, CellTypes.INTEGER, CellTypes.CHECKBOX, CellTypes.CHECKBOX, CellTypes.CHECKBOX, CellTypes.CHECKBOX, CellTypes.CHECKBOX, CellTypes.CHECKBOX, CellTypes.CHECKBOX, CellTypes.CHECKBOX, CellTypes.INTEGER, CellTypes.INTEGER};
-        private static final String[] columnKeys = new String[] {"id", "name", "moves.effect", "category", "power", "type", "accuracy", "pp", "moves.effectChance", "target", "priority", "moves.makesContact", "moves.blockedByProtect", "moves.reflectedByMagicCoat", "moves.affectedBySnatch", "moves.affectedByMirrorMove", "moves.triggersKingsRock", "moves.hidesHpBars", "moves.removeTargetShadow", "moves.contestEffect", "moves.contestType"};
 
         public MovesModel(List<MoveData> data, List<TextBankData> textBankData)
         {
-            super(columnKeys, data, textBankData, NUM_FROZEN_COLUMNS);
+            super(data, textBankData);
+        }
+
+        @Override
+        public int getNumFrozenColumns()
+        {
+            return 2;
+        }
+
+        @Override
+        public String getColumnNameKey(int columnIndex)
+        {
+            return MovesColumn.getColumn(columnIndex).key;
         }
 
         @Override
@@ -74,37 +76,33 @@ public class MovesTable extends DefaultTable<MoveData>
             MoveData entry = getData().get(rowIndex);
             TextBankData moveNames = getTextBankData().get(TextFiles.MOVE_NAMES.getValue());
 
-            if (aValue instanceof String)
-            {
-                CellTypes cellType = movesClasses[columnIndex + NUM_FROZEN_COLUMNS];
-                if (cellType == CellTypes.CHECKBOX)
-                    aValue = Boolean.parseBoolean(((String) aValue).trim());
-                else if (cellType != CellTypes.STRING)
-                    aValue = Integer.parseInt(((String) aValue).trim());
-            }
+            aValue = prepareObjectForWriting(aValue, columnIndex);
 
-
-            switch (columnIndex + NUM_FROZEN_COLUMNS) {
-                case 0 -> {}
-                case 1 -> {
+            switch (MovesColumn.getColumn(columnIndex)) {
+                case ID -> {}
+                case NAME -> {
                     TextBankData.Message message = moveNames.get(rowIndex);
                     message.setText((String) aValue);
                 }
-                case 2 -> entry.setEffect((Integer) aValue);
-                case 3 -> entry.setCategory((Integer) aValue);
-                case 4 -> entry.setPower((Integer) aValue);
-                case 5 -> entry.setType((Integer) aValue);
-                case 6 -> entry.setAccuracy((Integer) aValue);
-                case 7 -> entry.setPp((Integer) aValue);
-                case 8 -> entry.setEffectChance((Integer) aValue);
-                case 9 -> {
-                    entry.setTarget((Integer) aValue);
-                }
-                case 10 -> entry.setPriority((Integer) aValue);
-                case 11, 12, 13, 14, 15, 16, 17, 18 -> entry.getFlags()[columnIndex - 11 + NUM_FROZEN_COLUMNS] = (Boolean) aValue;
-                case 19 -> entry.setContestEffect((Integer) aValue);
-                case 20 -> entry.setContestType((Integer) aValue);
+                case EFFECT -> entry.setEffect((Integer) aValue);
+                case CATEGORY -> entry.setCategory((Integer) aValue);
+                case POWER -> entry.setPower((Integer) aValue);
+                case TYPE -> entry.setType((Integer) aValue);
+                case ACCURACY -> entry.setAccuracy((Integer) aValue);
+                case PP -> entry.setPp((Integer) aValue);
+                case EFFECT_CHANCE -> entry.setEffectChance((Integer) aValue);
+                case TARGET -> entry.setTarget((Integer) aValue);
+                case PRIORITY -> entry.setPriority((Integer) aValue);
+                case MAKES_CONTACT, BLOCKED_BY_PROTECT, REFLECTED_BY_MAGIC_COAT, AFFECTED_BY_SNATCH, AFFECTED_BY_MIRROR_MOVE, TRIGGERS_KINGS_ROCK, HIDES_HP_BARS, REMOVE_TARGET_SHADOW -> entry.getFlags()[columnIndex - MovesColumn.MAKES_CONTACT.idx] = (Boolean) aValue;
+                case CONTEST_EFFECT -> entry.setContestEffect((Integer) aValue);
+                case CONTEST_TYPE -> entry.setContestType((Integer) aValue);
             }
+        }
+
+        @Override
+        public int getColumnCount()
+        {
+            return MovesColumn.NUMBER_OF_COLUMNS.idx;
         }
 
         @Override
@@ -113,50 +111,50 @@ public class MovesTable extends DefaultTable<MoveData>
             TextBankData moveNames = getTextBankData().get(TextFiles.MOVE_NAMES.getValue());
             MoveData entry = getData().get(rowIndex);
 
-            switch(columnIndex + NUM_FROZEN_COLUMNS) {
-                case 0 -> {
+            switch (MovesColumn.getColumn(columnIndex)) {
+                case ID -> {
                     return rowIndex;
                 }
-                case 1 -> {
+                case NAME -> {
                     if(rowIndex < moveNames.size())
                         return moveNames.get(rowIndex).getText();
                     else
                         return "";
                 }
-                case 2 -> {
+                case EFFECT -> {
                     return entry.getEffect();
                 }
-                case 3 -> {
+                case CATEGORY -> {
                     return entry.getCategory();
                 }
-                case 4 -> {
+                case POWER -> {
                     return entry.getPower();
                 }
-                case 5 -> {
+                case TYPE -> {
                     return entry.getType();
                 }
-                case 6 -> {
+                case ACCURACY -> {
                     return entry.getAccuracy();
                 }
-                case 7 -> {
+                case PP -> {
                     return entry.getPp();
                 }
-                case 8 -> {
+                case EFFECT_CHANCE -> {
                     return entry.getEffectChance();
                 }
-                case 9 -> {
+                case TARGET -> {
                     return entry.getTarget();
                 }
-                case 10 -> {
+                case PRIORITY -> {
                     return entry.getPriority();
                 }
-                case 11, 12, 13, 14, 15, 16, 17, 18 -> {
-                    return entry.getFlags()[columnIndex - 11 + NUM_FROZEN_COLUMNS];
+                case MAKES_CONTACT, BLOCKED_BY_PROTECT, REFLECTED_BY_MAGIC_COAT, AFFECTED_BY_SNATCH, AFFECTED_BY_MIRROR_MOVE, TRIGGERS_KINGS_ROCK, HIDES_HP_BARS, REMOVE_TARGET_SHADOW -> {
+                    return entry.getFlags()[columnIndex - MovesColumn.MAKES_CONTACT.idx];
                 }
-                case 19 -> {
+                case CONTEST_EFFECT -> {
                     return entry.getContestEffect();
                 }
-                case 20 -> {
+                case CONTEST_TYPE -> {
                     return entry.getContestType();
                 }
             }
@@ -165,25 +163,37 @@ public class MovesTable extends DefaultTable<MoveData>
         }
 
         @Override
+        protected CellTypes getCellType(int columnIndex)
+        {
+            return MovesColumn.getColumn(columnIndex).cellType;
+        }
+
+        @Override
         public FormatModel<MoveData> getFrozenColumnModel()
         {
-            return new MovesTable.MovesModel(getData(), getTextBankData()) {
+            return new MovesModel(getData(), getTextBankData()) {
                 @Override
                 public int getColumnCount()
                 {
-                    return NUM_FROZEN_COLUMNS;
+                    return super.getNumFrozenColumns();
                 }
 
                 @Override
                 public Object getValueAt(int rowIndex, int columnIndex)
                 {
-                    return super.getValueAt(rowIndex, columnIndex - 2);
+                    return super.getValueAt(rowIndex, columnIndex - super.getNumFrozenColumns());
                 }
 
                 @Override
                 public void setValueAt(Object aValue, int rowIndex, int columnIndex)
                 {
-                    super.setValueAt(aValue, rowIndex, columnIndex - 2);
+                    super.setValueAt(aValue, rowIndex, columnIndex - super.getNumFrozenColumns());
+                }
+
+                @Override
+                protected CellTypes getCellType(int columnIndex)
+                {
+                    return super.getCellType(columnIndex - super.getNumFrozenColumns());
                 }
 
                 @Override
@@ -192,6 +202,54 @@ public class MovesTable extends DefaultTable<MoveData>
                     return columnIndex != 0;
                 }
             };
+        }
+    }
+
+    enum MovesColumn
+    {
+        ID(-2, "id", CellTypes.INTEGER),
+        NAME(-1, "name", CellTypes.STRING),
+        EFFECT(0, "moves.effect", CellTypes.INTEGER),
+        CATEGORY(1, "category", CellTypes.COMBO_BOX),
+        POWER(2, "power", CellTypes.INTEGER),
+        TYPE(3, "type", CellTypes.COLORED_COMBO_BOX),
+        ACCURACY(4, "accuracy", CellTypes.INTEGER),
+        PP(5, "pp", CellTypes.INTEGER),
+        EFFECT_CHANCE(6, "moves.effectChance", CellTypes.INTEGER),
+        TARGET(7, "target", CellTypes.BITFIELD_COMBO_BOX),
+        PRIORITY(8, "priority", CellTypes.INTEGER),
+        MAKES_CONTACT(9, "moves.makesContact", CellTypes.CHECKBOX),
+        BLOCKED_BY_PROTECT(10, "moves.blockedByProtect", CellTypes.CHECKBOX),
+        REFLECTED_BY_MAGIC_COAT(11, "moves.reflectedByMagicCoat", CellTypes.CHECKBOX),
+        AFFECTED_BY_SNATCH(12, "moves.affectedBySnatch", CellTypes.CHECKBOX),
+        AFFECTED_BY_MIRROR_MOVE(13, "moves.affectedByMirrorMove", CellTypes.CHECKBOX),
+        TRIGGERS_KINGS_ROCK(14, "moves.triggersKingsRock", CellTypes.CHECKBOX),
+        HIDES_HP_BARS(15, "moves.hidesHpBars", CellTypes.CHECKBOX),
+        REMOVE_TARGET_SHADOW(16, "moves.removeTargetShadow", CellTypes.CHECKBOX),
+        CONTEST_EFFECT(17, "moves.contestEffect", CellTypes.INTEGER),
+        CONTEST_TYPE(18, "moves.contestType", CellTypes.INTEGER),
+        NUMBER_OF_COLUMNS(19, null, null);
+
+        private final int idx;
+        private final String key;
+        private final CellTypes cellType;
+
+        MovesColumn(int idx, String key, CellTypes cellType)
+        {
+            this.idx = idx;
+            this.key = key;
+            this.cellType = cellType;
+        }
+
+        static MovesColumn getColumn(int idx)
+        {
+            for (MovesColumn column : MovesColumn.values())
+            {
+                if (column.idx == idx) {
+                    return column;
+                }
+            }
+            return NUMBER_OF_COLUMNS;
         }
     }
 }

@@ -11,14 +11,13 @@ import java.util.*;
 
 public class PersonalTable extends DefaultTable<PersonalData>
 {
-    private static final int NUM_FROZEN_COLUMNS = 2;
     public static final int[] columnWidths = new int[] {40, 100, 65, 65, 65, 65, 65, 65, 100, 100, 65, 65, 65, 65, 65, 65, 65, 65, 140, 140, 65, 65, 70, 120, 120, 120, 140, 140, 65, 65, 65};
     private static final String[] growthRateKeys = new String[] {"growthRate.mediumFast", "growthRate.erratic",  "growthRate.fluctuating", "growthRate.mediumSlow", "growthRate.fast", "growthRate.slow", "growthRate.mediumFast", "growthRate.mediumFast"};
     private static final String[] eggGroupKeys = new String[] {"eggGroup.null", "eggGroup.monster", "eggGroup.water1", "eggGroup.bug", "eggGroup.flying", "eggGroup.field", "eggGroup.fairy", "eggGroup.grass", "eggGroup.humanLike", "eggGroup.water3", "eggGroup.mineral", "eggGroup.amorphous", "eggGroup.water2", "eggGroup.ditto", "eggGroup.dragon", "eggGroup.undiscovered"};
 
     public PersonalTable(List<PersonalData> data, List<TextBankData> textData)
     {
-        super(PersonalModel.personalClasses, new PersonalModel(data, textData), textData, columnWidths, null);
+        super(new PersonalModel(data, textData), textData, columnWidths, null);
     }
 
     @Override
@@ -53,20 +52,24 @@ public class PersonalTable extends DefaultTable<PersonalData>
         return PersonalData.class;
     }
 
-    @Override
-    public int getNumFrozenColumns()
-    {
-        return NUM_FROZEN_COLUMNS;
-    }
-
     static class PersonalModel extends FormatModel<PersonalData>
     {
-        static final CellTypes[] personalClasses = new CellTypes[] {CellTypes.INTEGER, CellTypes.STRING, CellTypes.INTEGER, CellTypes.INTEGER, CellTypes.INTEGER, CellTypes.INTEGER, CellTypes.INTEGER, CellTypes.INTEGER, CellTypes.COLORED_COMBO_BOX, CellTypes.COLORED_COMBO_BOX, CellTypes.INTEGER, CellTypes.INTEGER, CellTypes.INTEGER, CellTypes.INTEGER, CellTypes.INTEGER, CellTypes.INTEGER, CellTypes.INTEGER, CellTypes.INTEGER, CellTypes.COMBO_BOX, CellTypes.COMBO_BOX, CellTypes.INTEGER, CellTypes.INTEGER, CellTypes.INTEGER, CellTypes.COMBO_BOX, CellTypes.COMBO_BOX, CellTypes.COMBO_BOX, CellTypes.COMBO_BOX, CellTypes.COMBO_BOX, CellTypes.INTEGER, CellTypes.INTEGER, CellTypes.CHECKBOX};
-        private static final String[] columnKeys = new String[] {"id", "name", "hp", "atk", "def", "speed", "spAtk", "spDef", "personal.type1", "personal.type2", "catchRate", "expDrop", "hpEvYield", "atkEvYield", "defEvYield", "speedEvYield", "spAtkEvYield", "spDefEvYield", "uncommonHeldItem", "rareHeldItem", "genderRatio", "hatchMultiplier", "baseHappiness", "growthRate", "personal.eggGroup1", "personal.eggGroup2", "personal.ability1", "personal.ability2", "runChance", "color", "flip"};
 
         public PersonalModel(List<PersonalData> data, List<TextBankData> textBankData)
         {
-            super(columnKeys, data, textBankData, NUM_FROZEN_COLUMNS);
+            super(data, textBankData);
+        }
+
+        @Override
+        public int getNumFrozenColumns()
+        {
+            return 2;
+        }
+
+        @Override
+        public String getColumnNameKey(int columnIndex)
+        {
+            return PersonalColumns.getColumn(columnIndex).key;
         }
 
         @Override
@@ -75,51 +78,50 @@ public class PersonalTable extends DefaultTable<PersonalData>
             PersonalData entry = getData().get(rowIndex);
             TextBankData speciesNames = getTextBankData().get(TextFiles.SPECIES_NAMES.getValue());
 
-            if (aValue instanceof String)
-            {
-                CellTypes cellType = personalClasses[columnIndex + NUM_FROZEN_COLUMNS];
-                if (cellType == CellTypes.CHECKBOX)
-                    aValue = Boolean.parseBoolean(((String) aValue).trim());
-                else if (cellType != CellTypes.STRING)
-                    aValue = Integer.parseInt(((String) aValue).trim());
-            }
+            aValue = prepareObjectForWriting(aValue, columnIndex);
 
-            switch (columnIndex + NUM_FROZEN_COLUMNS) {
-                case 0 -> {}
-                case 1 -> {
+            switch (PersonalColumns.getColumn(columnIndex)) {
+                case ID -> {}
+                case NAME -> {
                     TextBankData.Message message = speciesNames.get(rowIndex);
                     message.setText((String) aValue);
                 }
-                case 2 -> entry.setHp((Integer) aValue);
-                case 3 -> entry.setAtk((Integer) aValue);
-                case 4 -> entry.setDef((Integer) aValue);
-                case 5 -> entry.setSpeed((Integer) aValue);
-                case 6 -> entry.setSpAtk((Integer) aValue);
-                case 7 -> entry.setSpDef((Integer) aValue);
-                case 8 -> entry.setType1((Integer) aValue);
-                case 9 -> entry.setType2((Integer) aValue);
-                case 10 -> entry.setCatchRate((Integer) aValue);
-                case 11 -> entry.setBaseExp((Integer) aValue);
-                case 12 -> entry.setHpEvYield((Integer) aValue);
-                case 13 -> entry.setAtkEvYield((Integer) aValue);
-                case 14 -> entry.setDefEvYield((Integer) aValue);
-                case 15 -> entry.setSpeedEvYield((Integer) aValue);
-                case 16 -> entry.setSpAtkEvYield((Integer) aValue);
-                case 17 -> entry.setSpDefEvYield((Integer) aValue);
-                case 18 -> entry.setUncommonItem((Integer) aValue);
-                case 19 -> entry.setRareItem((Integer) aValue);
-                case 20 -> entry.setGenderRatio((Integer) aValue);
-                case 21 -> entry.setHatchMultiplier((Integer) aValue);
-                case 22 -> entry.setBaseHappiness((Integer) aValue);
-                case 23 -> entry.setExpRate((Integer) aValue);
-                case 24 -> entry.setEggGroup1((Integer) aValue);
-                case 25 -> entry.setEggGroup2((Integer) aValue);
-                case 26 -> entry.setAbility1((Integer) aValue);
-                case 27 -> entry.setAbility2((Integer) aValue);
-                case 28 -> entry.setRunChance((Integer) aValue);
-                case 29 -> entry.setDexColor((Integer) aValue);
-                case 30 -> entry.setFlip((Boolean) aValue);
+                case HP -> entry.setHp((Integer) aValue);
+                case ATK -> entry.setAtk((Integer) aValue);
+                case DEF -> entry.setDef((Integer) aValue);
+                case SPEED -> entry.setSpeed((Integer) aValue);
+                case SP_ATK -> entry.setSpAtk((Integer) aValue);
+                case SP_DEF -> entry.setSpDef((Integer) aValue);
+                case TYPE_1 -> entry.setType1((Integer) aValue);
+                case TYPE_2 -> entry.setType2((Integer) aValue);
+                case CATCH_RATE -> entry.setCatchRate((Integer) aValue);
+                case EXP_DROP -> entry.setBaseExp((Integer) aValue);
+                case HP_EV_YIELD -> entry.setHpEvYield((Integer) aValue);
+                case ATK_EV_YIELD -> entry.setAtkEvYield((Integer) aValue);
+                case DEF_EV_YIELD -> entry.setDefEvYield((Integer) aValue);
+                case SPEED_EV_YIELD -> entry.setSpeedEvYield((Integer) aValue);
+                case SP_ATK_EV_YIELD -> entry.setSpAtkEvYield((Integer) aValue);
+                case SP_DEF_EV_YIELD -> entry.setSpDefEvYield((Integer) aValue);
+                case UNCOMMON_HELD_ITEM -> entry.setUncommonItem((Integer) aValue);
+                case RARE_HELD_ITEM -> entry.setRareItem((Integer) aValue);
+                case GENDER_RATIO -> entry.setGenderRatio((Integer) aValue);
+                case HATCH_MULTIPLIER -> entry.setHatchMultiplier((Integer) aValue);
+                case BASE_HAPPINESS -> entry.setBaseHappiness((Integer) aValue);
+                case GROWTH_RATE -> entry.setExpRate((Integer) aValue);
+                case EGG_GROUP_1 -> entry.setEggGroup1((Integer) aValue);
+                case EGG_GROUP_2 -> entry.setEggGroup2((Integer) aValue);
+                case ABILITY_1 -> entry.setAbility1((Integer) aValue);
+                case ABILITY_2 -> entry.setAbility2((Integer) aValue);
+                case RUN_CHANCE -> entry.setRunChance((Integer) aValue);
+                case COLOR -> entry.setDexColor((Integer) aValue);
+                case FLIP -> entry.setFlip((Boolean) aValue);
             }
+        }
+
+        @Override
+        public int getColumnCount()
+        {
+            return PersonalColumns.NUMBER_OF_COLUMNS.idx;
         }
 
         @Override
@@ -128,106 +130,112 @@ public class PersonalTable extends DefaultTable<PersonalData>
             TextBankData speciesNames = getTextBankData().get(TextFiles.SPECIES_NAMES.getValue());
             PersonalData entry = getData().get(rowIndex);
 
-            switch(columnIndex + NUM_FROZEN_COLUMNS) {
-                case 0 -> {
+            switch (PersonalColumns.getColumn(columnIndex)) {
+                case ID -> {
                     return rowIndex;
                 }
-                case 1 -> {
+                case NAME -> {
                     if(rowIndex < speciesNames.size())
                         return speciesNames.get(rowIndex).getText();
                     else
                         return "";
                 }
-                case 2 -> {
+                case HP -> {
                     return entry.getHp();
                 }
-                case 3 -> {
+                case ATK -> {
                     return entry.getAtk();
                 }
-                case 4 -> {
+                case DEF -> {
                     return entry.getDef();
                 }
-                case 5 -> {
+                case SPEED -> {
                     return entry.getSpeed();
                 }
-                case 6 -> {
+                case SP_ATK -> {
                     return entry.getSpAtk();
                 }
-                case 7 -> {
+                case SP_DEF -> {
                     return entry.getSpDef();
                 }
-                case 8 -> {
+                case TYPE_1 -> {
                     return entry.getType1();
                 }
-                case 9 -> {
+                case TYPE_2 -> {
                     return entry.getType2();
                 }
-                case 10 -> {
+                case CATCH_RATE -> {
                     return entry.getCatchRate();
                 }
-                case 11 -> {
+                case EXP_DROP -> {
                     return entry.getBaseExp();
                 }
-                case 12 -> {
+                case HP_EV_YIELD -> {
                     return entry.getHpEvYield();
                 }
-                case 13 -> {
+                case ATK_EV_YIELD -> {
                     return entry.getAtkEvYield();
                 }
-                case 14 -> {
+                case DEF_EV_YIELD -> {
                     return entry.getDefEvYield();
                 }
-                case 15 -> {
+                case SPEED_EV_YIELD -> {
                     return entry.getSpeedEvYield();
                 }
-                case 16 -> {
+                case SP_ATK_EV_YIELD -> {
                     return entry.getSpAtkEvYield();
                 }
-                case 17 -> {
+                case SP_DEF_EV_YIELD -> {
                     return entry.getSpDefEvYield();
                 }
-                case 18 -> {
+                case UNCOMMON_HELD_ITEM -> {
                     return entry.getUncommonItem();
                 }
-                case 19 -> {
+                case RARE_HELD_ITEM -> {
                     return entry.getRareItem();
                 }
-                case 20 -> {
+                case GENDER_RATIO -> {
                     return entry.getGenderRatio();
                 }
-                case 21 -> {
+                case HATCH_MULTIPLIER -> {
                     return entry.getHatchMultiplier();
                 }
-                case 22 -> {
+                case BASE_HAPPINESS -> {
                     return entry.getBaseHappiness();
                 }
-                case 23 -> {
+                case GROWTH_RATE -> {
                     return entry.getExpRate();
                 }
-                case 24-> {
+                case EGG_GROUP_1-> {
                     return entry.getEggGroup1();
                 }
-                case 25 -> {
+                case EGG_GROUP_2 -> {
                     return entry.getEggGroup2();
                 }
-                case 26 -> {
+                case ABILITY_1 -> {
                     return entry.getAbility1();
                 }
-                case 27 -> {
+                case ABILITY_2 -> {
                     return entry.getAbility2();
                 }
-                case 28 -> {
+                case RUN_CHANCE -> {
                     return entry.getRunChance();
                 }
-                case 29 -> {
+                case COLOR -> {
                     return entry.getDexColor();
                 }
-                case 30 -> {
+                case FLIP -> {
                     return entry.isFlip();
                 }
             }
 
             return null;
+        }
+
+        @Override
+        protected CellTypes getCellType(int columnIndex)
+        {
+            return PersonalColumns.getColumn(columnIndex).cellType;
         }
 
         @Override
@@ -237,19 +245,19 @@ public class PersonalTable extends DefaultTable<PersonalData>
                 @Override
                 public int getColumnCount()
                 {
-                    return NUM_FROZEN_COLUMNS;
+                    return super.getNumFrozenColumns();
                 }
 
                 @Override
                 public Object getValueAt(int rowIndex, int columnIndex)
                 {
-                    return super.getValueAt(rowIndex, columnIndex - 2);
+                    return super.getValueAt(rowIndex, columnIndex - super.getNumFrozenColumns());
                 }
 
                 @Override
                 public void setValueAt(Object aValue, int rowIndex, int columnIndex)
                 {
-                    super.setValueAt(aValue, rowIndex, columnIndex - 2);
+                    super.setValueAt(aValue, rowIndex, columnIndex - super.getNumFrozenColumns());
                 }
 
                 @Override
@@ -258,6 +266,63 @@ public class PersonalTable extends DefaultTable<PersonalData>
                     return columnIndex != 0;
                 }
             };
+        }
+    }
+
+    enum PersonalColumns {
+        ID(-2, "id", CellTypes.INTEGER),
+        NAME(-1, "name", CellTypes.STRING),
+        HP(0, "hp", CellTypes.INTEGER),
+        ATK(1, "atk", CellTypes.INTEGER),
+        DEF(2, "def", CellTypes.INTEGER),
+        SPEED(3, "speed", CellTypes.INTEGER),
+        SP_ATK(4, "spAtk", CellTypes.INTEGER),
+        SP_DEF(5, "spDef", CellTypes.INTEGER),
+        TYPE_1(6, "personal.type1", CellTypes.COLORED_COMBO_BOX),
+        TYPE_2(7, "personal.type2", CellTypes.COLORED_COMBO_BOX),
+        CATCH_RATE(8, "catchRate", CellTypes.INTEGER),
+        EXP_DROP(9, "expDrop", CellTypes.INTEGER),
+        HP_EV_YIELD(10, "hpEvYield", CellTypes.INTEGER),
+        ATK_EV_YIELD(11, "atkEvYield", CellTypes.INTEGER),
+        DEF_EV_YIELD(12, "defEvYield", CellTypes.INTEGER),
+        SPEED_EV_YIELD(13, "speedEvYield", CellTypes.INTEGER),
+        SP_ATK_EV_YIELD(14, "spAtkEvYield", CellTypes.INTEGER),
+        SP_DEF_EV_YIELD(15, "spDefEvYield", CellTypes.INTEGER),
+        UNCOMMON_HELD_ITEM(16, "uncommonHeldItem", CellTypes.COMBO_BOX),
+        RARE_HELD_ITEM(17, "rareHeldItem", CellTypes.COMBO_BOX),
+        GENDER_RATIO(18, "genderRatio", CellTypes.INTEGER),
+        HATCH_MULTIPLIER(19, "hatchMultiplier", CellTypes.INTEGER),
+        BASE_HAPPINESS(20, "baseHappiness", CellTypes.INTEGER),
+        GROWTH_RATE(21, "growthRate", CellTypes.COMBO_BOX),
+        EGG_GROUP_1(22, "personal.eggGroup1", CellTypes.COMBO_BOX),
+        EGG_GROUP_2(23, "personal.eggGroup2", CellTypes.COMBO_BOX),
+        ABILITY_1(24, "personal.ability1", CellTypes.COMBO_BOX),
+        ABILITY_2(25, "personal.ability2", CellTypes.COMBO_BOX),
+        RUN_CHANCE(26, "runChance", CellTypes.INTEGER),
+        COLOR(27, "color", CellTypes.INTEGER),
+        FLIP(28, "flip", CellTypes.CHECKBOX),
+        NUMBER_OF_COLUMNS(29, null, null);
+
+        private final int idx;
+        private final String key;
+        private final CellTypes cellType;
+
+        PersonalColumns(int idx, String key, CellTypes cellType)
+        {
+            this.idx = idx;
+            this.key = key;
+            this.cellType = cellType;
+        }
+
+        static PersonalColumns getColumn(int idx)
+        {
+            for (PersonalColumns column : PersonalColumns.values())
+            {
+                if (column.idx == idx) {
+                    return column;
+                }
+            }
+            return NUMBER_OF_COLUMNS;
         }
     }
 }
