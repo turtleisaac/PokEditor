@@ -33,7 +33,7 @@ public class Main
 
     public static void main(String[] args) throws ToolCreationException
     {
-//        Locale.setDefault(Locale.FRANCE);
+//        Locale.setDefault(Locale.CHINA);
         Tool tool = Tool.create();
         tool.setType(ProgramType.PROJECT)
                 .setName("PokEditor")
