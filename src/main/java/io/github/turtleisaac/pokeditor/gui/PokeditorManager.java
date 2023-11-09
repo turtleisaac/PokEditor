@@ -11,14 +11,16 @@ import io.github.turtleisaac.pokeditor.formats.evolutions.EvolutionData;
 import io.github.turtleisaac.pokeditor.formats.learnsets.LearnsetData;
 import io.github.turtleisaac.pokeditor.formats.moves.MoveData;
 import io.github.turtleisaac.pokeditor.formats.personal.PersonalData;
+import io.github.turtleisaac.pokeditor.formats.pokemon_sprites.PokemonSpriteData;
 import io.github.turtleisaac.pokeditor.formats.text.TextBankData;
 import io.github.turtleisaac.pokeditor.gamedata.Game;
 import io.github.turtleisaac.pokeditor.gamedata.GameFiles;
 import io.github.turtleisaac.pokeditor.gamedata.TextFiles;
+import io.github.turtleisaac.pokeditor.gui.editors.DefaultEditor;
+import io.github.turtleisaac.pokeditor.gui.editors.DefaultEditorPanel;
 import io.github.turtleisaac.pokeditor.gui.sheets.DefaultSheetPanel;
 
 import javax.swing.*;
-import javax.swing.event.ChangeEvent;
 import javax.swing.filechooser.FileFilter;
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -81,7 +83,7 @@ public class PokeditorManager extends PanelManager
         }
     }
 
-    private Map<Class<? extends GenericFileData>, DefaultSheetPanel<? extends GenericFileData>> sheetPanels;
+    private final Map<Class<? extends GenericFileData>, DefaultSheetPanel<? extends GenericFileData, ? extends Enum<?>>> sheetPanels;
     private List<JPanel> panels;
 
     private NintendoDsRom rom;
@@ -98,33 +100,34 @@ public class PokeditorManager extends PanelManager
 
         sheetPanels = new HashMap<>();
         panels = new ArrayList<>();
-        JPanel placeholder = new JPanel();
-        placeholder.setName("Test panel");
+//        JPanel placeholder = new JPanel();
+//        placeholder.setName("Test panel");
+//
+//        placeholder.setPreferredSize(dimension);
+//        placeholder.setMinimumSize(dimension);
 
-        placeholder.setPreferredSize(dimension);
-        placeholder.setMinimumSize(dimension);
+        DefaultEditorPanel<PokemonSpriteData, ?> battleSpriteEditor = DataManager.createPokemonSpriteEditor(this, rom);
+        battleSpriteEditor.setName("Battle Sprites");
+        battleSpriteEditor.setPreferredSize(battleSpriteEditor.getPreferredSize());
 
-        DefaultSheetPanel<PersonalData> personalPanel = DataManager.createPersonal(this, rom);
+        DefaultSheetPanel<PersonalData, ?> personalPanel = DataManager.createPersonalSheet(this, rom);
         personalPanel.setName("Personal Sheet");
         sheetPanels.put(PersonalData.class, personalPanel);
 //        panels.add(personalPanel);
 
-        DefaultSheetPanel<EvolutionData> evolutionsPanel = DataManager.createEvolutions(this, rom);
+        DefaultSheetPanel<EvolutionData, ?> evolutionsPanel = DataManager.createEvolutionSheet(this, rom);
         evolutionsPanel.setName("Evolutions Sheet");
         sheetPanels.put(EvolutionData.class, evolutionsPanel);
 //        panels.add(evolutionsPanel);
 
-        DefaultSheetPanel<LearnsetData> learnsetsPanel = DataManager.createLearnsets(this, rom);
+        DefaultSheetPanel<LearnsetData, ?> learnsetsPanel = DataManager.createLearnsetSheet(this, rom);
         learnsetsPanel.setName("Learnsets Sheet");
         sheetPanels.put(LearnsetData.class, learnsetsPanel);
 //        panels.add(evolutionsPanel);
 
-        DefaultSheetPanel<MoveData> movesPanel = DataManager.createMoves(this, rom);
+        DefaultSheetPanel<MoveData, ?> movesPanel = DataManager.createMoveSheet(this, rom);
         movesPanel.setName("Moves Sheet");
         sheetPanels.put(MoveData.class, movesPanel);
-
-        JPanel spritesPanel = new JPanel();
-        spritesPanel.setName("Battle Sprites");
 
         JPanel fieldPanel = new JPanel();
         fieldPanel.setName("Field");
@@ -132,11 +135,12 @@ public class PokeditorManager extends PanelManager
         waterPanel.setName("Water");
         PanelGroup encounters = new PanelGroup("Encounters", fieldPanel, waterPanel);
 
-        PanelGroup pokemonGroup = new PanelGroup("Pokémon Editing", personalPanel, learnsetsPanel, evolutionsPanel, spritesPanel);
+        PanelGroup pokemonGroup = new PanelGroup("Pokémon Editing", personalPanel, learnsetsPanel, evolutionsPanel);
         panels.add(pokemonGroup);
+        panels.add(battleSpriteEditor);
         panels.add(movesPanel);
         panels.add(encounters);
-        panels.add(placeholder);
+//        panels.add(placeholder);
     }
 
     public <E extends GenericFileData> void saveData(Class<E> dataClass)
@@ -155,7 +159,7 @@ public class PokeditorManager extends PanelManager
 
     public void resetAllIndexedCellRendererText()
     {
-        for (DefaultSheetPanel<?> panel : sheetPanels.values())
+        for (DefaultSheetPanel<?, ?> panel : sheetPanels.values())
         {
             panel.getTable().resetIndexedCellRendererText();
         }

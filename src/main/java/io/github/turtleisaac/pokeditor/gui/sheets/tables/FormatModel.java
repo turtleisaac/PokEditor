@@ -3,20 +3,21 @@ package io.github.turtleisaac.pokeditor.gui.sheets.tables;
 import io.github.turtleisaac.pokeditor.DataManager;
 import io.github.turtleisaac.pokeditor.formats.GenericFileData;
 import io.github.turtleisaac.pokeditor.formats.text.TextBankData;
+import io.github.turtleisaac.pokeditor.gui.editors.EditorDataModel;
+
 import javax.swing.table.AbstractTableModel;
-import java.util.Arrays;
 import java.util.List;
 import java.util.ResourceBundle;
 
-public abstract class FormatModel<E extends GenericFileData> extends AbstractTableModel
+public abstract class FormatModel<G extends GenericFileData, E extends Enum<E>> extends AbstractTableModel implements EditorDataModel<E>
 {
-    private final List<E> data;
+    private final List<G> data;
     private final List<TextBankData> textBankData;
     private final String[] columnNames;
 
     private boolean copyPasteModeEnabled;
 
-    public FormatModel(List<E> data, List<TextBankData> textBankData)
+    public FormatModel(List<G> data, List<TextBankData> textBankData)
     {
         this.data = data;
         this.textBankData = textBankData;
@@ -31,7 +32,7 @@ public abstract class FormatModel<E extends GenericFileData> extends AbstractTab
             String columnNameKey = getColumnNameKey(adjusted);
             if (columnNameKey == null)
             {
-                columnNames[idx] = bundle.getString(getColumnNameKey(adjusted % (lastValid + 1)));
+                columnNames[idx] = bundle.getString(getColumnNameKey(adjusted % (lastValid + 1))); // this will cause columns to repeat as much as needed for the sheets which need them
             }
             else {
                 columnNames[idx] = bundle.getString(columnNameKey);
@@ -43,7 +44,9 @@ public abstract class FormatModel<E extends GenericFileData> extends AbstractTab
         copyPasteModeEnabled = false;
     }
 
-    public abstract int getNumFrozenColumns();
+    public int getNumFrozenColumns() {
+        return 0;
+    }
 
     public abstract String getColumnNameKey(int columnIndex);
 
@@ -67,10 +70,22 @@ public abstract class FormatModel<E extends GenericFileData> extends AbstractTab
     @Override
     public int getRowCount()
     {
+        return getEntryCount();
+    }
+
+    @Override
+    public int getEntryCount()
+    {
         return data.size();
     }
 
-    public List<E> getData()
+    @Override
+    public String getEntryName(int entryIdx)
+    {
+        return "" + entryIdx;
+    }
+
+    public List<G> getData()
     {
         return data;
     }
@@ -85,13 +100,12 @@ public abstract class FormatModel<E extends GenericFileData> extends AbstractTab
         return CellTypes.STRING;
     }
 
-    public abstract FormatModel<E> getFrozenColumnModel();
+    public abstract FormatModel<G, E> getFrozenColumnModel();
 
-    public Object prepareObjectForWriting(Object aValue, int columnIndex)
+    public Object prepareObjectForWriting(Object aValue, CellTypes cellType)
     {
         if (aValue instanceof String)
         {
-            CellTypes cellType = getCellType(columnIndex);
             if (cellType == CellTypes.CHECKBOX)
                 aValue = Boolean.parseBoolean(((String) aValue).trim());
             else if (cellType != CellTypes.STRING)

@@ -19,7 +19,6 @@ import javax.swing.table.TableColumn;
 import java.awt.*;
 import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.DataFlavor;
-import java.awt.datatransfer.Transferable;
 import java.awt.datatransfer.UnsupportedFlavorException;
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
@@ -27,17 +26,17 @@ import java.io.IOException;
 import java.util.*;
 import java.util.List;
 
-public abstract class DefaultTable<E extends GenericFileData> extends JTable
+public abstract class DefaultTable<G extends GenericFileData, E extends Enum<E>> extends JTable
 {
     final CellTypes[] cellTypes;
     private final int[] widths;
     private final List<TextBankData> textData;
 
-    private final FormatModel<E> formatModel;
+    private final FormatModel<G, E> formatModel;
 
     private final CellTypes.CustomCellFunctionSupplier customCellSupplier;
 
-    public DefaultTable(FormatModel<E> model, List<TextBankData> textData, int[] widths, CellTypes.CustomCellFunctionSupplier customCellSupplier)
+    public DefaultTable(FormatModel<G, E> model, List<TextBankData> textData, int[] widths, CellTypes.CustomCellFunctionSupplier customCellSupplier)
     {
         super(model);
         this.formatModel = model;
@@ -123,12 +122,12 @@ public abstract class DefaultTable<E extends GenericFileData> extends JTable
 
     public abstract Queue<String[]> obtainTextSources(List<TextBankData> textData);
 
-    public FormatModel<E> getFormatModel()
+    public FormatModel<G, E> getFormatModel()
     {
         return formatModel;
     }
 
-    public abstract Class<E> getDataClass();
+    public abstract Class<G> getDataClass();
 
 //    public abstract int getNumFrozenColumns();
 
@@ -272,9 +271,9 @@ public abstract class DefaultTable<E extends GenericFileData> extends JTable
 
     public static class PasteAction extends AbstractAction {
 
-        private final DefaultTable<? extends GenericFileData> table;
+        private final DefaultTable<? extends GenericFileData, ? extends Enum<?>> table;
 
-        public PasteAction(DefaultTable<? extends GenericFileData> table)
+        public PasteAction(DefaultTable<? extends GenericFileData, ? extends Enum<?>> table)
         {
             this.table = table;
         }

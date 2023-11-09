@@ -11,7 +11,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Queue;
 
-public class MovesTable extends DefaultTable<MoveData>
+public class MovesTable extends DefaultTable<MoveData, MovesTable.MovesColumn>
 {
     public static final int[] columnWidths = new int[] {40, 100, 500, 100, 65, 100, 65, 65, 120, 160, 65, 65, 80, 80, 80, 80, 80, 80, 80, 80, 65, 65};
     private static final String[] categoryKeys = new String[] {"category.physical", "category.special", "category.status"};
@@ -50,7 +50,7 @@ public class MovesTable extends DefaultTable<MoveData>
         return MoveData.class;
     }
 
-    static class MovesModel extends FormatModel<MoveData>
+    static class MovesModel extends FormatModel<MoveData, MovesColumn>
     {
 
         public MovesModel(List<MoveData> data, List<TextBankData> textBankData)
@@ -73,15 +73,21 @@ public class MovesTable extends DefaultTable<MoveData>
         @Override
         public void setValueAt(Object aValue, int rowIndex, int columnIndex)
         {
-            MoveData entry = getData().get(rowIndex);
+            setValueFor(aValue, rowIndex, MovesColumn.getColumn(columnIndex));
+        }
+
+        @Override
+        public void setValueFor(Object aValue, int entryIdx, MovesColumn property)
+        {
+            MoveData entry = getData().get(entryIdx);
             TextBankData moveNames = getTextBankData().get(TextFiles.MOVE_NAMES.getValue());
 
-            aValue = prepareObjectForWriting(aValue, columnIndex);
+            aValue = prepareObjectForWriting(aValue, property.cellType);
 
-            switch (MovesColumn.getColumn(columnIndex)) {
+            switch (MovesColumn.getColumn(entryIdx)) {
                 case ID -> {}
                 case NAME -> {
-                    TextBankData.Message message = moveNames.get(rowIndex);
+                    TextBankData.Message message = moveNames.get(entryIdx);
                     message.setText((String) aValue);
                 }
                 case EFFECT -> entry.setEffect((Integer) aValue);
@@ -93,7 +99,7 @@ public class MovesTable extends DefaultTable<MoveData>
                 case EFFECT_CHANCE -> entry.setEffectChance((Integer) aValue);
                 case TARGET -> entry.setTarget((Integer) aValue);
                 case PRIORITY -> entry.setPriority((Integer) aValue);
-                case MAKES_CONTACT, BLOCKED_BY_PROTECT, REFLECTED_BY_MAGIC_COAT, AFFECTED_BY_SNATCH, AFFECTED_BY_MIRROR_MOVE, TRIGGERS_KINGS_ROCK, HIDES_HP_BARS, REMOVE_TARGET_SHADOW -> entry.getFlags()[columnIndex - MovesColumn.MAKES_CONTACT.idx] = (Boolean) aValue;
+                case MAKES_CONTACT, BLOCKED_BY_PROTECT, REFLECTED_BY_MAGIC_COAT, AFFECTED_BY_SNATCH, AFFECTED_BY_MIRROR_MOVE, TRIGGERS_KINGS_ROCK, HIDES_HP_BARS, REMOVE_TARGET_SHADOW -> entry.getFlags()[property.idx - MovesColumn.MAKES_CONTACT.idx] = (Boolean) aValue;
                 case CONTEST_EFFECT -> entry.setContestEffect((Integer) aValue);
                 case CONTEST_TYPE -> entry.setContestType((Integer) aValue);
             }
@@ -108,10 +114,16 @@ public class MovesTable extends DefaultTable<MoveData>
         @Override
         public Object getValueAt(int rowIndex, int columnIndex)
         {
+            return getValueFor(rowIndex, MovesColumn.getColumn(columnIndex));
+        }
+
+        @Override
+        public Object getValueFor(int rowIndex, MovesColumn property)
+        {
             TextBankData moveNames = getTextBankData().get(TextFiles.MOVE_NAMES.getValue());
             MoveData entry = getData().get(rowIndex);
 
-            switch (MovesColumn.getColumn(columnIndex)) {
+            switch (property) {
                 case ID -> {
                     return rowIndex;
                 }
@@ -149,7 +161,7 @@ public class MovesTable extends DefaultTable<MoveData>
                     return entry.getPriority();
                 }
                 case MAKES_CONTACT, BLOCKED_BY_PROTECT, REFLECTED_BY_MAGIC_COAT, AFFECTED_BY_SNATCH, AFFECTED_BY_MIRROR_MOVE, TRIGGERS_KINGS_ROCK, HIDES_HP_BARS, REMOVE_TARGET_SHADOW -> {
-                    return entry.getFlags()[columnIndex - MovesColumn.MAKES_CONTACT.idx];
+                    return entry.getFlags()[property.idx - MovesColumn.MAKES_CONTACT.idx];
                 }
                 case CONTEST_EFFECT -> {
                     return entry.getContestEffect();
@@ -169,7 +181,7 @@ public class MovesTable extends DefaultTable<MoveData>
         }
 
         @Override
-        public FormatModel<MoveData> getFrozenColumnModel()
+        public FormatModel<MoveData, MovesColumn> getFrozenColumnModel()
         {
             return new MovesModel(getData(), getTextBankData()) {
                 @Override

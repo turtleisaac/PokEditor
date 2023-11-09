@@ -125,6 +125,13 @@
             <scope>system</scope>
             <systemPath>${project.basedir}/nds4j-toolui-1.0-SNAPSHOT.jar</systemPath>
         </dependency>
+        <dependency>
+            <groupId>io.github.turtleisaac</groupId>
+            <artifactId>WinLaF</artifactId>
+            <version>1.0.0</version>
+            <scope>system</scope>
+            <systemPath>${project.basedir}/WinLaF.jar</systemPath>
+        </dependency>
     </dependencies>
 
 </project>

@@ -9,7 +9,7 @@ import io.github.turtleisaac.pokeditor.gui.sheets.tables.FormatModel;
 
 import java.util.*;
 
-public class PersonalTable extends DefaultTable<PersonalData>
+public class PersonalTable extends DefaultTable<PersonalData, PersonalTable.PersonalColumns>
 {
     public static final int[] columnWidths = new int[] {40, 100, 65, 65, 65, 65, 65, 65, 100, 100, 65, 65, 65, 65, 65, 65, 65, 65, 140, 140, 65, 65, 70, 120, 120, 120, 140, 140, 65, 65, 65};
     private static final String[] growthRateKeys = new String[] {"growthRate.mediumFast", "growthRate.erratic",  "growthRate.fluctuating", "growthRate.mediumSlow", "growthRate.fast", "growthRate.slow", "growthRate.mediumFast", "growthRate.mediumFast"};
@@ -52,7 +52,7 @@ public class PersonalTable extends DefaultTable<PersonalData>
         return PersonalData.class;
     }
 
-    static class PersonalModel extends FormatModel<PersonalData>
+    public static class PersonalModel extends FormatModel<PersonalData, PersonalColumns>
     {
 
         public PersonalModel(List<PersonalData> data, List<TextBankData> textBankData)
@@ -75,15 +75,21 @@ public class PersonalTable extends DefaultTable<PersonalData>
         @Override
         public void setValueAt(Object aValue, int rowIndex, int columnIndex)
         {
-            PersonalData entry = getData().get(rowIndex);
+            setValueFor(aValue, rowIndex, PersonalColumns.getColumn(columnIndex));
+        }
+
+        @Override
+        public void setValueFor(Object aValue, int entryIdx, PersonalColumns property)
+        {
+            PersonalData entry = getData().get(entryIdx);
             TextBankData speciesNames = getTextBankData().get(TextFiles.SPECIES_NAMES.getValue());
 
-            aValue = prepareObjectForWriting(aValue, columnIndex);
+            aValue = prepareObjectForWriting(aValue, property.cellType);
 
-            switch (PersonalColumns.getColumn(columnIndex)) {
+            switch (property) {
                 case ID -> {}
                 case NAME -> {
-                    TextBankData.Message message = speciesNames.get(rowIndex);
+                    TextBankData.Message message = speciesNames.get(entryIdx);
                     message.setText((String) aValue);
                 }
                 case HP -> entry.setHp((Integer) aValue);
@@ -127,16 +133,22 @@ public class PersonalTable extends DefaultTable<PersonalData>
         @Override
         public Object getValueAt(int rowIndex, int columnIndex)
         {
-            TextBankData speciesNames = getTextBankData().get(TextFiles.SPECIES_NAMES.getValue());
-            PersonalData entry = getData().get(rowIndex);
+            return getValueFor(rowIndex, PersonalColumns.getColumn(columnIndex));
+        }
 
-            switch (PersonalColumns.getColumn(columnIndex)) {
+        @Override
+        public Object getValueFor(int entryIdx, PersonalColumns property)
+        {
+            TextBankData speciesNames = getTextBankData().get(TextFiles.SPECIES_NAMES.getValue());
+            PersonalData entry = getData().get(entryIdx);
+
+            switch (property) {
                 case ID -> {
-                    return rowIndex;
+                    return entryIdx;
                 }
                 case NAME -> {
-                    if(rowIndex < speciesNames.size())
-                        return speciesNames.get(rowIndex).getText();
+                    if(entryIdx < speciesNames.size())
+                        return speciesNames.get(entryIdx).getText();
                     else
                         return "";
                 }
@@ -239,7 +251,7 @@ public class PersonalTable extends DefaultTable<PersonalData>
         }
 
         @Override
-        public FormatModel<PersonalData> getFrozenColumnModel()
+        public FormatModel<PersonalData, PersonalColumns> getFrozenColumnModel()
         {
             return new PersonalModel(getData(), getTextBankData()) {
                 @Override

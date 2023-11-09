@@ -20,12 +20,16 @@ import io.github.turtleisaac.pokeditor.formats.moves.MoveData;
 import io.github.turtleisaac.pokeditor.formats.moves.MoveParser;
 import io.github.turtleisaac.pokeditor.formats.personal.PersonalData;
 import io.github.turtleisaac.pokeditor.formats.personal.PersonalParser;
+import io.github.turtleisaac.pokeditor.formats.pokemon_sprites.PokemonSpriteData;
+import io.github.turtleisaac.pokeditor.formats.pokemon_sprites.PokemonSpriteParser;
 import io.github.turtleisaac.pokeditor.formats.text.TextBankData;
 import io.github.turtleisaac.pokeditor.formats.text.TextBankParser;
 import io.github.turtleisaac.pokeditor.formats.trainers.TrainerData;
 import io.github.turtleisaac.pokeditor.formats.trainers.TrainerParser;
 import io.github.turtleisaac.pokeditor.gamedata.GameFiles;
 import io.github.turtleisaac.pokeditor.gui.PokeditorManager;
+import io.github.turtleisaac.pokeditor.gui.editors.DefaultEditorPanel;
+import io.github.turtleisaac.pokeditor.gui.editors.formats.pokemon_sprite.PokemonSpriteEditor;
 import io.github.turtleisaac.pokeditor.gui.sheets.DefaultSheetPanel;
 import io.github.turtleisaac.pokeditor.gui.sheets.tables.formats.EvolutionsTable;
 import io.github.turtleisaac.pokeditor.gui.sheets.tables.formats.LearnsetsTable;
@@ -41,32 +45,39 @@ public class DataManager
 {
     public static final String SHEET_STRINGS_PATH = "pokeditor/sheet_strings";
 
-    public static DefaultSheetPanel<PersonalData> createPersonal(PokeditorManager manager, NintendoDsRom rom)
+    public static DefaultSheetPanel<PersonalData, ?> createPersonalSheet(PokeditorManager manager, NintendoDsRom rom)
     {
         List<TextBankData> textData = DataManager.getData(rom, TextBankData.class);
         List<PersonalData> data = DataManager.getData(rom, PersonalData.class);
         return new DefaultSheetPanel<>(manager, new PersonalTable(data, textData));
     }
 
-    public static DefaultSheetPanel<EvolutionData> createEvolutions(PokeditorManager manager, NintendoDsRom rom)
+    public static DefaultSheetPanel<EvolutionData, ?> createEvolutionSheet(PokeditorManager manager, NintendoDsRom rom)
     {
         List<TextBankData> textData = DataManager.getData(rom, TextBankData.class);
         List<EvolutionData> data = DataManager.getData(rom, EvolutionData.class);
         return new DefaultSheetPanel<>(manager, new EvolutionsTable(data, textData));
     }
 
-    public static DefaultSheetPanel<LearnsetData> createLearnsets(PokeditorManager manager, NintendoDsRom rom)
+    public static DefaultSheetPanel<LearnsetData, ?> createLearnsetSheet(PokeditorManager manager, NintendoDsRom rom)
     {
         List<TextBankData> textData = DataManager.getData(rom, TextBankData.class);
         List<LearnsetData> data = DataManager.getData(rom, LearnsetData.class);
         return new DefaultSheetPanel<>(manager, new LearnsetsTable(data, textData));
     }
 
-    public static DefaultSheetPanel<MoveData> createMoves(PokeditorManager manager, NintendoDsRom rom)
+    public static DefaultSheetPanel<MoveData, ?> createMoveSheet(PokeditorManager manager, NintendoDsRom rom)
     {
         List<TextBankData> textData = DataManager.getData(rom, TextBankData.class);
         List<MoveData> data = DataManager.getData(rom, MoveData.class);
         return new DefaultSheetPanel<>(manager, new MovesTable(data, textData));
+    }
+
+    public static DefaultEditorPanel<PokemonSpriteData, ?> createPokemonSpriteEditor(PokeditorManager manager, NintendoDsRom rom)
+    {
+        List<TextBankData> textData = DataManager.getData(rom, TextBankData.class);
+        List<PokemonSpriteData> data = DataManager.getData(rom, PokemonSpriteData.class);
+        return new DefaultEditorPanel<>(manager, new PokemonSpriteEditor(data, textData));
     }
 
     private static final Injector injector = Guice.createInjector(
@@ -78,7 +89,8 @@ public class DataManager
             new SinnohEncountersModule(),
             new JohtoEncountersModule(),
             new ItemsModule(),
-            new TextBankModule());
+            new TextBankModule(),
+            new PokemonSpriteModule());
 
     public static <E extends GenericFileData> GenericParser<E> getParser(Class<E> eClass)
     {
@@ -221,6 +233,16 @@ public class DataManager
         {
             bind(new TypeLiteral<GenericParser<TextBankData>>() {})
                     .to(TextBankParser.class)
+                    .in(Scopes.SINGLETON);
+        }
+    }
+
+    static class PokemonSpriteModule extends AbstractModule {
+        @Override
+        protected void configure()
+        {
+            bind(new TypeLiteral<GenericParser<PokemonSpriteData>>() {})
+                    .to(PokemonSpriteParser.class)
                     .in(Scopes.SINGLETON);
         }
     }

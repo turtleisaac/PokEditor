@@ -11,7 +11,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Queue;
 
-public class LearnsetsTable extends DefaultTable<LearnsetData>
+public class LearnsetsTable extends DefaultTable<LearnsetData, LearnsetsTable.LearnsetsColumn>
 {
     public static final int[] columnWidths = new int[] {40, 100, 140, 65, 140, 65, 140, 65, 140, 65, 140, 65, 140, 65, 140, 65, 140, 65, 140, 65, 140, 65, 140, 65, 140, 65, 140, 65, 140, 65, 140, 65, 140, 65, 140, 65, 140, 65, 140, 65, 140, 65};
 
@@ -41,7 +41,7 @@ public class LearnsetsTable extends DefaultTable<LearnsetData>
         return LearnsetData.class;
     }
 
-    static class LearnsetsModel extends FormatModel<LearnsetData>
+    static class LearnsetsModel extends FormatModel<LearnsetData, LearnsetsColumn>
     {
 
         public LearnsetsModel(List<LearnsetData> data, List<TextBankData> textBankData)
@@ -64,27 +64,36 @@ public class LearnsetsTable extends DefaultTable<LearnsetData>
         @Override
         public void setValueAt(Object aValue, int rowIndex, int columnIndex)
         {
-            LearnsetData learnset = getData().get(rowIndex);
-
-            if (aValue instanceof String)
-            {
-                CellTypes cellType = getCellType(columnIndex);
-                if (cellType == CellTypes.CHECKBOX)
-                    aValue = Boolean.parseBoolean(((String) aValue).trim());
-                else if (cellType != CellTypes.STRING)
-                    aValue = Integer.parseInt(((String) aValue).trim());
-            }
-
             if (columnIndex >= 0)
             {
-                int entryIdx = columnIndex / 2;
+                LearnsetsColumn c = LearnsetsColumn.getColumn(columnIndex % 2);
+                c.repetition = columnIndex;
+                setValueFor(aValue, rowIndex, c);
+            }
+            else
+            {
+                setValueFor(aValue, rowIndex, LearnsetsColumn.getColumn(columnIndex));
+            }
+
+        }
+
+        @Override
+        public void setValueFor(Object aValue, int rowIdx, LearnsetsColumn property)
+        {
+            LearnsetData learnset = getData().get(rowIdx);
+
+            aValue = prepareObjectForWriting(aValue, property.cellType);
+
+            if (property.idx >= 0)
+            {
+                int entryIdx = property.repetition / 2;
                 while (entryIdx > learnset.size())
                 {
                     learnset.add(new LearnsetData.LearnsetEntry());
                 }
                 LearnsetData.LearnsetEntry entry = learnset.get(entryIdx);
 
-                switch (LearnsetsColumn.getColumn(columnIndex % 2)) {
+                switch (property) {
                     case MOVE -> entry.setMoveID((Integer) aValue);
                     case LEVEL -> entry.setLevel((Integer) aValue);
                 }
@@ -100,19 +109,30 @@ public class LearnsetsTable extends DefaultTable<LearnsetData>
         @Override
         public Object getValueAt(int rowIndex, int columnIndex)
         {
+            if (columnIndex >= 0) {
+                LearnsetsColumn c = LearnsetsColumn.getColumn(columnIndex % 2);
+                c.repetition = columnIndex;
+                return getValueFor(rowIndex, c);
+            }
+            return getValueFor(rowIndex, LearnsetsColumn.getColumn(columnIndex));
+        }
+
+        @Override
+        public Object getValueFor(int rowIndex, LearnsetsColumn property)
+        {
             TextBankData speciesNames = getTextBankData().get(TextFiles.SPECIES_NAMES.getValue());
             LearnsetData learnset = getData().get(rowIndex);
 
-            if (columnIndex >= 0)
+            if (property.idx >= 0)
             {
-                int entryIdx = columnIndex / 2;
+                int entryIdx = property.repetition / 2;
                 while (entryIdx >= learnset.size())
                 {
                     learnset.add(new LearnsetData.LearnsetEntry());
                 }
                 LearnsetData.LearnsetEntry entry = learnset.get(entryIdx);
 
-                switch (LearnsetsColumn.getColumn(columnIndex % 2)) {
+                switch (property) {
                     case MOVE -> {
                         return entry.getMoveID();
                     }
@@ -121,11 +141,11 @@ public class LearnsetsTable extends DefaultTable<LearnsetData>
                     }
                 }
             }
-            else if (LearnsetsColumn.getColumn(columnIndex) == LearnsetsColumn.ID)
+            else if (property == LearnsetsColumn.ID)
             {
                 return rowIndex;
             }
-            else if (LearnsetsColumn.getColumn(columnIndex) == LearnsetsColumn.NAME)
+            else if (property == LearnsetsColumn.NAME)
             {
                 if(rowIndex < speciesNames.size())
                     return speciesNames.get(rowIndex).getText();
@@ -148,7 +168,7 @@ public class LearnsetsTable extends DefaultTable<LearnsetData>
         }
 
         @Override
-        public FormatModel<LearnsetData> getFrozenColumnModel()
+        public FormatModel<LearnsetData, LearnsetsColumn> getFrozenColumnModel()
         {
             return new LearnsetsTable.LearnsetsModel(getData(), getTextBankData()) {
                 @Override
@@ -189,6 +209,7 @@ public class LearnsetsTable extends DefaultTable<LearnsetData>
         private final int idx;
         private final String key;
         private final CellTypes cellType;
+        int repetition;
 
         LearnsetsColumn(int idx, String key, CellTypes cellType)
         {

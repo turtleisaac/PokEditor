@@ -13,7 +13,7 @@ import net.miginfocom.swing.*;
  * @author turtleisaac
  */
 public class FindDialog extends JFrame {
-    public FindDialog(DefaultSheetPanel<?> parent) {
+    public FindDialog(DefaultSheetPanel<?, ?> parent) {
         super();
         initComponents();
         setPreferredSize(dialogPane.getPreferredSize());

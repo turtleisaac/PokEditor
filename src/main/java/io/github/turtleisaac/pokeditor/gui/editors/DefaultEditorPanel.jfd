@@ -1,0 +1,73 @@
+JFDML JFormDesigner: "8.0.5.0.268" Java: "17.0.8" encoding: "UTF-8"
+
+new FormModel {
+	"i18n.autoExternalize": true
+	"i18n.bundlePackage": "pokeditor"
+	"i18n.bundleName": "sheet_panel"
+	"i18n.keyPrefix": "DefaultEditorPanel"
+	contentType: "form/swing"
+	root: new FormRoot {
+		add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class net.miginfocom.swing.MigLayout ) {
+			"$layoutConstraints": "hidemode 3"
+			"$columnConstraints": "[grow,fill]"
+			"$rowConstraints": "[][grow]"
+		} ) {
+			name: "this"
+			add( new FormComponent( "javax.swing.JSeparator" ) {
+				name: "separator4"
+			}, new FormLayoutConstraints( class net.miginfocom.layout.CC ) {
+				"value": "cell 0 0"
+			} )
+			add( new FormContainer( "javax.swing.JToolBar", new FormLayoutManager( class javax.swing.JToolBar ) ) {
+				name: "toolBar1"
+				"floatable": false
+				add( new FormComponent( "io.github.turtleisaac.pokeditor.gui_old.EditorComboBox" ) {
+					name: "entrySelectorComboBox"
+					addEvent( new FormEvent( "java.awt.event.ActionListener", "actionPerformed", "selectedEntryChanged", true ) )
+				} )
+				add( new FormComponent( "javax.swing.JButton" ) {
+					name: "saveButton"
+					"text": new FormMessage( null, "DefaultEditorPanel.saveButton.text" )
+					addEvent( new FormEvent( "java.awt.event.ActionListener", "actionPerformed", "saveButtonPressed", true ) )
+				} )
+				add( new FormComponent( "javax.swing.JToolBar$Separator" ) {
+					name: "separator2"
+				} )
+				add( new FormComponent( "javax.swing.JButton" ) {
+					name: "resetChangesButton"
+					"text": new FormMessage( null, "DefaultEditorPanel.resetChangesButton.text" )
+					addEvent( new FormEvent( "java.awt.event.ActionListener", "actionPerformed", "reloadDataButtonPressed", true ) )
+				} )
+				add( new FormComponent( "javax.swing.JToolBar$Separator" ) {
+					name: "separator1"
+				} )
+				add( new FormComponent( "javax.swing.JButton" ) {
+					name: "addButton"
+					"text": new FormMessage( null, "DefaultEditorPanel.addButton.text" )
+					addEvent( new FormEvent( "java.awt.event.ActionListener", "actionPerformed", "addEntryButtonPressed", true ) )
+				} )
+				add( new FormComponent( "javax.swing.JToolBar$Separator" ) {
+					name: "separator3"
+				} )
+				add( new FormComponent( "javax.swing.JButton" ) {
+					name: "deleteButton"
+					"text": new FormMessage( null, "DefaultEditorPanel.deleteButton.text" )
+					addEvent( new FormEvent( "java.awt.event.ActionListener", "actionPerformed", "deleteEntryButtonPressed", true ) )
+				} )
+			}, new FormLayoutConstraints( class net.miginfocom.layout.CC ) {
+				"value": "north"
+			} )
+			add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class java.awt.FlowLayout ) {
+				"alignment": 0
+			} ) {
+				name: "contentPanel"
+				"border": sfield com.jformdesigner.model.FormObject NULL_VALUE
+			}, new FormLayoutConstraints( class net.miginfocom.layout.CC ) {
+				"value": "cell 0 1,grow"
+			} )
+		}, new FormLayoutConstraints( null ) {
+			"location": new java.awt.Point( 5, 5 )
+			"size": new java.awt.Dimension( 1200, 720 )
+		} )
+	}
+}

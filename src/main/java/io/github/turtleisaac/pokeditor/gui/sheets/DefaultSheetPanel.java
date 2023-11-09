@@ -7,18 +7,14 @@ package io.github.turtleisaac.pokeditor.gui.sheets;
 import java.awt.event.*;
 import java.util.*;
 import javax.swing.*;
-import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ListSelectionListener;
-import javax.swing.event.TableModelListener;
+import javax.swing.border.*;
 import javax.swing.table.*;
 
 import io.github.turtleisaac.nds4j.ui.ThemeUtils;
 import io.github.turtleisaac.pokeditor.formats.GenericFileData;
 import io.github.turtleisaac.pokeditor.gui.PokeditorManager;
 import io.github.turtleisaac.pokeditor.gui.sheets.tables.DefaultTable;
-import io.github.turtleisaac.pokeditor.gui.sheets.tables.FormatModel;
 import io.github.turtleisaac.pokeditor.gui.sheets.tables.FrozenColumnTable;
-import io.github.turtleisaac.pokeditor.gui.sheets.tables.renderers.MultiLineTableHeaderRenderer;
 import net.miginfocom.swing.*;
 
 import java.awt.*;
@@ -30,16 +26,16 @@ import java.util.List;
 /**
  * @author turtleisaac
  */
-public class DefaultSheetPanel<E extends GenericFileData> extends JPanel
+public class DefaultSheetPanel<G extends GenericFileData, E extends Enum<E>> extends JPanel
 {
     private Dimension lastSize;
 
     private final PokeditorManager manager;
 
-    private final DefaultTable<E> table;
-    private final FrozenColumnTable<E> frozenColumns;
+    private final DefaultTable<G, E> table;
+    private final FrozenColumnTable<G> frozenColumns;
 
-    public DefaultSheetPanel(PokeditorManager manager, DefaultTable<E> table) {
+    public DefaultSheetPanel(PokeditorManager manager, DefaultTable<G, E> table) {
         initComponents();
         this.manager = manager;
         this.table = table;
@@ -88,7 +84,7 @@ public class DefaultSheetPanel<E extends GenericFileData> extends JPanel
         copyModeButton.setIcon(PokeditorManager.clipboardIcon);
     }
 
-    public DefaultTable<E> getTable()
+    public DefaultTable<G, E> getTable()
     {
         return table;
     }

@@ -19,7 +19,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Queue;
 
-public class EvolutionsTable extends DefaultTable<EvolutionData>
+public class EvolutionsTable extends DefaultTable<EvolutionData, EvolutionsTable.EvolutionsColumn>
 {
     public static final int[] columnWidths = new int[] {40, 100, 200, 140, 140, 200, 140, 140, 200, 140, 140, 200, 140, 140, 200, 140, 140, 200, 140, 140, 200, 140, 140};
     private static final String[] evolutionMethodKeys = new String[] {"evolutionMethod.none", "evolutionMethod.happiness", "evolutionMethod.happinessDay", "evolutionMethod.happinessNight", "evolutionMethod.reachLevel", "evolutionMethod.trade", "evolutionMethod.tradeItem", "evolutionMethod.useItem", "evolutionMethod.levelAttackGreaterThanDefense", "evolutionMethod.levelAttackEqualToDefense", "evolutionMethod.levelAttackLessThanDefense", "evolutionMethod.levelPIDLessThan5", "evolutionMethod.levelPIDGreaterThan5", "evolutionMethod.levelNincada1", "evolutionMethod.levelNincada2", "evolutionMethod.beauty", "evolutionMethod.useItemMale", "evolutionMethod.useItemFemale", "evolutionMethod.heldItemLevelUpDay", "evolutionMethod.heldItemLevelUpNight", "evolutionMethod.moveKnown", "evolutionMethod.speciesInParty", "evolutionMethod.levelMale", "evolutionMethod.levelFemale", "evolutionMethod.levelElectricField", "evolutionMethod.levelMossyRock", "evolutionMethod.levelIcyRock"};
@@ -59,7 +59,7 @@ public class EvolutionsTable extends DefaultTable<EvolutionData>
         return EvolutionData.class;
     }
 
-    static class EvolutionsModel extends FormatModel<EvolutionData>
+    static class EvolutionsModel extends FormatModel<EvolutionData, EvolutionsColumn>
     {
         public EvolutionsModel(List<EvolutionData> data, List<TextBankData> textBankData)
         {
@@ -81,20 +81,34 @@ public class EvolutionsTable extends DefaultTable<EvolutionData>
         @Override
         public void setValueAt(Object aValue, int rowIndex, int columnIndex)
         {
-            EvolutionData species = getData().get(rowIndex);
-
-            aValue = prepareObjectForWriting(aValue, columnIndex);
-
             if (columnIndex >= 0)
             {
-                int entryIdx = columnIndex / 3;
+                EvolutionsColumn c = EvolutionsColumn.getColumn(columnIndex % 3);
+                c.repetition = columnIndex;
+                setValueFor(aValue, rowIndex, c);
+            }
+            else {
+                setValueFor(aValue, rowIndex, EvolutionsColumn.getColumn(columnIndex));
+            }
+        }
+
+        @Override
+        public void setValueFor(Object aValue, int rowIndex, EvolutionsColumn property)
+        {
+            EvolutionData species = getData().get(rowIndex);
+
+            aValue = prepareObjectForWriting(aValue, property.cellType);
+
+            if (property.idx >= 0)
+            {
+                int entryIdx = property.repetition / 3;
                 while (entryIdx > species.size())
                 {
                     species.add(new EvolutionData.EvolutionEntry());
                 }
                 EvolutionData.EvolutionEntry entry = species.get(entryIdx);
 
-                switch (EvolutionsColumn.getColumn(columnIndex % 3)) {
+                switch (property) {
                     case METHOD -> entry.setMethod((Integer) aValue);
                     case REQUIREMENT -> entry.setRequirement((Integer) aValue);
                     case RESULT_SPECIES -> entry.setResultSpecies((Integer) aValue);
@@ -111,19 +125,30 @@ public class EvolutionsTable extends DefaultTable<EvolutionData>
         @Override
         public Object getValueAt(int rowIndex, int columnIndex)
         {
+            if (columnIndex >= 0) {
+                EvolutionsColumn c = EvolutionsColumn.getColumn(columnIndex % 2);
+                c.repetition = columnIndex;
+                return getValueFor(rowIndex, c);
+            }
+            return getValueFor(rowIndex, EvolutionsColumn.getColumn(columnIndex));
+        }
+
+        @Override
+        public Object getValueFor(int rowIndex, EvolutionsColumn property)
+        {
             TextBankData speciesNames = getTextBankData().get(TextFiles.SPECIES_NAMES.getValue());
             EvolutionData species = getData().get(rowIndex);
 
-            if (columnIndex >= 0)
+            if (property.idx >= 0)
             {
-                int entryIdx = columnIndex / 3;
+                int entryIdx = property.repetition / 3;
                 while (entryIdx > species.size())
                 {
                     species.add(new EvolutionData.EvolutionEntry());
                 }
                 EvolutionData.EvolutionEntry entry = species.get(entryIdx);
 
-                switch (EvolutionsColumn.getColumn(columnIndex % 3)) {
+                switch (property) {
                     case METHOD -> {
                         return entry.getMethod();
                     }
@@ -135,11 +160,11 @@ public class EvolutionsTable extends DefaultTable<EvolutionData>
                     }
                 }
             }
-            else if (EvolutionsColumn.getColumn(columnIndex) == EvolutionsColumn.ID)
+            else if (property == EvolutionsColumn.ID)
             {
                 return rowIndex;
             }
-            else if (EvolutionsColumn.getColumn(columnIndex) == EvolutionsColumn.NAME)
+            else if (property == EvolutionsColumn.NAME)
             {
                 if(rowIndex < speciesNames.size())
                     return speciesNames.get(rowIndex).getText();
@@ -162,7 +187,7 @@ public class EvolutionsTable extends DefaultTable<EvolutionData>
         }
 
         @Override
-        public FormatModel<EvolutionData> getFrozenColumnModel()
+        public FormatModel<EvolutionData, EvolutionsColumn> getFrozenColumnModel()
         {
             return new EvolutionsTable.EvolutionsModel(getData(), getTextBankData()) {
                 @Override
@@ -388,6 +413,7 @@ public class EvolutionsTable extends DefaultTable<EvolutionData>
         private final int idx;
         private final String key;
         private final CellTypes cellType;
+        int repetition;
 
         EvolutionsColumn(int idx, String key, CellTypes cellType)
         {
