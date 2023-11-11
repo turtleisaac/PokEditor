@@ -5,13 +5,15 @@ import io.github.turtleisaac.pokeditor.formats.GenericFileData;
 import javax.swing.*;
 import java.awt.event.ActionEvent;
 
-public class DefaultEditor<G extends GenericFileData, E extends Enum<E>> extends JPanel
+public abstract class DefaultEditor<G extends GenericFileData, E extends Enum<E>> extends JPanel
 {
     private EditorDataModel<E> model;
+    private int selectedIndex;
 
     public DefaultEditor(EditorDataModel<E> model)
     {
         this.model = model;
+        selectedIndex = -1;
     }
 
     public EditorDataModel<E> getModel()
@@ -24,5 +26,15 @@ public class DefaultEditor<G extends GenericFileData, E extends Enum<E>> extends
         this.model = model;
     }
 
-    public void selectedIndexedChanged(int idx, ActionEvent e) {}
+    public void selectedIndexedChanged(int idx, ActionEvent e)
+    {
+        selectedIndex = idx;
+    }
+
+    public int getSelectedIndex()
+    {
+        return selectedIndex;
+    }
+
+    public abstract Class<G> getDataClass();
 }

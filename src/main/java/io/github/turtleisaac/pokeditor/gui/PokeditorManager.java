@@ -2,6 +2,7 @@ package io.github.turtleisaac.pokeditor.gui;
 
 import com.formdev.flatlaf.extras.FlatSVGIcon;
 import io.github.turtleisaac.nds4j.NintendoDsRom;
+import io.github.turtleisaac.nds4j.images.IndexedImage;
 import io.github.turtleisaac.nds4j.ui.PanelManager;
 import io.github.turtleisaac.nds4j.ui.ThemeUtils;
 import io.github.turtleisaac.nds4j.ui.Tool;
@@ -24,6 +25,8 @@ import javax.swing.*;
 import javax.swing.filechooser.FileFilter;
 import java.awt.*;
 import java.awt.event.ActionEvent;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
@@ -168,7 +171,7 @@ public class PokeditorManager extends PanelManager
     public void writeSheet(String[][] data)
     {
         JFileChooser fc = new JFileChooser(System.getProperty("user.dir"));
-        fc.setDialogTitle("Open Project");
+        fc.setDialogTitle("Export Sheet");
         fc.setAcceptAllFileFilterUsed(false);
 
         fc.setFileSelectionMode(JFileChooser.FILES_ONLY);
@@ -212,6 +215,84 @@ public class PokeditorManager extends PanelManager
         }
     }
 
+    private static JFileChooser prepareImageChooser(String title)
+    {
+        String lastPath = Tool.preferences.get("pokeditor.imagePath", null);
+        if (lastPath == null) {
+            lastPath = System.getProperty("user.dir");
+        }
+
+        JFileChooser fc = new JFileChooser(lastPath);
+        fc.setDialogTitle(title);
+        fc.setAcceptAllFileFilterUsed(false);
+
+        fc.setFileSelectionMode(JFileChooser.FILES_ONLY);
+
+        fc.addChoosableFileFilter(pngFilter);
+        fc.addChoosableFileFilter(ncgrFilter);
+        return fc;
+    }
+
+    public static void writeIndexedImage(IndexedImage image)
+    {
+        JFileChooser fc = prepareImageChooser("Export Sprite");
+        int returnVal = fc.showSaveDialog(null);
+
+        if (returnVal == JFileChooser.APPROVE_OPTION) {
+            File selected = fc.getSelectedFile();
+
+            boolean png = fc.getFileFilter().equals(pngFilter);
+            String extension = png  ? "png" : "NCGR";
+
+            String path = selected.getAbsolutePath();
+            if (!path.endsWith("." + extension))
+                path = path + "." + extension;
+
+            Tool.preferences.put("pokeditor.imagePath", selected.getParentFile().getAbsolutePath());
+
+            try
+            {
+                if (png)
+                    image.saveToIndexedPngFile(path);
+                else
+                    image.saveToFile(path);
+            }
+            catch(IOException e) {
+                JOptionPane.showMessageDialog(null, "A fatal error occurred while writing an indexed PNG to disk. See command-line for details.", "Error", JOptionPane.ERROR_MESSAGE);
+                throw new RuntimeException(e);
+            }
+
+        }
+    }
+
+    public static IndexedImage readIndexedImage()
+    {
+        JFileChooser fc = prepareImageChooser("Import Sprite");
+        int returnVal = fc.showOpenDialog(null);
+
+        if (returnVal == JFileChooser.APPROVE_OPTION) {
+            File selected = fc.getSelectedFile();
+            boolean png = fc.getFileFilter().equals(pngFilter);
+
+            String path = selected.getAbsolutePath();
+
+            Tool.preferences.put("pokeditor.imagePath", selected.getParentFile().getAbsolutePath());
+
+            try
+            {
+                if (png)
+                    return IndexedImage.fromIndexedPngFile(path);
+                else
+                    return IndexedImage.fromFile(path, 0, 4, 1, 1, true); //todo revisit if implementing DP support
+            }
+            catch(IOException e) {
+                JOptionPane.showMessageDialog(null, "A fatal error occurred while writing an indexed PNG to disk. See command-line for details.", "Error", JOptionPane.ERROR_MESSAGE);
+                throw new RuntimeException(e);
+            }
+        }
+        return null;
+    }
+
     @Override
     public List<JPanel> getPanels()
     {
@@ -231,4 +312,33 @@ public class PokeditorManager extends PanelManager
         //todo
         JOptionPane.showMessageDialog(null, "Not yet implemented", "Sorry", JOptionPane.ERROR_MESSAGE);
     }
+
+    private static final FileFilter pngFilter = new FileFilter() {
+        @Override
+        public boolean accept(File f)
+        {
+            return f.isDirectory() || f.getName().endsWith(".png");
+        }
+
+        @Override
+        public String getDescription()
+        {
+            return "Portable Network Graphics file (*.png)";
+        }
+    };
+
+    private static final FileFilter ncgrFilter = new FileFilter()
+    {
+        @Override
+        public boolean accept(File f)
+        {
+            return f.isDirectory() || f.getName().endsWith(".NCGR");
+        }
+
+        @Override
+        public String getDescription()
+        {
+            return "Nitro Character Graphics Resource (*.NCGR)";
+        }
+    };
 }

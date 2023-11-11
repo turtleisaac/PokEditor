@@ -10,27 +10,28 @@ import java.awt.image.BufferedImage;
 import java.util.*;
 import java.util.List;
 import javax.swing.*;
-import javax.swing.border.*;
 import javax.swing.event.*;
 
 import io.github.turtleisaac.nds4j.images.IndexedImage;
 import io.github.turtleisaac.nds4j.images.Palette;
-import io.github.turtleisaac.pokeditor.formats.personal.PersonalData;
 import io.github.turtleisaac.pokeditor.formats.pokemon_sprites.PokemonSpriteData;
 import io.github.turtleisaac.pokeditor.formats.text.TextBankData;
 import io.github.turtleisaac.pokeditor.gamedata.TextFiles;
+import io.github.turtleisaac.pokeditor.gui.PokeditorManager;
 import io.github.turtleisaac.pokeditor.gui.editors.DefaultEditor;
+import io.github.turtleisaac.pokeditor.gui.editors.EditorDataModel;
 import io.github.turtleisaac.pokeditor.gui.sheets.tables.CellTypes;
 import io.github.turtleisaac.pokeditor.gui.sheets.tables.FormatModel;
-import io.github.turtleisaac.pokeditor.gui.sheets.tables.formats.LearnsetsTable;
-import io.github.turtleisaac.pokeditor.gui.sheets.tables.formats.PersonalTable;
 import net.miginfocom.swing.*;
+import org.eclipse.jgit.diff.Edit;
 
 /**
  * @author turtleisaac
  */
 public class PokemonSpriteEditor extends DefaultEditor<PokemonSpriteData, PokemonSpriteEditor.SpriteContents>
 {
+    private static final int MAXIMUM_PALETTE_SIZE = 16;
+
 //    private static final Dimension dimension = new Dimension(1060, 670);
 
     public PokemonSpriteEditor(List<PokemonSpriteData> data, List<TextBankData> textBankData) {
@@ -38,29 +39,53 @@ public class PokemonSpriteEditor extends DefaultEditor<PokemonSpriteData, Pokemo
 //        setPreferredSize(dimension);
 //        setMinimumSize(dimension);
         initComponents();
+        ResourceBundle bundle = ResourceBundle.getBundle("pokeditor.sheet_panel");
         partyIconPanel.panel.multiplier = 2;
-        femaleBackPanel.label.setText("Female Back");
-        maleBackPanel.label.setText("Male Back");
-        femaleFrontPanel.label.setText("Female Front");
-        maleFrontPanel.label.setText("Male Front");
-        partyIconPanel.label.setText("Party Icon");
+        femaleBackPanel.label.setText(bundle.getString("PokemonSpriteEditor.femaleBackPanel.text"));
+        femaleBackPanel.setContents(SpriteContents.FEMALE_BACK);
+        maleBackPanel.label.setText(bundle.getString("PokemonSpriteEditor.maleBackPanel.text"));
+        maleBackPanel.setContents(SpriteContents.MALE_BACK);
+        femaleFrontPanel.label.setText(bundle.getString("PokemonSpriteEditor.femaleFrontPanel.text"));
+        femaleFrontPanel.setContents(SpriteContents.FEMALE_FRONT);
+        maleFrontPanel.label.setText(bundle.getString("PokemonSpriteEditor.maleFrontPanel.text"));
+        maleFrontPanel.setContents(SpriteContents.MALE_FRONT);
+        partyIconPanel.label.setText(bundle.getString("PokemonSpriteEditor.partyIconPanel.text"));
+        partyIconPanel.setContents(SpriteContents.PARTY_ICON);
     }
 
     @Override
     public void selectedIndexedChanged(int idx, ActionEvent e)
     {
-        femaleBackPanel.setImage((IndexedImage) getModel().getValueFor(idx, SpriteContents.FEMALE_BACK));
-        maleBackPanel.setImage((IndexedImage) getModel().getValueFor(idx, SpriteContents.MALE_BACK));
-        femaleFrontPanel.setImage((IndexedImage) getModel().getValueFor(idx, SpriteContents.FEMALE_FRONT));
-        maleFrontPanel.setImage((IndexedImage) getModel().getValueFor(idx, SpriteContents.MALE_FRONT));
-        partyIconPanel.setImage((IndexedImage) getModel().getValueFor(idx, SpriteContents.PARTY_ICON));
-        battleMockupPanel1.setSprites(maleFrontPanel.panel.image, maleBackPanel.panel.image, (byte) 0, (byte) 0, 0, 0, false);
-        palettePanel.setPalette((Palette) getModel().getValueFor(idx, SpriteContents.PALETTE));
-        shinyPalettePanel.setPalette((Palette) getModel().getValueFor(idx, SpriteContents.SHINY_PALETTE));
+        super.selectedIndexedChanged(idx, e);
+        EditorDataModel<SpriteContents> model = getModel();
+        femaleBackPanel.setImage((IndexedImage) model.getValueFor(idx, SpriteContents.FEMALE_BACK));
+        maleBackPanel.setImage((IndexedImage) model.getValueFor(idx, SpriteContents.MALE_BACK));
+        femaleFrontPanel.setImage((IndexedImage) model.getValueFor(idx, SpriteContents.FEMALE_FRONT));
+        maleFrontPanel.setImage((IndexedImage) model.getValueFor(idx, SpriteContents.MALE_FRONT));
+        partyIconPanel.setImage((IndexedImage) model.getValueFor(idx, SpriteContents.PARTY_ICON));
+        palettePanel.setPalette((Palette) model.getValueFor(idx, SpriteContents.PALETTE));
+        shinyPalettePanel.setPalette((Palette) model.getValueFor(idx, SpriteContents.SHINY_PALETTE));
+
+        globalFrontYSpinner.setValue(model.getValueFor(idx, SpriteContents.GLOBAL_FRONT_Y));
+        femaleBackYSpinner.setValue(model.getValueFor(idx, SpriteContents.FEMALE_BACK_Y));
+        maleBackYSpinner.setValue(model.getValueFor(idx, SpriteContents.MALE_BACK_Y));
+        femaleFrontYSpinner.setValue(model.getValueFor(idx, SpriteContents.FEMALE_FRONT_Y));
+        maleFrontYSpinner.setValue(model.getValueFor(idx, SpriteContents.MALE_FRONT_Y));
+        movementSpinner.setValue(model.getValueFor(idx, SpriteContents.MOVEMENT));
+        shadowXSpinner.setValue(model.getValueFor(idx, SpriteContents.SHADOW_X));
+        shadowSizeComboBox.setSelectedIndex((Integer) model.getValueFor(idx, SpriteContents.SHADOW_SIZE));
+
+        tabbedPane1.setSelectedIndex(0);
+    }
+
+    @Override
+    public Class<PokemonSpriteData> getDataClass()
+    {
+        return PokemonSpriteData.class;
     }
 
     private void thisComponentResized(ComponentEvent e) {
-        System.out.println("moo");
+//        System.out.println("moo");
 //        System.out.println(panel1.getMaximumSize().toString());
 //        panel1.setSize();
     }
@@ -74,46 +99,104 @@ public class PokemonSpriteEditor extends DefaultEditor<PokemonSpriteData, Pokemo
             femaleFrontPanel.setPalette(palette);
             maleFrontPanel.setPalette(palette);
         }
+        battleMockupPanel1.repaint();
+    }
 
+    private void toggleGenderButtonPressed(ActionEvent e) {
+        battleMockupPanel1.repaint();
+    }
+
+    private void toggleFrameButtonPressed(ActionEvent e) {
+        battleMockupPanel1.repaint();
+    }
+
+    private void spriteMetadataSpinnerStateChanged(ChangeEvent e) {
+        Object source = e.getSource();
+        if (source.equals(globalFrontYSpinner))
+        {
+            getModel().setValueFor(globalFrontYSpinner.getValue(), getSelectedIndex(), SpriteContents.GLOBAL_FRONT_Y);
+        }
+        else if (source.equals(femaleBackYSpinner))
+        {
+            getModel().setValueFor(femaleBackYSpinner.getValue(), getSelectedIndex(), SpriteContents.FEMALE_BACK_Y);
+        }
+        else if (source.equals(maleBackYSpinner))
+        {
+            getModel().setValueFor(maleBackYSpinner.getValue(), getSelectedIndex(), SpriteContents.MALE_BACK_Y);
+        }
+        else if (source.equals(femaleFrontYSpinner))
+        {
+            getModel().setValueFor(femaleFrontYSpinner.getValue(), getSelectedIndex(), SpriteContents.FEMALE_FRONT_Y);
+        }
+        else if (source.equals(maleFrontYSpinner))
+        {
+            getModel().setValueFor(maleFrontYSpinner.getValue(), getSelectedIndex(), SpriteContents.MALE_FRONT_Y);
+        }
+        else if (source.equals(movementSpinner))
+        {
+            getModel().setValueFor(movementSpinner.getValue(), getSelectedIndex(), SpriteContents.MOVEMENT);
+        }
+        else if (source.equals(shadowXSpinner))
+        {
+            getModel().setValueFor(shadowXSpinner.getValue(), getSelectedIndex(), SpriteContents.SHADOW_X);
+        }
+        else if (source.equals(partyIconPaletteSpinner))
+        {
+            if (partyIconPanel.panel.image != null)
+            {
+                partyIconPanel.panel.image.setPaletteIdx((Integer) partyIconPaletteSpinner.getValue());
+                partyIconPanel.repaint();
+            }
+
+        }
+        battleMockupPanel1.repaint();
+    }
+
+    private void shadowSizeChanged(ActionEvent e) {
+        getModel().setValueFor(shadowSizeComboBox.getSelectedIndex(), getSelectedIndex(), SpriteContents.SHADOW_SIZE);
+        battleMockupPanel1.repaint();
     }
 
     private void initComponents() {
         // JFormDesigner - Component initialization - DO NOT MODIFY  //GEN-BEGIN:initComponents  @formatter:off
         // Generated using JFormDesigner non-commercial license
         ResourceBundle bundle = ResourceBundle.getBundle("pokeditor.sheet_panel");
-        femaleBackPanel = new PokemonSpriteEditor.PokemonSpriteDisplayPanel();
-        maleBackPanel = new PokemonSpriteEditor.PokemonSpriteDisplayPanel();
+        femaleBackPanel = new PokemonSpriteDisplayPanel(PokemonSpriteDisplayPanel.HORIZONTAL);
+        maleBackPanel = new PokemonSpriteDisplayPanel(PokemonSpriteDisplayPanel.HORIZONTAL);
         separator1 = new JSeparator();
         panel1 = new JPanel();
         battleMockupPanel1 = new PokemonSpriteEditor.BattleMockupPanel();
-        toggleButton2 = new JToggleButton();
-        toggleButton1 = new JToggleButton();
-        toggleButton3 = new JToggleButton();
+        toggleGenderButton = new JToggleButton();
+        toggleFrameButton = new JToggleButton();
         panel2 = new JPanel();
-        label1 = new JLabel();
-        spinner1 = new JSpinner();
+        globalFrontYLabel = new JLabel();
+        globalFrontYSpinner = new JSpinner();
         separator4 = new JSeparator();
-        label2 = new JLabel();
-        spinner2 = new JSpinner();
-        label3 = new JLabel();
-        spinner3 = new JSpinner();
+        femaleBackYLabel = new JLabel();
+        femaleBackYSpinner = new JSpinner();
+        femaleFrontYLabel = new JLabel();
+        femaleFrontYSpinner = new JSpinner();
         separator5 = new JSeparator();
-        label4 = new JLabel();
-        spinner4 = new JSpinner();
-        label5 = new JLabel();
-        spinner5 = new JSpinner();
+        maleBackYLabel = new JLabel();
+        maleBackYSpinner = new JSpinner();
+        maleFrontYLabel = new JLabel();
+        maleFrontYSpinner = new JSpinner();
         separator3 = new JSeparator();
-        label6 = new JLabel();
-        spinner6 = new JSpinner();
+        movementLabel = new JLabel();
+        movementSpinner = new JSpinner();
         separator2 = new JSeparator();
-        label7 = new JLabel();
-        spinner7 = new JSpinner();
-        label8 = new JLabel();
-        comboBox1 = new JComboBox();
+        shadowXLabel = new JLabel();
+        shadowXSpinner = new JSpinner();
+        shadowSizeLabel = new JLabel();
+        shadowSizeComboBox = new JComboBox<>();
         separator6 = new JSeparator();
-        partyIconPanel = new PokemonSpriteEditor.PokemonSpriteDisplayPanel();
-        femaleFrontPanel = new PokemonSpriteEditor.PokemonSpriteDisplayPanel();
-        maleFrontPanel = new PokemonSpriteEditor.PokemonSpriteDisplayPanel();
+        partyIconGroupPanel = new JPanel();
+        partyIconPanel = new PokemonSpriteDisplayPanel(PokemonSpriteDisplayPanel.VERTICAL);
+        separator7 = new JSeparator();
+        partyIconPaletteIdLabel = new JLabel();
+        partyIconPaletteSpinner = new JSpinner();
+        femaleFrontPanel = new PokemonSpriteDisplayPanel(PokemonSpriteDisplayPanel.HORIZONTAL);
+        maleFrontPanel = new PokemonSpriteDisplayPanel(PokemonSpriteDisplayPanel.HORIZONTAL);
         tabbedPane1 = new JTabbedPane();
         palettePanel = new PokemonSpriteEditor.PalettePanel();
         shinyPalettePanel = new PokemonSpriteEditor.PalettePanel();
@@ -161,21 +244,18 @@ public class PokemonSpriteEditor extends DefaultEditor<PokemonSpriteData, Pokemo
                 // rows
                 "[]0" +
                 "[]0" +
-                "[]0" +
                 "[grow]"));
             panel1.add(battleMockupPanel1, "cell 0 0");
 
-            //---- toggleButton2 ----
-            toggleButton2.setText(bundle.getString("PokemonSpriteEditor.toggleButton2.text"));
-            panel1.add(toggleButton2, "cell 0 1");
+            //---- toggleGenderButton ----
+            toggleGenderButton.setText(bundle.getString("PokemonSpriteEditor.toggleGenderButton.text"));
+            toggleGenderButton.addActionListener(e -> toggleGenderButtonPressed(e));
+            panel1.add(toggleGenderButton, "cell 0 1");
 
-            //---- toggleButton1 ----
-            toggleButton1.setText(bundle.getString("PokemonSpriteEditor.toggleButton1.text"));
-            panel1.add(toggleButton1, "cell 0 1");
-
-            //---- toggleButton3 ----
-            toggleButton3.setText(bundle.getString("PokemonSpriteEditor.toggleButton3.text"));
-            panel1.add(toggleButton3, "cell 0 2");
+            //---- toggleFrameButton ----
+            toggleFrameButton.setText(bundle.getString("PokemonSpriteEditor.toggleFrameButton.text"));
+            toggleFrameButton.addActionListener(e -> toggleFrameButtonPressed(e));
+            panel1.add(toggleFrameButton, "cell 0 1");
 
             //======== panel2 ========
             {
@@ -198,58 +278,121 @@ public class PokemonSpriteEditor extends DefaultEditor<PokemonSpriteData, Pokemo
                     "[]0" +
                     "[]"));
 
-                //---- label1 ----
-                label1.setText(bundle.getString("PokemonSpriteEditor.label1.text"));
-                panel2.add(label1, "cell 0 0");
-                panel2.add(spinner1, "cell 1 0,growx");
+                //---- globalFrontYLabel ----
+                globalFrontYLabel.setText(bundle.getString("PokemonSpriteEditor.globalFrontYLabel.text"));
+                panel2.add(globalFrontYLabel, "cell 0 0");
+
+                //---- globalFrontYSpinner ----
+                globalFrontYSpinner.setModel(new SpinnerNumberModel(0, -128, 127, 1));
+                globalFrontYSpinner.addChangeListener(e -> spriteMetadataSpinnerStateChanged(e));
+                panel2.add(globalFrontYSpinner, "cell 1 0,growx");
                 panel2.add(separator4, "cell 0 1 2 1");
 
-                //---- label2 ----
-                label2.setText(bundle.getString("PokemonSpriteEditor.label2.text"));
-                panel2.add(label2, "cell 0 2");
-                panel2.add(spinner2, "cell 1 2,growx");
+                //---- femaleBackYLabel ----
+                femaleBackYLabel.setText(bundle.getString("PokemonSpriteEditor.femaleBackYLabel.text"));
+                panel2.add(femaleBackYLabel, "cell 0 2");
 
-                //---- label3 ----
-                label3.setText(bundle.getString("PokemonSpriteEditor.label3.text"));
-                panel2.add(label3, "cell 0 3");
-                panel2.add(spinner3, "cell 1 3,growx");
+                //---- femaleBackYSpinner ----
+                femaleBackYSpinner.setModel(new SpinnerNumberModel(0, -255, 0, 1));
+                femaleBackYSpinner.addChangeListener(e -> spriteMetadataSpinnerStateChanged(e));
+                panel2.add(femaleBackYSpinner, "cell 1 2,growx");
+
+                //---- femaleFrontYLabel ----
+                femaleFrontYLabel.setText(bundle.getString("PokemonSpriteEditor.femaleFrontYLabel.text"));
+                panel2.add(femaleFrontYLabel, "cell 0 3");
+
+                //---- femaleFrontYSpinner ----
+                femaleFrontYSpinner.setModel(new SpinnerNumberModel(0, -255, 0, 1));
+                femaleFrontYSpinner.addChangeListener(e -> spriteMetadataSpinnerStateChanged(e));
+                panel2.add(femaleFrontYSpinner, "cell 1 3,growx");
                 panel2.add(separator5, "cell 0 4 2 1");
 
-                //---- label4 ----
-                label4.setText(bundle.getString("PokemonSpriteEditor.label4.text"));
-                panel2.add(label4, "cell 0 5");
-                panel2.add(spinner4, "cell 1 5,growx");
+                //---- maleBackYLabel ----
+                maleBackYLabel.setText(bundle.getString("PokemonSpriteEditor.maleBackYLabel.text"));
+                panel2.add(maleBackYLabel, "cell 0 5");
 
-                //---- label5 ----
-                label5.setText(bundle.getString("PokemonSpriteEditor.label5.text"));
-                panel2.add(label5, "cell 0 6");
-                panel2.add(spinner5, "cell 1 6,growx");
+                //---- maleBackYSpinner ----
+                maleBackYSpinner.setModel(new SpinnerNumberModel(0, -255, 0, 1));
+                maleBackYSpinner.addChangeListener(e -> spriteMetadataSpinnerStateChanged(e));
+                panel2.add(maleBackYSpinner, "cell 1 5,growx");
+
+                //---- maleFrontYLabel ----
+                maleFrontYLabel.setText(bundle.getString("PokemonSpriteEditor.maleFrontYLabel.text"));
+                panel2.add(maleFrontYLabel, "cell 0 6");
+
+                //---- maleFrontYSpinner ----
+                maleFrontYSpinner.setModel(new SpinnerNumberModel(0, -255, 0, 1));
+                maleFrontYSpinner.addChangeListener(e -> spriteMetadataSpinnerStateChanged(e));
+                panel2.add(maleFrontYSpinner, "cell 1 6,growx");
                 panel2.add(separator3, "cell 0 7 2 1");
 
-                //---- label6 ----
-                label6.setText(bundle.getString("PokemonSpriteEditor.label6.text"));
-                panel2.add(label6, "cell 0 8");
-                panel2.add(spinner6, "cell 1 8,growx");
+                //---- movementLabel ----
+                movementLabel.setText(bundle.getString("PokemonSpriteEditor.movementLabel.text"));
+                panel2.add(movementLabel, "cell 0 8");
+
+                //---- movementSpinner ----
+                movementSpinner.setModel(new SpinnerNumberModel(0, 0, 255, 1));
+                movementSpinner.addChangeListener(e -> spriteMetadataSpinnerStateChanged(e));
+                panel2.add(movementSpinner, "cell 1 8,growx");
                 panel2.add(separator2, "cell 0 9 2 1,growx");
 
-                //---- label7 ----
-                label7.setText(bundle.getString("PokemonSpriteEditor.label7.text"));
-                panel2.add(label7, "cell 0 10");
-                panel2.add(spinner7, "cell 1 10,growx");
+                //---- shadowXLabel ----
+                shadowXLabel.setText(bundle.getString("PokemonSpriteEditor.shadowXLabel.text"));
+                panel2.add(shadowXLabel, "cell 0 10");
 
-                //---- label8 ----
-                label8.setText(bundle.getString("PokemonSpriteEditor.label8.text"));
-                panel2.add(label8, "cell 0 11");
-                panel2.add(comboBox1, "cell 1 11");
+                //---- shadowXSpinner ----
+                shadowXSpinner.setModel(new SpinnerNumberModel(0, -128, 127, 1));
+                shadowXSpinner.addChangeListener(e -> spriteMetadataSpinnerStateChanged(e));
+                panel2.add(shadowXSpinner, "cell 1 10,growx");
+
+                //---- shadowSizeLabel ----
+                shadowSizeLabel.setText(bundle.getString("PokemonSpriteEditor.shadowSizeLabel.text"));
+                panel2.add(shadowSizeLabel, "cell 0 11");
+
+                //---- shadowSizeComboBox ----
+                shadowSizeComboBox.setModel(new DefaultComboBoxModel<>(new String[] {
+                    "None",
+                    "Small",
+                    "Medium",
+                    "Large"
+                }));
+                shadowSizeComboBox.addActionListener(e -> shadowSizeChanged(e));
+                panel2.add(shadowSizeComboBox, "cell 1 11");
             }
-            panel1.add(panel2, "cell 0 3,aligny top,grow 100 0");
+            panel1.add(panel2, "cell 0 2,aligny top,grow 100 0");
         }
         add(panel1, "cell 3 0 1 3,alignx left,grow 0 100");
 
         //---- separator6 ----
         separator6.setOrientation(SwingConstants.VERTICAL);
         add(separator6, "cell 4 0 1 3,grow");
-        add(partyIconPanel, "cell 5 0 1 3");
+
+        //======== partyIconGroupPanel ========
+        {
+            partyIconGroupPanel.setLayout(new MigLayout(
+                "insets 0,hidemode 3",
+                // columns
+                "[fill]",
+                // rows
+                "[]" +
+                "[]unrel" +
+                "[]" +
+                "[]" +
+                "[]" +
+                "[]"));
+            partyIconGroupPanel.add(partyIconPanel, "cell 0 0 1 3");
+            partyIconGroupPanel.add(separator7, "cell 0 3");
+
+            //---- partyIconPaletteIdLabel ----
+            partyIconPaletteIdLabel.setText(bundle.getString("PokemonSpriteEditor.partyIconPaletteIdLabel.text"));
+            partyIconPaletteIdLabel.setHorizontalAlignment(SwingConstants.CENTER);
+            partyIconGroupPanel.add(partyIconPaletteIdLabel, "cell 0 4,alignx center,growx 0");
+
+            //---- partyIconPaletteSpinner ----
+            partyIconPaletteSpinner.addChangeListener(e -> spriteMetadataSpinnerStateChanged(e));
+            partyIconGroupPanel.add(partyIconPaletteSpinner, "cell 0 5");
+        }
+        add(partyIconGroupPanel, "cell 5 0 1 3");
 
         //---- femaleFrontPanel ----
         femaleFrontPanel.setMinimumSize(new Dimension(320, 160));
@@ -277,32 +420,35 @@ public class PokemonSpriteEditor extends DefaultEditor<PokemonSpriteData, Pokemo
     private JSeparator separator1;
     private JPanel panel1;
     private PokemonSpriteEditor.BattleMockupPanel battleMockupPanel1;
-    private JToggleButton toggleButton2;
-    private JToggleButton toggleButton1;
-    private JToggleButton toggleButton3;
+    private JToggleButton toggleGenderButton;
+    private JToggleButton toggleFrameButton;
     private JPanel panel2;
-    private JLabel label1;
-    private JSpinner spinner1;
+    private JLabel globalFrontYLabel;
+    private JSpinner globalFrontYSpinner;
     private JSeparator separator4;
-    private JLabel label2;
-    private JSpinner spinner2;
-    private JLabel label3;
-    private JSpinner spinner3;
+    private JLabel femaleBackYLabel;
+    private JSpinner femaleBackYSpinner;
+    private JLabel femaleFrontYLabel;
+    private JSpinner femaleFrontYSpinner;
     private JSeparator separator5;
-    private JLabel label4;
-    private JSpinner spinner4;
-    private JLabel label5;
-    private JSpinner spinner5;
+    private JLabel maleBackYLabel;
+    private JSpinner maleBackYSpinner;
+    private JLabel maleFrontYLabel;
+    private JSpinner maleFrontYSpinner;
     private JSeparator separator3;
-    private JLabel label6;
-    private JSpinner spinner6;
+    private JLabel movementLabel;
+    private JSpinner movementSpinner;
     private JSeparator separator2;
-    private JLabel label7;
-    private JSpinner spinner7;
-    private JLabel label8;
-    private JComboBox comboBox1;
+    private JLabel shadowXLabel;
+    private JSpinner shadowXSpinner;
+    private JLabel shadowSizeLabel;
+    private JComboBox<String> shadowSizeComboBox;
     private JSeparator separator6;
+    private JPanel partyIconGroupPanel;
     private PokemonSpriteEditor.PokemonSpriteDisplayPanel partyIconPanel;
+    private JSeparator separator7;
+    private JLabel partyIconPaletteIdLabel;
+    private JSpinner partyIconPaletteSpinner;
     private PokemonSpriteEditor.PokemonSpriteDisplayPanel femaleFrontPanel;
     private PokemonSpriteEditor.PokemonSpriteDisplayPanel maleFrontPanel;
     private JTabbedPane tabbedPane1;
@@ -310,15 +456,39 @@ public class PokemonSpriteEditor extends DefaultEditor<PokemonSpriteData, Pokemo
     private PokemonSpriteEditor.PalettePanel shinyPalettePanel;
     // JFormDesigner - End of variables declaration  //GEN-END:variables  @formatter:on
 
-    static class PokemonSpriteDisplayPanel extends JPanel
+    class PokemonSpriteDisplayPanel extends JPanel
     {
         PokemonSpriteDisplaySubPanel panel = new PokemonSpriteDisplaySubPanel();
         JButton exportButton;
         JButton importButton;
+        JButton swapButton;
         JLabel label;
+
+        public static final int HORIZONTAL = 0;
+        public static final int VERTICAL = 1;
+
+        private int expectedWidth;
+        private int expectedHeight;
+
+        private final int buttonStyle;
+
+        private SpriteContents contents;
 
         public PokemonSpriteDisplayPanel()
         {
+            buttonStyle = HORIZONTAL;
+            setup(HORIZONTAL);
+        }
+
+        public PokemonSpriteDisplayPanel(int buttonStyle)
+        {
+            this.buttonStyle = buttonStyle;
+            setup(buttonStyle);
+        }
+
+        private void setup(int buttonStyle)
+        {
+            ResourceBundle bundle = ResourceBundle.getBundle("pokeditor.sheet_panel");
             setLayout(new MigLayout(
                     "ins 2",
                     // columns
@@ -329,19 +499,119 @@ public class PokemonSpriteEditor extends DefaultEditor<PokemonSpriteData, Pokemo
 
             label = new JLabel("Female Front");
             label.setHorizontalAlignment(JLabel.CENTER);
-            exportButton = new JButton("Export");
-            importButton = new JButton("Import");
+            exportButton = new JButton(bundle.getString("PokemonSpriteEditor.exportButton.text"));
+            importButton = new JButton(bundle.getString("PokemonSpriteEditor.importButton.text"));
+            swapButton = new JButton(bundle.getString("PokemonSpriteEditor.swapFramesButton.text"));
 
             add(label, "cell 0 0,grow");
             add(panel, "cell 0 1,grow");
-            add(exportButton, "cell 0 2,grow");
-            add(importButton, "cell 0 2,grow");
+            if (buttonStyle == HORIZONTAL)
+            {
+                expectedWidth = PokemonSpriteData.BATTLE_SPRITE_WIDTH*2;
+                expectedHeight = PokemonSpriteData.BATTLE_SPRITE_HEIGHT;
+
+                add(exportButton, "cell 0 2,grow");
+                add(importButton, "cell 0 2,grow");
+                add(swapButton, "cell 0 2,grow");
+            }
+            else
+            {
+                expectedWidth = PokemonSpriteData.PARTY_ICON_WIDTH;
+                expectedHeight = PokemonSpriteData.PARTY_ICON_HEIGHT*2;
+
+                add(exportButton, "cell 0 2,grow");
+                add(importButton, "cell 0 3,grow");
+            }
+
+
+            exportButton.addActionListener(new ActionListener()
+            {
+                @Override
+                public void actionPerformed(ActionEvent e)
+                {
+                    if (panel.image != null)
+                        PokeditorManager.writeIndexedImage(panel.image);
+                }
+            });
+
+            importButton.addActionListener(e ->
+            {
+                IndexedImage image = PokeditorManager.readIndexedImage();
+                if (image == null) {
+                    JOptionPane.showMessageDialog(this, "An error occurred while reading the provided image.\nAction has been aborted.");
+                    return;
+                }
+
+                if (image.getWidth() != expectedWidth || image.getHeight() != expectedHeight) {
+                    JOptionPane.showMessageDialog(this,
+                            String.format("Expected image width is %d wide by %d tall. Provided is %d by %d.\nAction has been aborted.",
+                                expectedWidth,
+                                expectedHeight,
+                                image.getWidth(),
+                                image.getHeight()),
+                        "Size error", JOptionPane.ERROR_MESSAGE);
+                    return;
+                }
+
+                if (panel.image != null) {
+                    if (image.getPalette().getNumColors() > MAXIMUM_PALETTE_SIZE) {
+                        JOptionPane.showMessageDialog(this,
+                                String.format("The provided image's palette needs to have at most %d colors. This image's palette has %d.\nAction has been aborted.", MAXIMUM_PALETTE_SIZE, image.getPalette().getNumColors()),
+                                "Palette Error",
+                                JOptionPane.ERROR_MESSAGE);
+                        return;
+                    }
+
+                    if (buttonStyle == HORIZONTAL && !image.getPalette().equals(panel.image.getPalette())) {
+                        int result = JOptionPane.showConfirmDialog(this, "The provided image has a palette which differs from that of the current image. Would you like to overwrite?", "Palette Conflict", JOptionPane.YES_NO_CANCEL_OPTION);
+
+                        switch (result) {
+                            case JOptionPane.CANCEL_OPTION -> {
+                                JOptionPane.showMessageDialog(this, "Action has been aborted", "Abort", JOptionPane.INFORMATION_MESSAGE);
+                                return;
+                            }
+                            case JOptionPane.NO_OPTION -> image.setPalette(panel.image.getPalette());
+                        }
+                    }
+                }
+
+                getModel().setValueFor(image, getSelectedIndex(), contents);
+                setImage(image);
+            });
+
+            swapButton.addActionListener(new ActionListener()
+            {
+                @Override
+                public void actionPerformed(ActionEvent e)
+                {
+                    try {
+                        IndexedImage left = panel.image.getSubImage(0, 0, PokemonSpriteData.BATTLE_SPRITE_WIDTH, PokemonSpriteData.BATTLE_SPRITE_HEIGHT);
+                        IndexedImage right = panel.image.getSubImage(PokemonSpriteData.BATTLE_SPRITE_WIDTH, 0, PokemonSpriteData.BATTLE_SPRITE_WIDTH, PokemonSpriteData.BATTLE_SPRITE_HEIGHT);
+                        IndexedImage result = IndexedImage.getCompositeImage(right, left);
+                        getModel().setValueFor(result, getSelectedIndex(), contents);
+                        setImage(result);
+                    }
+                    catch (IndexedImage.ImageException exception)
+                    {
+                        exception.printStackTrace();
+                        return;
+                    }
+
+                }
+            });
         }
 
         public void setImage(IndexedImage image)
         {
-            panel.setImage(image);
-            setMaximumSize(getPreferredSize());
+            if (image == null) {
+                setImage(new IndexedImage(80, 160, 4, Palette.defaultPalette));
+                setEnabled(false);
+            }
+            else {
+                setEnabled(true);
+                panel.setImage(image);
+                setMaximumSize(getPreferredSize());
+            }
             repaint();
         }
 
@@ -353,6 +623,19 @@ public class PokemonSpriteEditor extends DefaultEditor<PokemonSpriteData, Pokemo
                 repaint();
             }
 
+        }
+
+        @Override
+        public void setEnabled(boolean enabled)
+        {
+//            super.setEnabled(enabled);
+            exportButton.setEnabled(enabled);
+            swapButton.setEnabled(enabled);
+        }
+
+        public void setContents(SpriteContents contents)
+        {
+            this.contents = contents;
         }
 
         static class PokemonSpriteDisplaySubPanel extends JPanel {
@@ -380,47 +663,31 @@ public class PokemonSpriteEditor extends DefaultEditor<PokemonSpriteData, Pokemo
         }
     }
 
-    static class BattleMockupPanel extends JPanel
+    class BattleMockupPanel extends JPanel
     {
-        static Image textBar;
-        static Image background;
-        static Image playerPlatform;
-        static Image enemyPlatform;
-        static Image playerHealth;
-        static Image enemyHealth;
+        private static final int spriteSize = 80;
 
-        static BufferedImage frontSprite;
-        static BufferedImage backSprite;
+        static Image textBar = new ImageIcon(BattleMockupPanel.class.getResource("/pokeditor/icons/text_bar.png")).getImage();
+        static Image background = new ImageIcon(BattleMockupPanel.class.getResource("/pokeditor/icons/background.png")).getImage();
+        static Image playerPlatform = new ImageIcon(BattleMockupPanel.class.getResource("/pokeditor/icons/platform_you.png")).getImage();
+        static Image enemyPlatform = new ImageIcon(BattleMockupPanel.class.getResource("/pokeditor/icons/platform_opponent.png")).getImage();
+        static Image playerHealth = new ImageIcon(BattleMockupPanel.class.getResource("/pokeditor/icons/health_you.png")).getImage();
+        static Image enemyHealth = new ImageIcon(BattleMockupPanel.class.getResource("/pokeditor/icons/health_opponent.png")).getImage();
+        static Image maleIcon = new ImageIcon(BattleMockupPanel.class.getResource("/pokeditor/icons/symbol_male.png")).getImage();
+        static Image femaleIcon = new ImageIcon(BattleMockupPanel.class.getResource("/pokeditor/icons/symbol_female.png")).getImage();
 
-        static Image shadow;
-        static Image genderIcon;
-
-
-        static byte frontYOffset;
-        static byte shadowXOffset;
-//        static SpriteDataProcessor.ShadowType shadowType;
-
-
-        static int frontModifier;
-        static int backModifier;
-
-        static boolean isFemale;
+        static Image smallShadow = new ImageIcon(BattleMockupPanel.class.getResource("/pokeditor/icons/shadow_small.png")).getImage();
+        static Image mediumShadow = new ImageIcon(BattleMockupPanel.class.getResource("/pokeditor/icons/shadow_medium.png")).getImage();
+        static Image largeShadow = new ImageIcon(BattleMockupPanel.class.getResource("/pokeditor/icons/shadow_large.png")).getImage();
 
         public BattleMockupPanel()
         {
             super();
-            textBar = new ImageIcon(BattleMockupPanel.class.getResource("/pokeditor/icons/text_bar.png")).getImage();
-            background = new ImageIcon(BattleMockupPanel.class.getResource("/pokeditor/icons/background.png")).getImage();
-            playerPlatform = new ImageIcon(BattleMockupPanel.class.getResource("/pokeditor/icons/platform_you.png")).getImage();
-            enemyPlatform = new ImageIcon(BattleMockupPanel.class.getResource("/pokeditor/icons/platform_opponent.png")).getImage();
-            playerHealth = new ImageIcon(BattleMockupPanel.class.getResource("/pokeditor/icons/health_you.png")).getImage();
-            enemyHealth = new ImageIcon(BattleMockupPanel.class.getResource("/pokeditor/icons/health_opponent.png")).getImage();
-
 
             Dimension dimension= new Dimension(256,192);
-//            setPreferredSize(dimension);
+            setPreferredSize(dimension);
             setMinimumSize(dimension);
-//            setMaximumSize(dimension);
+            setMaximumSize(dimension);
             setVisible(true);
         }
 
@@ -436,30 +703,57 @@ public class PokemonSpriteEditor extends DefaultEditor<PokemonSpriteData, Pokemo
                 g2d.drawImage(enemyPlatform,129,72,null);
                 g2d.drawImage(playerPlatform,-42,122,null);
 
-
-//                if(shadowType == SpriteDataProcessor.ShadowType.Small)
-//                {
-//                    g2d.drawImage(shadow,179 + shadowXOffset, 83, null);
-//                }
-//                else if(shadowType == SpriteDataProcessor.ShadowType.Medium)
-//                {
-//                    g2d.drawImage(shadow,174 + shadowXOffset, 83, null);
-//                }
-//                else if(shadowType == SpriteDataProcessor.ShadowType.Large)
-//                {
-//                    g2d.drawImage(shadow,167 + shadowXOffset, 82, null);
-//                }
-
-
-                if(frontSprite != null)
+                ShadowSize shadowSize = ShadowSize.getSize(shadowSizeComboBox.getSelectedIndex());
+                if(shadowSize == ShadowSize.SMALL)
                 {
-                    g2d.drawImage(frontSprite,152,10 - frontYOffset - frontModifier,null);
-                    g2d.drawImage(backSprite,23,72 - backModifier,null);
+                    g2d.drawImage(smallShadow,179 + (Integer) shadowXSpinner.getValue(), 83, null);
                 }
+                else if(shadowSize == ShadowSize.MEDIUM)
+                {
+                    g2d.drawImage(mediumShadow,174 + (Integer) shadowXSpinner.getValue(), 83, null);
+                }
+                else if(shadowSize == ShadowSize.LARGE)
+                {
+                    g2d.drawImage(largeShadow,167 + (Integer) shadowXSpinner.getValue(), 82, null);
+                }
+
+                Image frontSprite = null;
+                Image backSprite = null;
+                IndexedImage front;
+                IndexedImage back;
+
+                boolean isFemale = toggleGenderButton.isSelected();
+
+                if (isFemale)
+                {
+                    front = femaleFrontPanel.panel.image;
+                    back = femaleBackPanel.panel.image;
+                }
+                else
+                {
+                    front = maleFrontPanel.panel.image;
+                    back = maleBackPanel.panel.image;
+                }
+
+                int startCoordinateX = toggleFrameButton.isSelected() ? spriteSize : 0;
+
+                if (front != null)
+                    frontSprite = front.getSubImage(startCoordinateX, 0, spriteSize, spriteSize).getTransparentImage();
+                if (back != null)
+                    backSprite = back.getSubImage(startCoordinateX, 0, spriteSize, spriteSize).getTransparentImage();
+
+                int frontModifier = (int) (isFemale ? femaleFrontYSpinner.getValue() : maleFrontYSpinner.getValue());
+                int backModifier = (int) (isFemale ? femaleBackYSpinner.getValue() : maleBackYSpinner.getValue());
+
+                if (frontSprite != null)
+                    g2d.drawImage(frontSprite,152,10 - (Integer) globalFrontYSpinner.getValue() - frontModifier,null);
+                if (backSprite != null)
+                    g2d.drawImage(backSprite,23,72 - backModifier,null);
 
                 g2d.drawImage(playerHealth,129,95, null);
                 g2d.drawImage(enemyHealth,0,18, null);
 
+                Image genderIcon = isFemale ? femaleIcon : maleIcon;
                 g2d.drawImage(genderIcon,217,103,null);
                 g2d.drawImage(genderIcon,65,25, null);
 
@@ -468,54 +762,12 @@ public class PokemonSpriteEditor extends DefaultEditor<PokemonSpriteData, Pokemo
 
                 g.drawImage(image, 0, 0, getWidth(), getHeight(), null);
             }
-            catch (NullPointerException exception)
+            catch(IndexedImage.ImageException e)
             {
-                exception.printStackTrace();
+                e.printStackTrace();
+                JOptionPane.showMessageDialog(this, "A fatal image-parsing error has occurred while attempting to display the in-battle sprite preview. Check the command-line for details.", "Error", JOptionPane.ERROR_MESSAGE);
             }
 
-        }
-
-        public void setSprites(IndexedImage newFront, IndexedImage newBack, byte newFrontYOffset, byte newShadowXOffset, /*SpriteDataProcessor.ShadowType newShadowType,*/ int frontMod, int backMod, boolean female)
-        {
-            frontSprite= newFront.getTransparentImage();
-            backSprite= newBack.getTransparentImage();
-            frontYOffset= newFrontYOffset;
-            shadowXOffset= newShadowXOffset;
-//            shadowType= newShadowType;
-
-            frontModifier= frontMod;
-            backModifier= backMod;
-
-//            switch (newShadowType)
-//            {
-//                case None:
-//                    shadow= null;
-//                    break;
-//
-//                case Small:
-//                    shadow= new ImageIcon(BattleMockupPanel.class.getResource("/pokeditor/icons/shadow_small.png")).getImage();
-//                    break;
-//
-//                case Medium:
-//                    shadow= new ImageIcon(BattleMockupPanel.class.getResource("/pokeditor/icons/shadow_medium.png")).getImage();
-//                    break;
-//
-//                case Large:
-//                    shadow= new ImageIcon(BattleMockupPanel.class.getResource("/pokeditor/icons/shadow_large.png")).getImage();
-//                    break;
-//            }
-
-            isFemale= female;
-
-            if(female)
-            {
-                genderIcon= new ImageIcon(BattleMockupPanel.class.getResource("/pokeditor/icons/symbol_female.png")).getImage();
-            }
-            else
-            {
-                genderIcon= new ImageIcon(BattleMockupPanel.class.getResource("/pokeditor/icons/symbol_male.png")).getImage();
-            }
-            repaint();
         }
     }
 
@@ -574,6 +826,26 @@ public class PokemonSpriteEditor extends DefaultEditor<PokemonSpriteData, Pokemo
         public void setPalette(Palette palette)
         {
             this.palette = palette;
+            int i = 0;
+            for (JButton button : buttons)
+            {
+                Color c = palette.getColor(i++);
+                button.setBackground(c);
+            }
+        }
+
+        static class PaletteButton extends JButton
+        {
+            private JLabel label;
+            PaletteButton()
+            {
+                super();
+                setForeground(new Color(0, 0, 0, 0));
+                setLayout(new MigLayout("insets 0,hidemode 3", "[center,fill]"));
+                label = new JLabel("0");
+                label.setHorizontalAlignment(JLabel.CENTER);
+                add(label, "cell 0 0");
+            }
         }
     }
 
@@ -612,6 +884,30 @@ public class PokemonSpriteEditor extends DefaultEditor<PokemonSpriteData, Pokemo
                 case PARTY_ICON -> {
                     return entry.getPartyIcon();
                 }
+                case GLOBAL_FRONT_Y -> {
+                    return entry.getGlobalFrontYOffset();
+                }
+                case FEMALE_BACK_Y -> {
+                    return entry.getFemaleBackOffset();
+                }
+                case MALE_BACK_Y -> {
+                    return entry.getMaleBackOffset();
+                }
+                case FEMALE_FRONT_Y -> {
+                    return entry.getFemaleFrontOffset();
+                }
+                case MALE_FRONT_Y -> {
+                    return entry.getMaleFrontOffset();
+                }
+                case MOVEMENT -> {
+                    return entry.getMovement();
+                }
+                case SHADOW_X -> {
+                    return entry.getShadowXOffset();
+                }
+                case SHADOW_SIZE -> {
+                    return entry.getShadowSize();
+                }
             }
 
             return null;
@@ -630,6 +926,14 @@ public class PokemonSpriteEditor extends DefaultEditor<PokemonSpriteData, Pokemo
                 case PALETTE -> entry.setPalette((Palette) aValue);
                 case SHINY_PALETTE -> entry.setShinyPalette((Palette) aValue);
                 case PARTY_ICON -> entry.setPartyIcon((IndexedImage) aValue);
+                case GLOBAL_FRONT_Y -> entry.setGlobalFrontYOffset((Integer) aValue);
+                case FEMALE_BACK_Y -> entry.setFemaleBackOffset((Integer) aValue);
+                case MALE_BACK_Y -> entry.setMaleBackOffset((Integer) aValue);
+                case FEMALE_FRONT_Y -> entry.setFemaleFrontOffset((Integer) aValue);
+                case MALE_FRONT_Y -> entry.setMaleFrontOffset((Integer) aValue);
+                case MOVEMENT -> entry.setMovement((Integer) aValue);
+                case SHADOW_X -> entry.setShadowXOffset((Integer) aValue);
+                case SHADOW_SIZE -> entry.setShadowSize((Integer) aValue);
             }
         }
 
@@ -676,7 +980,15 @@ public class PokemonSpriteEditor extends DefaultEditor<PokemonSpriteData, Pokemo
         PALETTE(4, "move", null),
         SHINY_PALETTE(5, "level", null),
         PARTY_ICON(6, "", null),
-        NUMBER_OF_COLUMNS(PARTY_ICON.idx+1, null, null);
+        GLOBAL_FRONT_Y(7, "", null),
+        FEMALE_BACK_Y(8, "", null),
+        MALE_BACK_Y(9, "", null),
+        FEMALE_FRONT_Y(10, "", null),
+        MALE_FRONT_Y(11, "", null),
+        MOVEMENT(12, "", null),
+        SHADOW_X(13, "", null),
+        SHADOW_SIZE(14, "", null),
+        NUMBER_OF_COLUMNS(SHADOW_SIZE.idx+1, null, null);
 
         private final int idx;
         private final String key;
@@ -699,6 +1011,27 @@ public class PokemonSpriteEditor extends DefaultEditor<PokemonSpriteData, Pokemo
                 }
             }
             return NUMBER_OF_COLUMNS;
+        }
+    }
+
+    enum ShadowSize {
+        NONE(0),
+        SMALL(1),
+        MEDIUM(2),
+        LARGE(3);
+
+        final int value;
+
+        ShadowSize(int value) {this.value= value;}
+
+        static ShadowSize getSize(int value)
+        {
+            for (ShadowSize size : ShadowSize.values())
+            {
+                if (size.value == value)
+                    return size;
+            }
+            return NONE;
         }
     }
 }

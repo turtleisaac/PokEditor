@@ -21,9 +21,11 @@ import net.miginfocom.swing.*;
  */
 public class DefaultEditorPanel<G extends GenericFileData, E extends Enum<E>> extends JPanel {
     private final DefaultEditor<G, E> editor;
+    private final PokeditorManager manager;
 
     public DefaultEditorPanel(PokeditorManager manager, DefaultEditor<G, E> editor) {
         initComponents();
+        this.manager = manager;
         this.editor = editor;
         contentPanel.add(editor);
         setIcons();
@@ -51,11 +53,12 @@ public class DefaultEditorPanel<G extends GenericFileData, E extends Enum<E>> ex
     }
 
     private void saveButtonPressed(ActionEvent e) {
-        // TODO add your code here
+        manager.saveData(editor.getDataClass());
     }
 
     private void reloadDataButtonPressed(ActionEvent e) {
-        // TODO add your code here
+        manager.resetData(editor.getDataClass());
+        editor.selectedIndexedChanged(entrySelectorComboBox.getSelectedIndex(), e);
     }
 
     private void addEntryButtonPressed(ActionEvent e) {
