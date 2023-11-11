@@ -2,7 +2,9 @@ package io.github.turtleisaac.pokeditor.gui;
 
 import com.formdev.flatlaf.extras.FlatSVGIcon;
 import io.github.turtleisaac.nds4j.NintendoDsRom;
+import io.github.turtleisaac.nds4j.framework.GenericNtrFile;
 import io.github.turtleisaac.nds4j.images.IndexedImage;
+import io.github.turtleisaac.nds4j.images.Palette;
 import io.github.turtleisaac.nds4j.ui.PanelManager;
 import io.github.turtleisaac.nds4j.ui.ThemeUtils;
 import io.github.turtleisaac.nds4j.ui.Tool;
@@ -44,6 +46,7 @@ public class PokeditorManager extends PanelManager
     public static final FlatSVGIcon rowInsertIcon;
     public static final FlatSVGIcon searchIcon;
     public static final FlatSVGIcon clipboardIcon;
+    public static final FlatSVGIcon copyIcon;
 
     public static final Color[] typeColors = new Color[]{new Color(201, 201, 201),
             new Color(173, 96, 94),
@@ -73,6 +76,7 @@ public class PokeditorManager extends PanelManager
             rowInsertIcon = new FlatSVGIcon(PokeditorManager.class.getResourceAsStream("/pokeditor/icons/svg/row-insert-bottom.svg"));
             searchIcon = new FlatSVGIcon(PokeditorManager.class.getResourceAsStream("/pokeditor/icons/svg/list-search.svg"));
             clipboardIcon = new FlatSVGIcon(PokeditorManager.class.getResourceAsStream("/pokeditor/icons/svg/clipboard-copy.svg"));
+            copyIcon = new FlatSVGIcon(PokeditorManager.class.getResourceAsStream("/pokeditor/icons/svg/copy.svg"));
 
             sheetExportIcon.setColorFilter(ThemeUtils.iconColorFilter);
             sheetImportIcon.setColorFilter(ThemeUtils.iconColorFilter);
@@ -80,6 +84,7 @@ public class PokeditorManager extends PanelManager
             rowInsertIcon.setColorFilter(ThemeUtils.iconColorFilter);
             searchIcon.setColorFilter(ThemeUtils.iconColorFilter);
             clipboardIcon.setColorFilter(ThemeUtils.iconColorFilter);
+            copyIcon.setColorFilter(ThemeUtils.iconColorFilter);
         }
         catch(IOException e) {
             throw new RuntimeException(e);
@@ -215,7 +220,7 @@ public class PokeditorManager extends PanelManager
         }
     }
 
-    private static JFileChooser prepareImageChooser(String title)
+    private static JFileChooser prepareImageChooser(String title, boolean allowPalette)
     {
         String lastPath = Tool.preferences.get("pokeditor.imagePath", null);
         if (lastPath == null) {
@@ -230,19 +235,26 @@ public class PokeditorManager extends PanelManager
 
         fc.addChoosableFileFilter(pngFilter);
         fc.addChoosableFileFilter(ncgrFilter);
+        if (allowPalette)
+            fc.addChoosableFileFilter(nclrFilter);
         return fc;
     }
 
     public static void writeIndexedImage(IndexedImage image)
     {
-        JFileChooser fc = prepareImageChooser("Export Sprite");
+        JFileChooser fc = prepareImageChooser("Export Sprite", true);
         int returnVal = fc.showSaveDialog(null);
 
         if (returnVal == JFileChooser.APPROVE_OPTION) {
             File selected = fc.getSelectedFile();
 
-            boolean png = fc.getFileFilter().equals(pngFilter);
-            String extension = png  ? "png" : "NCGR";
+            String extension;
+            if (fc.getFileFilter().equals(pngFilter))
+                extension = "png";
+            else if (fc.getFileFilter().equals(ncgrFilter))
+                extension = "NCGR";
+            else
+                extension = "NCLR";
 
             String path = selected.getAbsolutePath();
             if (!path.endsWith("." + extension))
@@ -252,10 +264,12 @@ public class PokeditorManager extends PanelManager
 
             try
             {
-                if (png)
+                if (extension.equals("png"))
                     image.saveToIndexedPngFile(path);
-                else
+                else if (extension.equals("NCGR"))
                     image.saveToFile(path);
+                else
+                    image.getPalette().saveToFile(path);
             }
             catch(IOException e) {
                 JOptionPane.showMessageDialog(null, "A fatal error occurred while writing an indexed PNG to disk. See command-line for details.", "Error", JOptionPane.ERROR_MESSAGE);
@@ -265,14 +279,13 @@ public class PokeditorManager extends PanelManager
         }
     }
 
-    public static IndexedImage readIndexedImage()
+    public static GenericNtrFile readIndexedImage(boolean allowPalette)
     {
-        JFileChooser fc = prepareImageChooser("Import Sprite");
+        JFileChooser fc = prepareImageChooser("Import Sprite", allowPalette);
         int returnVal = fc.showOpenDialog(null);
 
         if (returnVal == JFileChooser.APPROVE_OPTION) {
             File selected = fc.getSelectedFile();
-            boolean png = fc.getFileFilter().equals(pngFilter);
 
             String path = selected.getAbsolutePath();
 
@@ -280,17 +293,20 @@ public class PokeditorManager extends PanelManager
 
             try
             {
-                if (png)
+                if (fc.getFileFilter().equals(pngFilter))
                     return IndexedImage.fromIndexedPngFile(path);
+                else if (fc.getFileFilter().equals(ncgrFilter))
+                    return IndexedImage.fromFile(path, 0, 0, 1, 1, true); //todo revisit if implementing DP support
                 else
-                    return IndexedImage.fromFile(path, 0, 4, 1, 1, true); //todo revisit if implementing DP support
+                    return Palette.fromFile(path, 4);
             }
             catch(IOException e) {
                 JOptionPane.showMessageDialog(null, "A fatal error occurred while writing an indexed PNG to disk. See command-line for details.", "Error", JOptionPane.ERROR_MESSAGE);
                 throw new RuntimeException(e);
             }
         }
-        return null;
+
+        return new GenericNtrFile();
     }
 
     @Override
@@ -339,6 +355,21 @@ public class PokeditorManager extends PanelManager
         public String getDescription()
         {
             return "Nitro Character Graphics Resource (*.NCGR)";
+        }
+    };
+
+    private static final FileFilter nclrFilter = new FileFilter()
+    {
+        @Override
+        public boolean accept(File f)
+        {
+            return f.isDirectory() || f.getName().endsWith(".NCLR");
+        }
+
+        @Override
+        public String getDescription()
+        {
+            return "Nitro Color Resource (*.NCLR)";
         }
     };
 }

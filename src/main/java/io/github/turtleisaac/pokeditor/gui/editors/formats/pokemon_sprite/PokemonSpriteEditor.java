@@ -12,6 +12,7 @@ import java.util.List;
 import javax.swing.*;
 import javax.swing.event.*;
 
+import io.github.turtleisaac.nds4j.framework.GenericNtrFile;
 import io.github.turtleisaac.nds4j.images.IndexedImage;
 import io.github.turtleisaac.nds4j.images.Palette;
 import io.github.turtleisaac.pokeditor.formats.pokemon_sprites.PokemonSpriteData;
@@ -155,6 +156,96 @@ public class PokemonSpriteEditor extends DefaultEditor<PokemonSpriteData, Pokemo
     private void shadowSizeChanged(ActionEvent e) {
         getModel().setValueFor(shadowSizeComboBox.getSelectedIndex(), getSelectedIndex(), SpriteContents.SHADOW_SIZE);
         battleMockupPanel1.repaint();
+    }
+
+    private void importSprite(PokemonSpriteDisplayPanel panel)
+    {
+        GenericNtrFile result = PokeditorManager.readIndexedImage(panel.contents != SpriteContents.PARTY_ICON);
+        if (result == null) {
+            JOptionPane.showMessageDialog(this, "An error occurred while reading the provided file.\nAction has been aborted.");
+            return;
+        }
+
+        if (result instanceof IndexedImage image)
+        {
+            if (image.getWidth() != panel.expectedWidth || image.getHeight() != panel.expectedHeight) {
+                JOptionPane.showMessageDialog(this,
+                        String.format("Expected image width is %d wide by %d tall. Provided is %d by %d.\nAction has been aborted.",
+                                panel.expectedWidth,
+                                panel.expectedHeight,
+                                image.getWidth(),
+                                image.getHeight()),
+                        "Size error", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+
+            if (panel.panel.image != null && !image.getPalette().equals(Palette.defaultPalette)) {
+                if (image.getPalette().getColors().length > MAXIMUM_PALETTE_SIZE) {
+                    JOptionPane.showMessageDialog(this,
+                            String.format("The provided image's palette needs to have at most %d colors. This image's palette has %d.\nAction has been aborted.", MAXIMUM_PALETTE_SIZE, image.getPalette().getNumColors()),
+                            "Palette Error",
+                            JOptionPane.ERROR_MESSAGE);
+                    return;
+                }
+
+                if (panel.buttonStyle == PokemonSpriteDisplayPanel.HORIZONTAL && !image.getPalette().equals(panel.panel.image.getPalette())) {
+                    int confirmResult = JOptionPane.showConfirmDialog(this, "The provided image has a palette which differs from that of the current image. Would you like to overwrite?", "Palette Conflict", JOptionPane.YES_NO_CANCEL_OPTION);
+
+                    switch (confirmResult) {
+                        case JOptionPane.CANCEL_OPTION -> {
+                            JOptionPane.showMessageDialog(this, "Action has been aborted", "Abort", JOptionPane.INFORMATION_MESSAGE);
+                            return;
+                        }
+                        case JOptionPane.NO_OPTION -> {
+                            image.setPalette(panel.panel.image.getPalette());
+                        }
+                    }
+                }
+            }
+
+            if (!image.getPalette().equals(Palette.defaultPalette))
+            {
+                if (tabbedPane1.getSelectedComponent().equals(palettePanel))
+                {
+                    palettePanel.setPalette(image.getPalette());
+                    getModel().setValueFor(image.getPalette(), getSelectedIndex(), SpriteContents.PALETTE);
+                }
+                else
+                {
+                    shinyPalettePanel.setPalette(image.getPalette());
+                    getModel().setValueFor(image.getPalette(), getSelectedIndex(), SpriteContents.SHINY_PALETTE);
+                }
+            }
+
+            panel.panel.image.setPixels(image.getPixels());
+            getModel().setValueFor(panel.panel.image, getSelectedIndex(), panel.contents);
+            panel.repaint();
+            tabbedPane1StateChanged(null);
+        }
+        else if (result instanceof Palette palette)
+        {
+            if (panel.panel.image != null) {
+                if (palette.getColors().length > MAXIMUM_PALETTE_SIZE) {
+                    JOptionPane.showMessageDialog(this,
+                            String.format("The provided palette needs to have at most %d colors. This image's palette has %d.\nAction has been aborted.", MAXIMUM_PALETTE_SIZE, palette.getNumColors()),
+                            "Palette Error",
+                            JOptionPane.ERROR_MESSAGE);
+                    return;
+                }
+
+                if (tabbedPane1.getSelectedComponent().equals(palettePanel))
+                {
+                    palettePanel.setPalette(palette);
+                    getModel().setValueFor(palette, getSelectedIndex(), SpriteContents.PALETTE);
+                }
+                else
+                {
+                    shinyPalettePanel.setPalette(palette);
+                    getModel().setValueFor(palette, getSelectedIndex(), SpriteContents.SHINY_PALETTE);
+                }
+                tabbedPane1StateChanged(null);
+            }
+        }
     }
 
     private void initComponents() {
@@ -389,6 +480,7 @@ public class PokemonSpriteEditor extends DefaultEditor<PokemonSpriteData, Pokemo
             partyIconGroupPanel.add(partyIconPaletteIdLabel, "cell 0 4,alignx center,growx 0");
 
             //---- partyIconPaletteSpinner ----
+            partyIconPaletteSpinner.setModel(new SpinnerNumberModel(0, 0, null, 1));
             partyIconPaletteSpinner.addChangeListener(e -> spriteMetadataSpinnerStateChanged(e));
             partyIconGroupPanel.add(partyIconPaletteSpinner, "cell 0 5");
         }
@@ -534,50 +626,7 @@ public class PokemonSpriteEditor extends DefaultEditor<PokemonSpriteData, Pokemo
                 }
             });
 
-            importButton.addActionListener(e ->
-            {
-                IndexedImage image = PokeditorManager.readIndexedImage();
-                if (image == null) {
-                    JOptionPane.showMessageDialog(this, "An error occurred while reading the provided image.\nAction has been aborted.");
-                    return;
-                }
-
-                if (image.getWidth() != expectedWidth || image.getHeight() != expectedHeight) {
-                    JOptionPane.showMessageDialog(this,
-                            String.format("Expected image width is %d wide by %d tall. Provided is %d by %d.\nAction has been aborted.",
-                                expectedWidth,
-                                expectedHeight,
-                                image.getWidth(),
-                                image.getHeight()),
-                        "Size error", JOptionPane.ERROR_MESSAGE);
-                    return;
-                }
-
-                if (panel.image != null) {
-                    if (image.getPalette().getNumColors() > MAXIMUM_PALETTE_SIZE) {
-                        JOptionPane.showMessageDialog(this,
-                                String.format("The provided image's palette needs to have at most %d colors. This image's palette has %d.\nAction has been aborted.", MAXIMUM_PALETTE_SIZE, image.getPalette().getNumColors()),
-                                "Palette Error",
-                                JOptionPane.ERROR_MESSAGE);
-                        return;
-                    }
-
-                    if (buttonStyle == HORIZONTAL && !image.getPalette().equals(panel.image.getPalette())) {
-                        int result = JOptionPane.showConfirmDialog(this, "The provided image has a palette which differs from that of the current image. Would you like to overwrite?", "Palette Conflict", JOptionPane.YES_NO_CANCEL_OPTION);
-
-                        switch (result) {
-                            case JOptionPane.CANCEL_OPTION -> {
-                                JOptionPane.showMessageDialog(this, "Action has been aborted", "Abort", JOptionPane.INFORMATION_MESSAGE);
-                                return;
-                            }
-                            case JOptionPane.NO_OPTION -> image.setPalette(panel.image.getPalette());
-                        }
-                    }
-                }
-
-                getModel().setValueFor(image, getSelectedIndex(), contents);
-                setImage(image);
-            });
+            importButton.addActionListener(e -> importSprite(this));
 
             swapButton.addActionListener(new ActionListener()
             {
@@ -587,9 +636,12 @@ public class PokemonSpriteEditor extends DefaultEditor<PokemonSpriteData, Pokemo
                     try {
                         IndexedImage left = panel.image.getSubImage(0, 0, PokemonSpriteData.BATTLE_SPRITE_WIDTH, PokemonSpriteData.BATTLE_SPRITE_HEIGHT);
                         IndexedImage right = panel.image.getSubImage(PokemonSpriteData.BATTLE_SPRITE_WIDTH, 0, PokemonSpriteData.BATTLE_SPRITE_WIDTH, PokemonSpriteData.BATTLE_SPRITE_HEIGHT);
-                        IndexedImage result = IndexedImage.getCompositeImage(right, left);
-                        getModel().setValueFor(result, getSelectedIndex(), contents);
-                        setImage(result);
+                        IndexedImage result = IndexedImage.getHorizontalCompositeImage(right, left);
+
+                        panel.image.setPixels(result.getPixels());
+                        getModel().setValueFor(panel.image, getSelectedIndex(), contents);
+                        panel.repaint();
+                        battleMockupPanel1.repaint();
                     }
                     catch (IndexedImage.ImageException exception)
                     {
@@ -993,7 +1045,6 @@ public class PokemonSpriteEditor extends DefaultEditor<PokemonSpriteData, Pokemo
         private final int idx;
         private final String key;
         private final CellTypes cellType;
-        int repetition;
 
         SpriteContents(int idx, String key, CellTypes cellType)
         {

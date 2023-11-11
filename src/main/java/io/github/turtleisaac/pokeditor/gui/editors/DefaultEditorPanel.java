@@ -40,12 +40,10 @@ public class DefaultEditorPanel<G extends GenericFileData, E extends Enum<E>> ex
     {
         saveButton.setIcon(ThemeUtils.saveIcon);
         resetChangesButton.setIcon(ThemeUtils.reloadIcon);
-//        exportSheetButton.setIcon(PokeditorManager.sheetExportIcon);
-//        importSheetButton.setIcon(PokeditorManager.sheetImportIcon);
         addButton.setIcon(PokeditorManager.rowInsertIcon);
         deleteButton.setIcon(PokeditorManager.rowRemoveIcon);
-//        findButton.setIcon(PokeditorManager.searchIcon);
-//        copyModeButton.setIcon(PokeditorManager.clipboardIcon);
+        copyEntryButton.setIcon(PokeditorManager.copyIcon);
+        pasteEntryButton.setIcon(PokeditorManager.clipboardIcon);
     }
 
     private void selectedEntryChanged(ActionEvent e) {
@@ -80,6 +78,8 @@ public class DefaultEditorPanel<G extends GenericFileData, E extends Enum<E>> ex
         resetChangesButton = new JButton();
         addButton = new JButton();
         deleteButton = new JButton();
+        copyEntryButton = new JButton();
+        pasteEntryButton = new JButton();
         contentPanel = new JPanel();
 
         //======== this ========
@@ -122,6 +122,16 @@ public class DefaultEditorPanel<G extends GenericFileData, E extends Enum<E>> ex
             deleteButton.setText(bundle.getString("DefaultEditorPanel.deleteButton.text"));
             deleteButton.addActionListener(e -> deleteEntryButtonPressed(e));
             toolBar1.add(deleteButton);
+            toolBar1.addSeparator();
+
+            //---- copyEntryButton ----
+            copyEntryButton.setText(bundle.getString("DefaultEditorPanel.copyEntryButton.text"));
+            toolBar1.add(copyEntryButton);
+            toolBar1.addSeparator();
+
+            //---- pasteEntryButton ----
+            pasteEntryButton.setText(bundle.getString("DefaultEditorPanel.pasteEntryButton.text"));
+            toolBar1.add(pasteEntryButton);
         }
         add(toolBar1, "north");
 
@@ -143,6 +153,8 @@ public class DefaultEditorPanel<G extends GenericFileData, E extends Enum<E>> ex
     private JButton resetChangesButton;
     private JButton addButton;
     private JButton deleteButton;
+    private JButton copyEntryButton;
+    private JButton pasteEntryButton;
     private JPanel contentPanel;
     // JFormDesigner - End of variables declaration  //GEN-END:variables  @formatter:on
 }

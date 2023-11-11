@@ -40,7 +40,7 @@ public class Main
 //                .setFlavorText("Did you know that Jay likes Moemon?")
                 .setFlavorText(mainMenuJokes[(int) (Math.random()*(mainMenuJokes.length))])
                 .setAuthor("Developed by Turtleisaac")
-//                .addLookAndFeel(new FlatDarkPurpleIJTheme())
+                .addLookAndFeel(new FlatDarkPurpleIJTheme())
                 .addLookAndFeel(new FlatArcOrangeIJTheme())
 //                .addLookAndFeel(new javax.swing.plaf.metal.MetalLookAndFeel())
                 .addGame("Pokémon Platinum", "CPU")

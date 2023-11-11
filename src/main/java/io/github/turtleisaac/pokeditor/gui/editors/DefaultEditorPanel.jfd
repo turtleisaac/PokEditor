@@ -54,6 +54,20 @@ new FormModel {
 					"text": new FormMessage( null, "DefaultEditorPanel.deleteButton.text" )
 					addEvent( new FormEvent( "java.awt.event.ActionListener", "actionPerformed", "deleteEntryButtonPressed", true ) )
 				} )
+				add( new FormComponent( "javax.swing.JToolBar$Separator" ) {
+					name: "separator6"
+				} )
+				add( new FormComponent( "javax.swing.JButton" ) {
+					name: "copyEntryButton"
+					"text": new FormMessage( null, "DefaultEditorPanel.copyEntryButton.text" )
+				} )
+				add( new FormComponent( "javax.swing.JToolBar$Separator" ) {
+					name: "separator5"
+				} )
+				add( new FormComponent( "javax.swing.JButton" ) {
+					name: "pasteEntryButton"
+					"text": new FormMessage( null, "DefaultEditorPanel.pasteEntryButton.text" )
+				} )
 			}, new FormLayoutConstraints( class net.miginfocom.layout.CC ) {
 				"value": "north"
 			} )
