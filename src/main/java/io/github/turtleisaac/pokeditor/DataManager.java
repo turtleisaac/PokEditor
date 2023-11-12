@@ -4,6 +4,9 @@ import com.google.inject.*;
 import com.google.inject.util.Types;
 import io.github.turtleisaac.nds4j.Narc;
 import io.github.turtleisaac.nds4j.NintendoDsRom;
+import io.github.turtleisaac.nds4j.binaries.CodeBinary;
+import io.github.turtleisaac.nds4j.binaries.MainCodeFile;
+import io.github.turtleisaac.nds4j.framework.MemBuf;
 import io.github.turtleisaac.pokeditor.formats.GenericFileData;
 import io.github.turtleisaac.pokeditor.formats.GenericParser;
 import io.github.turtleisaac.pokeditor.formats.encounters.JohtoEncounterData;
@@ -26,6 +29,7 @@ import io.github.turtleisaac.pokeditor.formats.text.TextBankData;
 import io.github.turtleisaac.pokeditor.formats.text.TextBankParser;
 import io.github.turtleisaac.pokeditor.formats.trainers.TrainerData;
 import io.github.turtleisaac.pokeditor.formats.trainers.TrainerParser;
+import io.github.turtleisaac.pokeditor.gamedata.GameCodeBinaries;
 import io.github.turtleisaac.pokeditor.gamedata.GameFiles;
 import io.github.turtleisaac.pokeditor.gui.PokeditorManager;
 import io.github.turtleisaac.pokeditor.gui.editors.DefaultEditorPanel;
@@ -99,6 +103,7 @@ public class DataManager
     }
 
     private static final Map<Class<? extends GenericFileData>, List<? extends GenericFileData>> dataMap = new HashMap<>();
+    private static final Map<GameCodeBinaries, CodeBinary> codeBinaries = new HashMap<>();
 
     public static <E extends GenericFileData> List<E> getData(NintendoDsRom rom, Class<E> eClass)
     {
@@ -112,7 +117,7 @@ public class DataManager
             input.put(gameFile, new Narc(rom.getFileByName(gameFile.getPath())));
         }
 
-        List<E> data = parser.generateDataList(input);
+        List<E> data = parser.generateDataList(input, codeBinaries);
         dataMap.put(eClass, data);
 
         return data;
@@ -124,7 +129,7 @@ public class DataManager
             return;
 
         GenericParser<E> parser = DataManager.getParser(eClass);
-        Map<GameFiles, Narc> map = parser.processDataList(getData(rom, eClass));
+        Map<GameFiles, Narc> map = parser.processDataList(getData(rom, eClass), codeBinaries);
         for (GameFiles gameFile : map.keySet())
         {
             rom.setFileByName(gameFile.getPath(), map.get(gameFile).save());
@@ -144,6 +149,30 @@ public class DataManager
 
         list.addAll(newList);
         dataMap.put(eClass, list);
+    }
+
+    public static void codeBinarySetup(NintendoDsRom rom)
+    {
+        MainCodeFile arm9 = rom.loadArm9();
+        codeBinaries.put(GameCodeBinaries.ARM9, arm9);
+//        codeBinaries.put(GameCodeBinaries.ARM7, rom.loadArm7());
+
+        MemBuf.MemBufWriter writer = arm9.getPhysicalAddressBuffer().writer();
+        int pos = writer.getPosition();
+        writer.setPosition(0xBB4);
+        writer.writeInt(0);
+        writer.setPosition(pos);
+    }
+
+    public static void saveCodeBinaries(NintendoDsRom rom, List<GameCodeBinaries> codeBinaries)
+    {
+        for (GameCodeBinaries codeBinary : codeBinaries)
+        {
+            if(codeBinary == GameCodeBinaries.ARM9)
+            {
+                rom.setArm9(DataManager.codeBinaries.get(codeBinary).getData());
+            }
+        }
     }
 
     static class PersonalModule extends AbstractModule

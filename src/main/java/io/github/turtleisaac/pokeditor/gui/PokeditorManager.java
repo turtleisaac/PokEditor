@@ -16,9 +16,7 @@ import io.github.turtleisaac.pokeditor.formats.moves.MoveData;
 import io.github.turtleisaac.pokeditor.formats.personal.PersonalData;
 import io.github.turtleisaac.pokeditor.formats.pokemon_sprites.PokemonSpriteData;
 import io.github.turtleisaac.pokeditor.formats.text.TextBankData;
-import io.github.turtleisaac.pokeditor.gamedata.Game;
-import io.github.turtleisaac.pokeditor.gamedata.GameFiles;
-import io.github.turtleisaac.pokeditor.gamedata.TextFiles;
+import io.github.turtleisaac.pokeditor.gamedata.*;
 import io.github.turtleisaac.pokeditor.gui.editors.DefaultEditor;
 import io.github.turtleisaac.pokeditor.gui.editors.DefaultEditorPanel;
 import io.github.turtleisaac.pokeditor.gui.sheets.DefaultSheetPanel;
@@ -105,6 +103,10 @@ public class PokeditorManager extends PanelManager
         baseRom = Game.parseBaseRom(rom.getGameCode());
         GameFiles.initialize(baseRom);
         TextFiles.initialize(baseRom);
+        GameCodeBinaries.initialize(baseRom);
+        Tables.initialize(baseRom);
+
+        DataManager.codeBinarySetup(rom);
 
         sheetPanels = new HashMap<>();
         panels = new ArrayList<>();
@@ -155,6 +157,7 @@ public class PokeditorManager extends PanelManager
     {
         DataManager.saveData(rom, dataClass);
         DataManager.saveData(rom, TextBankData.class);
+        DataManager.saveCodeBinaries(rom, List.of(GameCodeBinaries.ARM9));
 
         if (!wipeAndWriteUnpacked())
             throw new RuntimeException("An error occurred while deleting or writing a file, please check write permissions");

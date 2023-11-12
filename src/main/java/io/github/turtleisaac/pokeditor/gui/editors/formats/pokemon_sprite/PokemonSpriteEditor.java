@@ -76,7 +76,15 @@ public class PokemonSpriteEditor extends DefaultEditor<PokemonSpriteData, Pokemo
         shadowXSpinner.setValue(model.getValueFor(idx, SpriteContents.SHADOW_X));
         shadowSizeComboBox.setSelectedIndex((Integer) model.getValueFor(idx, SpriteContents.SHADOW_SIZE));
 
+        int paletteIdx = (int) model.getValueFor(idx, SpriteContents.PARTY_ICON_PALETTE);
+        partyIconPaletteSpinner.setValue(paletteIdx);
+        partyIconPanel.panel.image.setPaletteIdx(paletteIdx);
+
         tabbedPane1.setSelectedIndex(0);
+        tabbedPane1.setSelectedIndex(1);
+        tabbedPane1.setSelectedIndex(0);
+        partyIconPanel.repaint();
+        repaint();
     }
 
     @Override
@@ -148,7 +156,7 @@ public class PokemonSpriteEditor extends DefaultEditor<PokemonSpriteData, Pokemo
                 partyIconPanel.panel.image.setPaletteIdx((Integer) partyIconPaletteSpinner.getValue());
                 partyIconPanel.repaint();
             }
-
+            getModel().setValueFor(partyIconPaletteSpinner.getValue(), getSelectedIndex(), SpriteContents.PARTY_ICON_PALETTE);
         }
         battleMockupPanel1.repaint();
     }
@@ -960,6 +968,9 @@ public class PokemonSpriteEditor extends DefaultEditor<PokemonSpriteData, Pokemo
                 case SHADOW_SIZE -> {
                     return entry.getShadowSize();
                 }
+                case PARTY_ICON_PALETTE -> {
+                    return entry.getPartyIconPaletteIndex();
+                }
             }
 
             return null;
@@ -1040,7 +1051,8 @@ public class PokemonSpriteEditor extends DefaultEditor<PokemonSpriteData, Pokemo
         MOVEMENT(12, "", null),
         SHADOW_X(13, "", null),
         SHADOW_SIZE(14, "", null),
-        NUMBER_OF_COLUMNS(SHADOW_SIZE.idx+1, null, null);
+        PARTY_ICON_PALETTE(15, "", null),
+        NUMBER_OF_COLUMNS(PARTY_ICON_PALETTE.idx+1, null, null);
 
         private final int idx;
         private final String key;

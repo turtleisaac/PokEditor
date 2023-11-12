@@ -102,29 +102,25 @@
 <!--        compile 'commons-io:commons-io:+'-->
 
 
-
-        <!--todo ok look I know I'm not supposed to do this (see below) but it was a pain manually reimporting the jar into IntelliJ each time. I'll fix this once I have a stable build of Nds4j 0.1.0 on maven-->
         <dependency>
             <groupId>io.github.turtleisaac</groupId>
-            <artifactId>nds4j</artifactId>
+            <artifactId>Nds4j</artifactId>
             <version>0.1.0</version>
-            <scope>system</scope>
-            <systemPath>${project.basedir}/Nds4j-0.1.0.jar</systemPath>
         </dependency>
         <dependency>
             <groupId>io.github.turtleisaac</groupId>
             <artifactId>PokEditor-Core</artifactId>
-            <version>1.0.0</version>
-            <scope>system</scope>
-            <systemPath>${project.basedir}/PokEditor-Core-1.0-SNAPSHOT.jar</systemPath>
+            <version>1.0-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>io.github.turtleisaac</groupId>
-            <artifactId>nds4j-toolui</artifactId>
-            <version>1.0.0</version>
-            <scope>system</scope>
-            <systemPath>${project.basedir}/nds4j-toolui-1.0-SNAPSHOT.jar</systemPath>
+            <artifactId>Nds4j-ToolUI</artifactId>
+            <version>1.0-SNAPSHOT</version>
         </dependency>
+
+
+
+        <!--todo ok look I know I'm not supposed to do this (see below) but it was a pain manually reimporting the jar into IntelliJ each time. I'll fix this once I have a stable build of Nds4j 0.1.0 on maven-->
         <dependency>
             <groupId>io.github.turtleisaac</groupId>
             <artifactId>WinLaF</artifactId>
