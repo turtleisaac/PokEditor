@@ -997,6 +997,7 @@ public class PokemonSpriteEditor extends DefaultEditor<PokemonSpriteData, Pokemo
                 case MOVEMENT -> entry.setMovement((Integer) aValue);
                 case SHADOW_X -> entry.setShadowXOffset((Integer) aValue);
                 case SHADOW_SIZE -> entry.setShadowSize((Integer) aValue);
+                case PARTY_ICON_PALETTE -> entry.setPartyIconPaletteIndex((Integer) aValue);
             }
         }
 
