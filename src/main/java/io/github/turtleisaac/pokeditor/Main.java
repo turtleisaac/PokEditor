@@ -14,8 +14,6 @@ import java.nio.charset.StandardCharsets;
  */
 public class Main
 {
-    public static final String versionNumber = "v3snapshot";
-    public static final boolean programFilesModifiedThisVersion = true;
     private static ConsoleWindow console;
     private static final String jokesPath = "/pokeditor/jokes.txt";
 
@@ -27,7 +25,7 @@ public class Main
         Tool tool = Tool.create();
         tool.setType(ProgramType.PROJECT)
                 .setName("PokEditor")
-                .setVersion("3.0.0-SNAPSHOT")
+                .setVersion("3.0.0")
 //                .setFlavorText("Did you know that Jay likes Moemon?")
                 .setFlavorText(mainMenuJokes[(int) (Math.random()*(mainMenuJokes.length))])
                 .setAuthor("Developed by Turtleisaac")
