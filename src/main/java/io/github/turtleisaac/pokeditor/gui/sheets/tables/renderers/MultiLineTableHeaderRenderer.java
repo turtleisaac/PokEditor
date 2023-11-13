@@ -22,6 +22,13 @@ public class MultiLineTableHeaderRenderer extends JTextArea implements TableCell
         int width = table.getColumnModel().getColumn(column).getWidth();
         setText(String.valueOf(value));
         setSize(width, getPreferredSize().height);
+        if (table.getSelectedColumn() == column)
+        {
+            setForeground(UIManager.getColor("Component.custom.borderColor"));
+        }
+        else {
+            setForeground(UIManager.getColor("TableHeader.foreground"));
+        }
         return this;
     }
 }

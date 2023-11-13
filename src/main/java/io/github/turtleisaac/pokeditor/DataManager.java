@@ -32,14 +32,14 @@ import io.github.turtleisaac.pokeditor.formats.trainers.TrainerParser;
 import io.github.turtleisaac.pokeditor.gamedata.GameCodeBinaries;
 import io.github.turtleisaac.pokeditor.gamedata.GameFiles;
 import io.github.turtleisaac.pokeditor.gamedata.Tables;
+import io.github.turtleisaac.pokeditor.gamedata.TextFiles;
 import io.github.turtleisaac.pokeditor.gui.PokeditorManager;
 import io.github.turtleisaac.pokeditor.gui.editors.DefaultEditorPanel;
 import io.github.turtleisaac.pokeditor.gui.editors.formats.pokemon_sprite.PokemonSpriteEditor;
 import io.github.turtleisaac.pokeditor.gui.sheets.DefaultSheetPanel;
-import io.github.turtleisaac.pokeditor.gui.sheets.tables.formats.EvolutionsTable;
-import io.github.turtleisaac.pokeditor.gui.sheets.tables.formats.LearnsetsTable;
-import io.github.turtleisaac.pokeditor.gui.sheets.tables.formats.MovesTable;
-import io.github.turtleisaac.pokeditor.gui.sheets.tables.formats.PersonalTable;
+import io.github.turtleisaac.pokeditor.gui.sheets.tables.editors.ComboBoxCellEditor;
+import io.github.turtleisaac.pokeditor.gui.sheets.tables.formats.*;
+import io.github.turtleisaac.pokeditor.gui.sheets.tables.renderers.ComboBoxHeaderRenderer;
 
 import java.lang.reflect.ParameterizedType;
 import java.util.HashMap;
@@ -55,6 +55,16 @@ public class DataManager
         List<TextBankData> textData = DataManager.getData(rom, TextBankData.class);
         List<PersonalData> data = DataManager.getData(rom, PersonalData.class);
         return new DefaultSheetPanel<>(manager, new PersonalTable(data, textData));
+    }
+
+    public static DefaultSheetPanel<PersonalData, ?> createTmCompatibilitySheet(PokeditorManager manager, NintendoDsRom rom)
+    {
+        List<TextBankData> textData = DataManager.getData(rom, TextBankData.class);
+        List<PersonalData> data = DataManager.getData(rom, PersonalData.class);
+        DefaultSheetPanel<PersonalData, ?> sheetPanel = new DefaultSheetPanel<>(manager, new TmCompatibilityTable(data, textData));
+//        String[] moveNames = textData.get(TextFiles.MOVE_NAMES.getValue()).getStringList().toArray(String[]::new);
+//        sheetPanel.thing(new ComboBoxCellEditor(moveNames));
+        return sheetPanel;
     }
 
     public static DefaultSheetPanel<EvolutionData, ?> createEvolutionSheet(PokeditorManager manager, NintendoDsRom rom)
@@ -160,7 +170,7 @@ public class DataManager
 
         MemBuf.MemBufWriter writer = arm9.getPhysicalAddressBuffer().writer();
         int pos = writer.getPosition();
-        writer.setPosition(0xBB4);
+        writer.setPosition(0xBB4); //todo account for DP if I ever add back support
         writer.writeInt(0);
         writer.setPosition(pos);
     }
@@ -169,9 +179,16 @@ public class DataManager
     {
         for (GameCodeBinaries codeBinary : codeBinaries)
         {
-            if(codeBinary == GameCodeBinaries.ARM9)
-            {
-                rom.setArm9(DataManager.codeBinaries.get(codeBinary).getData());
+            CodeBinary binary = DataManager.codeBinaries.get(codeBinary);
+            binary.lock();
+            try {
+                if(codeBinary == GameCodeBinaries.ARM9)
+                {
+                    rom.setArm9(binary.getData());
+                }
+            }
+            finally {
+                binary.unlock();
             }
         }
     }

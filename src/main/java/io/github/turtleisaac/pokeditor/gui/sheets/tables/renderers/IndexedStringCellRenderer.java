@@ -8,7 +8,7 @@ import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.TableCellRenderer;
 import java.awt.*;
 
-public class IndexedStringCellRenderer extends DefaultTableCellRenderer
+public class IndexedStringCellRenderer extends DefaultSheetCellRenderer
 {
     String[] items;
 
@@ -36,16 +36,14 @@ public class IndexedStringCellRenderer extends DefaultTableCellRenderer
                     this.setText(items[val]);
                 }
             }
-        }
-
-        if (isSelected || table.getSelectedRow() == row) {
-            setBackground(table.getSelectionBackground());
-        } else {
-            setForeground(getForeground());
-            if (row % 2 == 0)
-                setBackground(table.getBackground());
-            else
-                setBackground(new Color(248, 221, 231));
+            else if (value instanceof String s)
+            {
+                int val = Integer.parseInt(s);
+                if (val < items.length)
+                {
+                    this.setText(items[val]);
+                }
+            }
         }
 
         return this;
@@ -71,7 +69,7 @@ public class IndexedStringCellRenderer extends DefaultTableCellRenderer
                 if (value instanceof Integer)
                 {
                     this.setBackground(colors[(int) value]); // always in bounds because of earlier check
-                    this.setForeground(Color.black);
+//                    this.setForeground(Color.black);
 //                    setBorder(border);
                 }
             }

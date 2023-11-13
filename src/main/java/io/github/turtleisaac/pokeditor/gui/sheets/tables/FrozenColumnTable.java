@@ -5,6 +5,7 @@ import io.github.turtleisaac.pokeditor.gui.PokeditorManager;
 import io.github.turtleisaac.pokeditor.gui.sheets.tables.editors.ComboBoxCellEditor;
 import io.github.turtleisaac.pokeditor.gui.sheets.tables.editors.NumberOnlyCellEditor;
 import io.github.turtleisaac.pokeditor.gui.sheets.tables.renderers.CheckBoxRenderer;
+import io.github.turtleisaac.pokeditor.gui.sheets.tables.renderers.DefaultSheetCellRenderer;
 import io.github.turtleisaac.pokeditor.gui.sheets.tables.renderers.IndexedStringCellRenderer;
 import io.github.turtleisaac.pokeditor.gui.sheets.tables.renderers.MultiLineTableHeaderRenderer;
 
@@ -57,6 +58,7 @@ public class FrozenColumnTable<E extends GenericFileData> extends JTable
         setRowSelectionAllowed(true);
         setColumnSelectionAllowed(true);
         setSelectionMode(ListSelectionModel.SINGLE_INTERVAL_SELECTION);
+        setDefaultRenderer(Object.class, new DefaultSheetCellRenderer());
     }
 
     public JTable getCornerTableHeader()

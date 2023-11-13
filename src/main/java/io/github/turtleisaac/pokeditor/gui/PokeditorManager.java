@@ -66,6 +66,26 @@ public class PokeditorManager extends PanelManager
             new Color(102, 102, 102),
     };
 
+    public static final Color[] darkModeTypeColors = new Color[]{new Color(116, 116, 116),
+            new Color(130, 72, 71),
+            new Color(101, 133, 133),
+            new Color(86, 57, 112),
+            new Color(157, 129, 92),
+            new Color(99, 79, 26),
+            new Color(123, 152, 103),
+            new Color(77, 69, 105),
+            new Color(68, 68, 68),
+            new Color(192, 166, 212), //
+            new Color(61, 24, 16), //
+            new Color(55, 82, 140), //
+            new Color(59, 81, 44),
+            new Color(163, 144, 79),
+            new Color(180, 122, 116),
+            new Color(38, 100, 100),
+            new Color(30, 30, 76),
+            new Color(17, 17, 17),
+    };
+
     static {
         try {
             sheetExportIcon = new FlatSVGIcon(PokeditorManager.class.getResourceAsStream("/pokeditor/icons/svg/table-export.svg"));
@@ -83,13 +103,25 @@ public class PokeditorManager extends PanelManager
             searchIcon.setColorFilter(ThemeUtils.iconColorFilter);
             clipboardIcon.setColorFilter(ThemeUtils.iconColorFilter);
             copyIcon.setColorFilter(ThemeUtils.iconColorFilter);
+
+            /*
+                this code determines if the label foreground color is closer to/further from black/white, then uses that
+                to select which set of colors to use for the types on the sheets (lighter or darker)
+                (the idea being a darker theme tends to have a lighter text foreground color)
+             */
+            Color c = UIManager.getColor("Label.foreground");
+            double diff = (double) (c.getRed() + c.getBlue() + c.getGreen()) / 3;
+            if (Math.max(diff, 255 - diff) == diff)
+            {
+                System.arraycopy(darkModeTypeColors, 0, typeColors, 0, typeColors.length);
+            }
         }
         catch(IOException e) {
             throw new RuntimeException(e);
         }
     }
 
-    private final Map<Class<? extends GenericFileData>, DefaultSheetPanel<? extends GenericFileData, ? extends Enum<?>>> sheetPanels;
+//    private final Map<Class<? extends GenericFileData>, DefaultSheetPanel<? extends GenericFileData, ? extends Enum<?>>> sheetPanels;
     private List<JPanel> panels;
 
     private NintendoDsRom rom;
@@ -108,7 +140,7 @@ public class PokeditorManager extends PanelManager
 
         DataManager.codeBinarySetup(rom);
 
-        sheetPanels = new HashMap<>();
+//        sheetPanels = new HashMap<>();
         panels = new ArrayList<>();
 //        JPanel placeholder = new JPanel();
 //        placeholder.setName("Test panel");
@@ -122,22 +154,25 @@ public class PokeditorManager extends PanelManager
 
         DefaultSheetPanel<PersonalData, ?> personalPanel = DataManager.createPersonalSheet(this, rom);
         personalPanel.setName("Personal Sheet");
-        sheetPanels.put(PersonalData.class, personalPanel);
+//        sheetPanels.put(PersonalData.class, personalPanel);
+
+        DefaultSheetPanel<PersonalData, ?> tmCompatibilityPanel = DataManager.createTmCompatibilitySheet(this, rom);
+        tmCompatibilityPanel.setName("TMs Sheet");
+//        sheetPanels.put(PersonalData.class, tmCompatibilityPanel);
 //        panels.add(personalPanel);
 
         DefaultSheetPanel<EvolutionData, ?> evolutionsPanel = DataManager.createEvolutionSheet(this, rom);
         evolutionsPanel.setName("Evolutions Sheet");
-        sheetPanels.put(EvolutionData.class, evolutionsPanel);
+//        sheetPanels.put(EvolutionData.class, evolutionsPanel);
 //        panels.add(evolutionsPanel);
 
         DefaultSheetPanel<LearnsetData, ?> learnsetsPanel = DataManager.createLearnsetSheet(this, rom);
         learnsetsPanel.setName("Learnsets Sheet");
-        sheetPanels.put(LearnsetData.class, learnsetsPanel);
+//        sheetPanels.put(LearnsetData.class, learnsetsPanel);
 //        panels.add(evolutionsPanel);
 
         DefaultSheetPanel<MoveData, ?> movesPanel = DataManager.createMoveSheet(this, rom);
         movesPanel.setName("Moves Sheet");
-        sheetPanels.put(MoveData.class, movesPanel);
 
         JPanel fieldPanel = new JPanel();
         fieldPanel.setName("Field");
@@ -145,7 +180,7 @@ public class PokeditorManager extends PanelManager
         waterPanel.setName("Water");
         PanelGroup encounters = new PanelGroup("Encounters", fieldPanel, waterPanel);
 
-        PanelGroup pokemonGroup = new PanelGroup("Pokémon Editing", personalPanel, learnsetsPanel, evolutionsPanel);
+        PanelGroup pokemonGroup = new PanelGroup("Pokémon Editing", personalPanel, tmCompatibilityPanel, learnsetsPanel, evolutionsPanel);
         panels.add(pokemonGroup);
         panels.add(battleSpriteEditor);
         panels.add(movesPanel);
@@ -170,9 +205,22 @@ public class PokeditorManager extends PanelManager
 
     public void resetAllIndexedCellRendererText()
     {
-        for (DefaultSheetPanel<?, ?> panel : sheetPanels.values())
+        for (JPanel panel : panels)
         {
-            panel.getTable().resetIndexedCellRendererText();
+            if (panel instanceof DefaultSheetPanel<?,?> sheetPanel)
+            {
+                sheetPanel.getTable().resetIndexedCellRendererText();
+            }
+            else if (panel instanceof PanelGroup panelGroup)
+            {
+                for (JPanel groupPanel : panelGroup.getPanels())
+                {
+                    if (groupPanel instanceof DefaultSheetPanel<?,?> sheetPanel)
+                    {
+                        sheetPanel.getTable().resetIndexedCellRendererText();
+                    }
+                }
+            }
         }
     }
 

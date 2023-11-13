@@ -4,32 +4,33 @@ import javax.swing.*;
 import javax.swing.table.TableCellRenderer;
 import java.awt.*;
 
-public class CheckBoxRenderer extends JCheckBox implements TableCellRenderer
+public class CheckBoxRenderer extends DefaultSheetCellRenderer
 {
+    JPanel panel;
+    JCheckBox checkBox;
 
     public CheckBoxRenderer()
     {
         super();
+        panel = new JPanel();
+        checkBox = new JCheckBox();
+        panel.add(checkBox);
+//        checkBox.setVisible(true);
+//        add(panel);
+//        add(checkBox);
+//        add(checkBox);
+//        add(new JButton());
+        setPreferredSize(getPreferredSize());
+        setHorizontalAlignment(JLabel.CENTER);
     }
 
     @Override
     public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column)
     {
-        setForeground(Color.black);
-        if (isSelected) {
-            setBackground(table.getSelectionBackground());
-        } else if (table.getSelectedRow() == row) {
-            setBackground(table.getSelectionBackground());
-        }
-        else {
-            if (row % 2 == 0)
-                setBackground(table.getBackground());
-            else
-                setBackground(new Color(248, 221, 231));
-        }
-        validate();
-        repaint();
-        setSelected((Boolean) value);
-        return this;
+        super.getTableCellRendererComponent(table, "", isSelected, hasFocus, row, column);
+        checkBox.setSelected((Boolean) value);
+        return panel;
     }
+
+
 }

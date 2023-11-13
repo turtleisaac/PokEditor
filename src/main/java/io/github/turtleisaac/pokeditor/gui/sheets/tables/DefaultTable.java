@@ -68,12 +68,11 @@ public abstract class DefaultTable<G extends GenericFileData, E extends Enum<E>>
         loadCellRenderers(obtainTextSources(textData));
 
         MultiLineTableHeaderRenderer renderer = new MultiLineTableHeaderRenderer();
-        Enumeration<?> enumK = getColumnModel().getColumns();
-        while (enumK.hasMoreElements())
+        Enumeration<TableColumn> columns = getColumnModel().getColumns();
+        while (columns.hasMoreElements())
         {
-            ((TableColumn) enumK.nextElement()).setHeaderRenderer(renderer);
+            columns.nextElement().setHeaderRenderer(renderer);
         }
-
 
         setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
         getTableHeader().setReorderingAllowed(false);
@@ -118,6 +117,7 @@ public abstract class DefaultTable<G extends GenericFileData, E extends Enum<E>>
 //                    clearSelection();
 //            }
 //        });
+        setDefaultRenderer(Object.class, new DefaultSheetCellRenderer());
     }
 
     public abstract Queue<String[]> obtainTextSources(List<TextBankData> textData);

@@ -2,6 +2,7 @@ package io.github.turtleisaac.pokeditor;
 
 import javax.swing.*;
 
+import com.formdev.flatlaf.extras.FlatUIDefaultsInspector;
 import com.formdev.flatlaf.intellijthemes.*;
 import com.formdev.flatlaf.intellijthemes.materialthemeuilite.FlatAtomOneLightIJTheme;
 import com.formdev.flatlaf.intellijthemes.materialthemeuilite.FlatLightOwlIJTheme;
@@ -30,6 +31,7 @@ public class Main
 
     public static void main(String[] args) throws IOException
     {
+        FlatUIDefaultsInspector.install( "ctrl shift alt Y" );
         String[] mainMenuJokes = new String(Main.class.getResourceAsStream(jokesPath).readAllBytes(), StandardCharsets.UTF_8).split("\n");
 
 //        Locale.setDefault(Locale.CHINA);

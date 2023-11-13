@@ -55,8 +55,8 @@ public class DefaultSheetPanel<G extends GenericFileData, E extends Enum<E>> ext
         table.getSelectionModel().addListSelectionListener(e -> frozenColumns.clearSelection());
         frozenColumns.getSelectionModel().addListSelectionListener(e -> table.clearSelection());
 
-        linkTableSelectionIndicators(table, frozenColumns);
-        linkTableSelectionIndicators(frozenColumns, table);
+//        linkTableSelectionIndicators(table, frozenColumns);
+//        linkTableSelectionIndicators(frozenColumns, table);
 
         frozenColumns.addPropertyChangeListener(new PropertyChangeListener()
         {
@@ -198,6 +198,33 @@ public class DefaultSheetPanel<G extends GenericFileData, E extends Enum<E>> ext
     private void copyModeButtonPressed(ActionEvent e) {
         // TODO add your code here
         table.getFormatModel().toggleCopyPasteMode(copyModeButton.isSelected());
+    }
+
+    public void thing(TableCellEditor editor)
+    {
+        JTable moio = new JTable(new DefaultTableModel() {
+            @Override
+            public int getColumnCount()
+            {
+                return getTable().getColumnCount();
+            }
+        });
+        moio.setDefaultEditor(String.class, editor);
+
+        System.out.println("fuck");
+//        JPanel moo = new JPanel();
+        Dimension d = new Dimension(scrollPane1.getWidth(), 50);
+//        moo.setPreferredSize(d);
+//        moo.setMinimumSize(d);
+//        moo.setBackground(Color.green);
+
+//        moio.setPreferredSize(d);
+//        moio.setMinimumSize(d);
+        moio.setBackground(Color.green);
+
+        scrollPane1.setColumnHeaderView(moio);
+        scrollPane1.getColumnHeader().setMinimumSize(d);
+        scrollPane1.getColumnHeader().setPreferredSize(d);
     }
 
     private void initComponents() {
