@@ -17,6 +17,9 @@ Written entirely in Java and is completely OS-agnostic.
 
 <img width="1312" alt="image" src="https://github.com/turtleisaac/PokEditor/assets/7987859/1608d39f-3a29-4bbd-ab53-ea50d87ffff1">
 
+<img width="1044" alt="image" src="https://github.com/turtleisaac/PokEditor/assets/7987859/7afc9ed8-0a53-472e-9aae-e1bee7d66fe3">
+
+
 # Usage
 
 Builds are available in the [Releases page here on GitHub](https://github.com/turtleisaac/PokEditor/releases). Simply download the most recent release, unzip the zip file, and double click the file contained within with the name **PokEditor.jar**!
