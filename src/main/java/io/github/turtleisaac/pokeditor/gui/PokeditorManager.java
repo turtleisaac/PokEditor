@@ -121,7 +121,6 @@ public class PokeditorManager extends PanelManager
         }
     }
 
-//    private final Map<Class<? extends GenericFileData>, DefaultSheetPanel<? extends GenericFileData, ? extends Enum<?>>> sheetPanels;
     private List<JPanel> panels;
 
     private NintendoDsRom rom;
@@ -154,21 +153,17 @@ public class PokeditorManager extends PanelManager
 
         DefaultSheetPanel<PersonalData, ?> personalPanel = DataManager.createPersonalSheet(this, rom);
         personalPanel.setName("Personal Sheet");
-//        sheetPanels.put(PersonalData.class, personalPanel);
 
         DefaultSheetPanel<PersonalData, ?> tmCompatibilityPanel = DataManager.createTmCompatibilitySheet(this, rom);
         tmCompatibilityPanel.setName("TMs Sheet");
-//        sheetPanels.put(PersonalData.class, tmCompatibilityPanel);
 //        panels.add(personalPanel);
 
         DefaultSheetPanel<EvolutionData, ?> evolutionsPanel = DataManager.createEvolutionSheet(this, rom);
         evolutionsPanel.setName("Evolutions Sheet");
-//        sheetPanels.put(EvolutionData.class, evolutionsPanel);
 //        panels.add(evolutionsPanel);
 
         DefaultSheetPanel<LearnsetData, ?> learnsetsPanel = DataManager.createLearnsetSheet(this, rom);
         learnsetsPanel.setName("Learnsets Sheet");
-//        sheetPanels.put(LearnsetData.class, learnsetsPanel);
 //        panels.add(evolutionsPanel);
 
         DefaultSheetPanel<MoveData, ?> movesPanel = DataManager.createMoveSheet(this, rom);
@@ -194,8 +189,9 @@ public class PokeditorManager extends PanelManager
         DataManager.saveData(rom, TextBankData.class);
         DataManager.saveCodeBinaries(rom, List.of(GameCodeBinaries.ARM9));
 
-        if (!wipeAndWriteUnpacked())
-            throw new RuntimeException("An error occurred while deleting or writing a file, please check write permissions");
+//        if (!wipeAndWriteUnpacked())
+//            throw new RuntimeException("An error occurred while deleting or writing a file, please check write permissions");
+        wipeAndWriteUnpacked();
     }
 
     public <E extends GenericFileData> void resetData(Class<E> dataClass)

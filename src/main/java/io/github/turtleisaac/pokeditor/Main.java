@@ -29,6 +29,7 @@ public class Main
 //                .setFlavorText("Did you know that Jay likes Moemon?")
                 .setFlavorText(mainMenuJokes[(int) (Math.random()*(mainMenuJokes.length))])
                 .setAuthor("Developed by Turtleisaac")
+                .setGitEnabled(true)
                 .addLookAndFeel(new FlatArcOrangeIJTheme())
                 .addLookAndFeel(new FlatDarkPurpleIJTheme())
 //                .addLookAndFeel(new javax.swing.plaf.metal.MetalLookAndFeel())
