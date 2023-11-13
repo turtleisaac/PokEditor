@@ -11,7 +11,7 @@ Written entirely in Java and is completely OS-agnostic.
 * Also powered by my other libraries, [Nds4j](https://github.com/turtleisaac/Nds4j) and [Nds4j-ToolUI](https://github.com/turtleisaac/Nds4j-ToolUI).
 * This tool is still in active development and will receive periodic updates as improvements are made and bugs are found, time permitting.
 * Please join [this Discord server](https://discord.gg/zAtqJDW2jC) for help with using PokEditor v3 or for help with any questions relating to Pokémon Gen 4 and 5 hacking.
-* Currently can be used in English and has partial French support.
+* Currently can be used in English and has partial French and Chinese support.
 
 <img width="403" alt="image" src="https://github.com/turtleisaac/PokEditor/assets/7987859/8165bcd7-e9af-4056-991a-d61cc5783fe7">
 
@@ -19,7 +19,7 @@ Written entirely in Java and is completely OS-agnostic.
 
 # Usage
 
-There is a dev build available in the [Releases page here on GitHub](https://github.com/turtleisaac/PokEditor/releases). Simply download it, unzip the zip file, and double click the file contained within with the name **PokEditor.jar**!
+Builds are available in the [Releases page here on GitHub](https://github.com/turtleisaac/PokEditor/releases). Simply download the most recent release, unzip the zip file, and double click the file contained within with the name **PokEditor.jar**!
 
 Unlike prior versions of PokEditor, v3 is intended to fully be used within the tool. No more exporting sheets or editing them elsewhere. Additionally, there is very little effort required by the user to get it set up this time around. No more annoying sheets setup process, it should just automatically load everything into the sheets the instant you open a project.
 
@@ -27,8 +27,7 @@ Unlike prior versions of PokEditor, v3 is intended to fully be used within the t
 
 * Personal Data Editor
 
-[//]: # ()
-[//]: # (* TM Learnset Editor)
+* TM Learnset Editor)
 
 * Level-Up Learnset Editor
 
@@ -51,8 +50,7 @@ Unlike prior versions of PokEditor, v3 is intended to fully be used within the t
 [//]: # ()
 [//]: # (* Trainer Editor &#40;also has a GUI-based editor&#41;)
 
-[//]: # ()
-[//]: # (# GUI-Based Editors)
+# GUI-Based Editors
 
 [//]: # ()
 [//]: # (* Trainer Editor)
@@ -63,8 +61,7 @@ Unlike prior versions of PokEditor, v3 is intended to fully be used within the t
 
 [//]: # (  * Smogon Format Team Import/Export)
 
-[//]: # ()
-[//]: # (* Pokémon Battle Sprite Editor)
+* Pokémon Sprite Editor
 
 [//]: # (  * Palette Editor)
 
