@@ -1,11 +1,6 @@
 package io.github.turtleisaac.pokeditor.gui.sheets.tables.renderers;
 
-import io.github.turtleisaac.pokeditor.gui_old.EditorComboBox;
-
 import javax.swing.*;
-import javax.swing.border.Border;
-import javax.swing.table.DefaultTableCellRenderer;
-import javax.swing.table.TableCellRenderer;
 import java.awt.*;
 
 public class IndexedStringCellRenderer extends DefaultSheetCellRenderer

@@ -17,7 +17,6 @@ import io.github.turtleisaac.pokeditor.formats.personal.PersonalData;
 import io.github.turtleisaac.pokeditor.formats.pokemon_sprites.PokemonSpriteData;
 import io.github.turtleisaac.pokeditor.formats.text.TextBankData;
 import io.github.turtleisaac.pokeditor.gamedata.*;
-import io.github.turtleisaac.pokeditor.gui.editors.DefaultEditor;
 import io.github.turtleisaac.pokeditor.gui.editors.DefaultEditorPanel;
 import io.github.turtleisaac.pokeditor.gui.sheets.DefaultSheetPanel;
 
@@ -25,8 +24,6 @@ import javax.swing.*;
 import javax.swing.filechooser.FileFilter;
 import java.awt.*;
 import java.awt.event.ActionEvent;
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
@@ -148,7 +145,7 @@ public class PokeditorManager extends PanelManager
 //        placeholder.setMinimumSize(dimension);
 
         DefaultEditorPanel<PokemonSpriteData, ?> battleSpriteEditor = DataManager.createPokemonSpriteEditor(this, rom);
-        battleSpriteEditor.setName("Battle Sprites");
+        battleSpriteEditor.setName("Pokemon Sprites");
         battleSpriteEditor.setPreferredSize(battleSpriteEditor.getPreferredSize());
 
         DefaultSheetPanel<PersonalData, ?> personalPanel = DataManager.createPersonalSheet(this, rom);
@@ -175,9 +172,9 @@ public class PokeditorManager extends PanelManager
         waterPanel.setName("Water");
         PanelGroup encounters = new PanelGroup("Encounters", fieldPanel, waterPanel);
 
-        PanelGroup pokemonGroup = new PanelGroup("Pokémon Editing", personalPanel, tmCompatibilityPanel, learnsetsPanel, evolutionsPanel);
+        PanelGroup pokemonGroup = new PanelGroup("Pokémon Editing", personalPanel, tmCompatibilityPanel, learnsetsPanel, evolutionsPanel, battleSpriteEditor);
         panels.add(pokemonGroup);
-        panels.add(battleSpriteEditor);
+//        panels.add(battleSpriteEditor);
         panels.add(movesPanel);
         panels.add(encounters);
 //        panels.add(placeholder);

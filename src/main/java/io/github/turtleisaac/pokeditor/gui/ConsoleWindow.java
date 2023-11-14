@@ -2,7 +2,7 @@
  * Created by JFormDesigner on Sun Jan 03 23:43:53 EST 2021
  */
 
-package io.github.turtleisaac.pokeditor.gui_old.projects.projectwindow.console;
+package io.github.turtleisaac.pokeditor.gui;
 
 import java.awt.*;
 import java.io.*;
@@ -38,12 +38,13 @@ public class ConsoleWindow extends JFrame {
 
     private void initComponents() {
         // JFormDesigner - Component initialization - DO NOT MODIFY  //GEN-BEGIN:initComponents
+        // Generated using JFormDesigner non-commercial license
         scrollPane1 = new JScrollPane();
         textArea1 = new JTextArea();
 
         //======== this ========
         setTitle("Console");
-        Container contentPane = getContentPane();
+        var contentPane = getContentPane();
         contentPane.setLayout(new MigLayout(
             "hidemode 3",
             // columns

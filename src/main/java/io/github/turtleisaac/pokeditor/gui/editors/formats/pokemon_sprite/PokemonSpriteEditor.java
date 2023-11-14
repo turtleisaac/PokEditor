@@ -10,6 +10,7 @@ import java.awt.image.BufferedImage;
 import java.util.*;
 import java.util.List;
 import javax.swing.*;
+import javax.swing.colorchooser.ColorSelectionModel;
 import javax.swing.event.*;
 
 import io.github.turtleisaac.nds4j.framework.GenericNtrFile;
@@ -24,7 +25,6 @@ import io.github.turtleisaac.pokeditor.gui.editors.EditorDataModel;
 import io.github.turtleisaac.pokeditor.gui.sheets.tables.CellTypes;
 import io.github.turtleisaac.pokeditor.gui.sheets.tables.FormatModel;
 import net.miginfocom.swing.*;
-import org.eclipse.jgit.diff.Edit;
 
 /**
  * @author turtleisaac
@@ -831,7 +831,7 @@ public class PokemonSpriteEditor extends DefaultEditor<PokemonSpriteData, Pokemo
         }
     }
 
-    static class PalettePanel extends JPanel
+    class PalettePanel extends JPanel
     {
         private Palette palette;
 
@@ -853,6 +853,9 @@ public class PokemonSpriteEditor extends DefaultEditor<PokemonSpriteData, Pokemo
         private JButton button15 = new JButton();
 
         private final JButton[] buttons = new JButton[] {button0, button1, button2, button3, button4, button5, button6, button7, button8, button9, button10, button11, button12, button13, button14, button15};
+
+        private final PaletteEditingSpritePanel spritePanel = new PaletteEditingSpritePanel();
+        private int selectedColorIdx = -1;
 
         public PalettePanel()
         {
@@ -881,6 +884,10 @@ public class PokemonSpriteEditor extends DefaultEditor<PokemonSpriteData, Pokemo
             }
             add(new JButton("Set to Shiny"), "cell 0 4 4 1");
             add(new JButton("Swap with Shiny"), "cell 0 4 4 1");
+
+            for (JButton button : buttons) {
+                button.addActionListener(this::colorChangeRequested);
+            }
         }
 
         public void setPalette(Palette palette)
@@ -894,17 +901,120 @@ public class PokemonSpriteEditor extends DefaultEditor<PokemonSpriteData, Pokemo
             }
         }
 
-        static class PaletteButton extends JButton
+        private void colorChangeRequested(ActionEvent e)
         {
-            private JLabel label;
-            PaletteButton()
+            selectedColorIdx = -1;
+            for (JButton button : buttons)
+            {
+                selectedColorIdx++;
+                if (button.equals(e.getSource()))
+                    break;
+            }
+
+            if (selectedColorIdx == -1)
+                return;
+
+            spritePanel.setPalette(palette);
+            spritePanel.button.setSelected(false);
+
+            JColorChooser colorChooser = new JColorChooser(palette.getColor(selectedColorIdx));
+            ColorSelectionModel colorModel = colorChooser.getSelectionModel();
+            colorModel.addChangeListener(this::roundAndUpdateColor);
+
+            try {
+                spritePanel.setBackImage(femaleBackPanel.panel.image);
+                spritePanel.setFrontImage(femaleFrontPanel.panel.image);
+            }
+            catch (IndexedImage.ImageException ex) {
+                ex.printStackTrace();
+                return;
+            }
+
+            colorChooser.setPreviewPanel(spritePanel);
+            tabbedPane1StateChanged(null);
+            JDialog dialog = JColorChooser.createDialog(tabbedPane1, getModel().getEntryName(getSelectedIndex()) + " - Color #" + selectedColorIdx, true, colorChooser, this::finalizeColorChange, this::cancelColorChange);
+            dialog.setVisible(true);
+            //todo create new JColorChooser and dialog
+        }
+
+        private void finalizeColorChange(ActionEvent e)
+        {
+            Color newColor = spritePanel.paletteCopy.getColor(selectedColorIdx);
+            palette.setColor(selectedColorIdx, newColor);
+            buttons[selectedColorIdx].setBackground(newColor);
+            repaint();
+            tabbedPane1StateChanged(null);
+        }
+
+        private void cancelColorChange(ActionEvent e)
+        {
+            tabbedPane1StateChanged(null);
+        }
+
+        private void roundAndUpdateColor(ChangeEvent e)
+        {
+            ColorSelectionModel model1 = (ColorSelectionModel) e.getSource();
+            Color newColor = model1.getSelectedColor();
+            int r = newColor.getRed() - (newColor.getRed() % 8);
+            r = Math.min(r,248);
+
+            int g = newColor.getGreen() - (newColor.getGreen() % 8);
+            g = Math.min(g,248);
+
+            int b = newColor.getBlue() - (newColor.getBlue() % 8);
+            b = Math.min(b,248);
+            newColor = new Color(r,g,b);
+
+            spritePanel.paletteCopy.setColor(selectedColorIdx, newColor);
+            spritePanel.frontPanel.image.setPalette(spritePanel.paletteCopy);
+            spritePanel.backPanel.image.setPalette(spritePanel.paletteCopy);
+            spritePanel.repaint();
+        }
+
+        class PaletteEditingSpritePanel extends JPanel
+        {
+            private final PokemonSpriteDisplayPanel.PokemonSpriteDisplaySubPanel backPanel = new PokemonSpriteDisplayPanel.PokemonSpriteDisplaySubPanel();
+            private final PokemonSpriteDisplayPanel.PokemonSpriteDisplaySubPanel frontPanel = new PokemonSpriteDisplayPanel.PokemonSpriteDisplaySubPanel();
+            private final JToggleButton button;
+            private Palette paletteCopy;
+
+            PaletteEditingSpritePanel()
             {
                 super();
-                setForeground(new Color(0, 0, 0, 0));
-                setLayout(new MigLayout("insets 0,hidemode 3", "[center,fill]"));
-                label = new JLabel("0");
-                label.setHorizontalAlignment(JLabel.CENTER);
-                add(label, "cell 0 0");
+                setLayout(new MigLayout());
+                add(backPanel, "cell 0 0");
+                add(frontPanel, "cell 1 0");
+
+                this.button = new JToggleButton(ResourceBundle.getBundle("pokeditor.sheet_panel").getString("PokemonSpriteEditor.toggleGenderButton.text"));
+                button.addActionListener(e -> {
+                    IndexedImage front = button.isSelected() ? maleFrontPanel.panel.image : femaleFrontPanel.panel.image;
+                    IndexedImage back = button.isSelected() ? maleBackPanel.panel.image : femaleBackPanel.panel.image;
+                    try {
+                        setFrontImage(front);
+                        setBackImage(back);
+                        repaint();
+                    }
+                    catch (IndexedImage.ImageException ignored) {}
+
+                });
+                add(button, "cell 2 0");
+            }
+
+            void setPalette(Palette palette)
+            {
+                paletteCopy = palette.copyOf();
+            }
+
+            void setFrontImage(IndexedImage image) throws IndexedImage.ImageException
+            {
+                image.setPalette(paletteCopy);
+                frontPanel.setImage(image.getSubImage(0, 0, image.getWidth(), image.getHeight()));
+            }
+
+            void setBackImage(IndexedImage image) throws IndexedImage.ImageException
+            {
+                image.setPalette(paletteCopy);
+                backPanel.setImage(image.getSubImage(0, 0, image.getWidth(), image.getHeight()));
             }
         }
     }

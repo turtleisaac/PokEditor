@@ -1,4 +1,4 @@
-package io.github.turtleisaac.pokeditor.gui_old;
+package io.github.turtleisaac.pokeditor.gui;
 
 import com.jidesoft.swing.ComboBoxSearchable;
 

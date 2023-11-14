@@ -1,6 +1,6 @@
 package io.github.turtleisaac.pokeditor.gui.sheets.tables.editors;
 
-import io.github.turtleisaac.pokeditor.gui_old.EditorComboBox;
+import io.github.turtleisaac.pokeditor.gui.EditorComboBox;
 
 import javax.swing.*;
 import javax.swing.table.TableCellEditor;

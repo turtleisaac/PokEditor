@@ -4,7 +4,7 @@ import com.formdev.flatlaf.intellijthemes.*;
 import io.github.turtleisaac.nds4j.ui.ProgramType;
 import io.github.turtleisaac.nds4j.ui.Tool;
 import io.github.turtleisaac.pokeditor.gui.PokeditorManager;
-import io.github.turtleisaac.pokeditor.gui_old.projects.projectwindow.console.ConsoleWindow;
+import io.github.turtleisaac.pokeditor.gui.ConsoleWindow;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;

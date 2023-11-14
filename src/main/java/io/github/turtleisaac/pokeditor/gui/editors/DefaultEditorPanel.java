@@ -8,12 +8,12 @@ import java.awt.*;
 import java.awt.event.*;
 import java.util.*;
 import javax.swing.*;
-import javax.swing.border.*;
 
 import io.github.turtleisaac.nds4j.ui.ThemeUtils;
 import io.github.turtleisaac.pokeditor.formats.GenericFileData;
+import io.github.turtleisaac.pokeditor.gui.ComboBoxItem;
+import io.github.turtleisaac.pokeditor.gui.EditorComboBox;
 import io.github.turtleisaac.pokeditor.gui.PokeditorManager;
-import io.github.turtleisaac.pokeditor.gui_old.*;
 import net.miginfocom.swing.*;
 
 /**
