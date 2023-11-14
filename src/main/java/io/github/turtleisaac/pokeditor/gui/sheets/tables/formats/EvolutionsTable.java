@@ -8,6 +8,7 @@ import io.github.turtleisaac.pokeditor.gui.sheets.tables.DefaultTable;
 import io.github.turtleisaac.pokeditor.gui.sheets.tables.FormatModel;
 import io.github.turtleisaac.pokeditor.gui.sheets.tables.cells.editors.ComboBoxCellEditor;
 import io.github.turtleisaac.pokeditor.gui.sheets.tables.cells.editors.NumberOnlyCellEditor;
+import io.github.turtleisaac.pokeditor.gui.sheets.tables.cells.renderers.DefaultSheetCellRenderer;
 import io.github.turtleisaac.pokeditor.gui.sheets.tables.cells.renderers.IndexedStringCellRenderer;
 
 import javax.swing.*;
@@ -83,7 +84,7 @@ public class EvolutionsTable extends DefaultTable<EvolutionData, EvolutionsTable
         {
             if (columnIndex >= 0)
             {
-                EvolutionsColumn c = EvolutionsColumn.getColumn(columnIndex % 3);
+                EvolutionsColumn c = EvolutionsColumn.getColumn(columnIndex % EvolutionsColumn.NUMBER_OF_COLUMNS.idx);
                 c.repetition = columnIndex;
                 setValueFor(aValue, rowIndex, c);
             }
@@ -101,7 +102,7 @@ public class EvolutionsTable extends DefaultTable<EvolutionData, EvolutionsTable
 
             if (property.idx >= 0)
             {
-                int entryIdx = property.repetition / 3;
+                int entryIdx = property.repetition / EvolutionsColumn.NUMBER_OF_COLUMNS.idx;
                 while (entryIdx > species.size())
                 {
                     species.add(new EvolutionData.EvolutionEntry());
@@ -119,14 +120,14 @@ public class EvolutionsTable extends DefaultTable<EvolutionData, EvolutionsTable
         @Override
         public int getColumnCount()
         {
-            return EvolutionData.MAX_NUM_ENTRIES * 3;
+            return EvolutionData.MAX_NUM_ENTRIES * EvolutionsColumn.NUMBER_OF_COLUMNS.idx;
         }
 
         @Override
         public Object getValueAt(int rowIndex, int columnIndex)
         {
             if (columnIndex >= 0) {
-                EvolutionsColumn c = EvolutionsColumn.getColumn(columnIndex % 2);
+                EvolutionsColumn c = EvolutionsColumn.getColumn(columnIndex % EvolutionsColumn.NUMBER_OF_COLUMNS.idx);
                 c.repetition = columnIndex;
                 return getValueFor(rowIndex, c);
             }
@@ -141,7 +142,7 @@ public class EvolutionsTable extends DefaultTable<EvolutionData, EvolutionsTable
 
             if (property.idx >= 0)
             {
-                int entryIdx = property.repetition / 3;
+                int entryIdx = property.repetition / EvolutionsColumn.NUMBER_OF_COLUMNS.idx;
                 while (entryIdx > species.size())
                 {
                     species.add(new EvolutionData.EvolutionEntry());
@@ -180,7 +181,7 @@ public class EvolutionsTable extends DefaultTable<EvolutionData, EvolutionsTable
         {
             if (columnIndex >= 0)
             {
-                return EvolutionsColumn.getColumn(columnIndex % 3).cellType;
+                return EvolutionsColumn.getColumn(columnIndex % EvolutionsColumn.NUMBER_OF_COLUMNS.idx).cellType;
             }
 
             return EvolutionsColumn.getColumn(columnIndex).cellType;
@@ -246,7 +247,7 @@ public class EvolutionsTable extends DefaultTable<EvolutionData, EvolutionsTable
                 priorCol = Integer.parseInt((String) priorCol);
             }
 
-            if (column % 3 == 1)
+            if (column % EvolutionsColumn.NUMBER_OF_COLUMNS.idx == 1)
             {
                 switch ((Integer) priorCol) {
                     case 6, 7, 16, 17, 18, 19 -> { // items
@@ -267,7 +268,7 @@ public class EvolutionsTable extends DefaultTable<EvolutionData, EvolutionsTable
                     }
                 }
             }
-            else if (column % 3 == 2) {
+            else if (column % EvolutionsColumn.NUMBER_OF_COLUMNS.idx == 2) {
                 priorCol = table.getValueAt(row, column - 2);
                 if (priorCol instanceof String)
                 {
@@ -291,7 +292,7 @@ public class EvolutionsTable extends DefaultTable<EvolutionData, EvolutionsTable
         }
     }
 
-    static class EvolutionRequirementCellRenderer extends DefaultTableCellRenderer
+    static class EvolutionRequirementCellRenderer extends DefaultSheetCellRenderer
     {
         IndexedStringCellRenderer speciesRequirementRenderer;
         IndexedStringCellRenderer itemRequirementRenderer;
@@ -317,26 +318,7 @@ public class EvolutionsTable extends DefaultTable<EvolutionData, EvolutionsTable
             TableCellRenderer defaultRenderer = table.getDefaultRenderer(Object.class);
             Component defaultRenderedCell = defaultRenderer.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
 
-            if (defaultRenderedCell instanceof DefaultTableCellRenderer c)
-            {
-                c.setText(String.valueOf(value));
-                c.setForeground(Color.black);
-                if (isSelected) {
-                    c.setBackground(table.getSelectionBackground());
-                } else if (table.getSelectedRow() == row) {
-                    c.setBackground(table.getSelectionBackground());
-                }
-                else {
-                    if (row % 2 == 0)
-                        c.setBackground(table.getBackground());
-                    else
-                        c.setBackground(new Color(248, 221, 231));
-                }
-                c.validate();
-                c.repaint();
-            }
-
-            if (column % 3 == 1)
+            if (column % EvolutionsColumn.NUMBER_OF_COLUMNS.idx == 1)
             {
                 switch ((Integer) priorCol) {
                     case 6, 7, 16, 17, 18, 19 -> { // items
@@ -354,11 +336,10 @@ public class EvolutionsTable extends DefaultTable<EvolutionData, EvolutionsTable
                             c.setEnabled(true);
                             return c;
                         }
-
                     }
                 }
             }
-            else if (column % 3 == 2)
+            else if (column % EvolutionsColumn.NUMBER_OF_COLUMNS.idx == 2)
             {
                 priorCol = table.getValueAt(row, column - 2);
                 if (priorCol instanceof String)
@@ -370,8 +351,6 @@ public class EvolutionsTable extends DefaultTable<EvolutionData, EvolutionsTable
                     return speciesRequirementRenderer.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
                 }
             }
-
-
 
             if (defaultRenderedCell instanceof DefaultTableCellRenderer c)
             {

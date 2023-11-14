@@ -66,7 +66,7 @@ public class LearnsetsTable extends DefaultTable<LearnsetData, LearnsetsTable.Le
         {
             if (columnIndex >= 0)
             {
-                LearnsetsColumn c = LearnsetsColumn.getColumn(columnIndex % 2);
+                LearnsetsColumn c = LearnsetsColumn.getColumn(columnIndex % LearnsetsColumn.NUMBER_OF_COLUMNS.idx);
                 c.repetition = columnIndex;
                 setValueFor(aValue, rowIndex, c);
             }
@@ -86,7 +86,7 @@ public class LearnsetsTable extends DefaultTable<LearnsetData, LearnsetsTable.Le
 
             if (property.idx >= 0)
             {
-                int entryIdx = property.repetition / 2;
+                int entryIdx = property.repetition / LearnsetsColumn.NUMBER_OF_COLUMNS.idx;
                 while (entryIdx > learnset.size())
                 {
                     learnset.add(new LearnsetData.LearnsetEntry());
@@ -103,14 +103,14 @@ public class LearnsetsTable extends DefaultTable<LearnsetData, LearnsetsTable.Le
         @Override
         public int getColumnCount()
         {
-            return LearnsetData.MAX_NUM_ENTRIES * 2;
+            return LearnsetData.MAX_NUM_ENTRIES * LearnsetsColumn.NUMBER_OF_COLUMNS.idx;
         }
 
         @Override
         public Object getValueAt(int rowIndex, int columnIndex)
         {
             if (columnIndex >= 0) {
-                LearnsetsColumn c = LearnsetsColumn.getColumn(columnIndex % 2);
+                LearnsetsColumn c = LearnsetsColumn.getColumn(columnIndex % LearnsetsColumn.NUMBER_OF_COLUMNS.idx);
                 c.repetition = columnIndex;
                 return getValueFor(rowIndex, c);
             }
@@ -125,7 +125,7 @@ public class LearnsetsTable extends DefaultTable<LearnsetData, LearnsetsTable.Le
 
             if (property.idx >= 0)
             {
-                int entryIdx = property.repetition / 2;
+                int entryIdx = property.repetition / LearnsetsColumn.NUMBER_OF_COLUMNS.idx;
                 while (entryIdx >= learnset.size())
                 {
                     learnset.add(new LearnsetData.LearnsetEntry());
@@ -161,7 +161,7 @@ public class LearnsetsTable extends DefaultTable<LearnsetData, LearnsetsTable.Le
         {
             if (columnIndex >= 0)
             {
-                return LearnsetsColumn.getColumn(columnIndex % 2).cellType;
+                return LearnsetsColumn.getColumn(columnIndex % LearnsetsColumn.NUMBER_OF_COLUMNS.idx).cellType;
             }
 
             return LearnsetsColumn.getColumn(columnIndex).cellType;
