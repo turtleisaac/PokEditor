@@ -2,7 +2,7 @@
  * Created by JFormDesigner
  */
 
-package io.github.turtleisaac.pokeditor.gui.editors.formats.pokemon_sprite;
+package io.github.turtleisaac.pokeditor.gui.editors.data.formats.pokemon_sprite;
 
 import java.awt.*;
 import java.awt.event.*;
@@ -20,16 +20,16 @@ import io.github.turtleisaac.pokeditor.formats.pokemon_sprites.PokemonSpriteData
 import io.github.turtleisaac.pokeditor.formats.text.TextBankData;
 import io.github.turtleisaac.pokeditor.gamedata.TextFiles;
 import io.github.turtleisaac.pokeditor.gui.PokeditorManager;
-import io.github.turtleisaac.pokeditor.gui.editors.DefaultEditor;
-import io.github.turtleisaac.pokeditor.gui.editors.EditorDataModel;
-import io.github.turtleisaac.pokeditor.gui.sheets.tables.CellTypes;
+import io.github.turtleisaac.pokeditor.gui.editors.data.DefaultDataEditor;
+import io.github.turtleisaac.pokeditor.gui.editors.data.EditorDataModel;
+import io.github.turtleisaac.pokeditor.gui.sheets.tables.cells.CellTypes;
 import io.github.turtleisaac.pokeditor.gui.sheets.tables.FormatModel;
 import net.miginfocom.swing.*;
 
 /**
  * @author turtleisaac
  */
-public class PokemonSpriteEditor extends DefaultEditor<PokemonSpriteData, PokemonSpriteEditor.SpriteContents>
+public class PokemonSpriteEditor extends DefaultDataEditor<PokemonSpriteData, PokemonSpriteEditor.SpriteContents>
 {
     private static final int MAXIMUM_PALETTE_SIZE = 16;
 

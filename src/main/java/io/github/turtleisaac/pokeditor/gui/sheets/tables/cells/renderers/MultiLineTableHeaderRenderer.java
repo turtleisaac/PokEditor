@@ -1,4 +1,4 @@
-package io.github.turtleisaac.pokeditor.gui.sheets.tables.renderers;
+package io.github.turtleisaac.pokeditor.gui.sheets.tables.cells.renderers;
 
 import javax.swing.*;
 import javax.swing.table.TableCellRenderer;

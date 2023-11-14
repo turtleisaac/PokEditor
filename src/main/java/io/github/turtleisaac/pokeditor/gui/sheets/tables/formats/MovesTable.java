@@ -3,7 +3,7 @@ package io.github.turtleisaac.pokeditor.gui.sheets.tables.formats;
 import io.github.turtleisaac.pokeditor.formats.moves.MoveData;
 import io.github.turtleisaac.pokeditor.formats.text.TextBankData;
 import io.github.turtleisaac.pokeditor.gamedata.TextFiles;
-import io.github.turtleisaac.pokeditor.gui.sheets.tables.CellTypes;
+import io.github.turtleisaac.pokeditor.gui.sheets.tables.cells.CellTypes;
 import io.github.turtleisaac.pokeditor.gui.sheets.tables.DefaultTable;
 import io.github.turtleisaac.pokeditor.gui.sheets.tables.FormatModel;
 

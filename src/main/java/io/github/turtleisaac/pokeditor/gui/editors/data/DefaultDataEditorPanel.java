@@ -2,7 +2,7 @@
  * Created by JFormDesigner
  */
 
-package io.github.turtleisaac.pokeditor.gui.editors;
+package io.github.turtleisaac.pokeditor.gui.editors.data;
 
 import java.awt.*;
 import java.awt.event.*;
@@ -11,7 +11,7 @@ import javax.swing.*;
 
 import io.github.turtleisaac.nds4j.ui.ThemeUtils;
 import io.github.turtleisaac.pokeditor.formats.GenericFileData;
-import io.github.turtleisaac.pokeditor.gui.ComboBoxItem;
+import io.github.turtleisaac.pokeditor.gui.EditorComboBox.ComboBoxItem;
 import io.github.turtleisaac.pokeditor.gui.EditorComboBox;
 import io.github.turtleisaac.pokeditor.gui.PokeditorManager;
 import net.miginfocom.swing.*;
@@ -19,11 +19,11 @@ import net.miginfocom.swing.*;
 /**
  * @author turtleisaac
  */
-public class DefaultEditorPanel<G extends GenericFileData, E extends Enum<E>> extends JPanel {
-    private final DefaultEditor<G, E> editor;
+public class DefaultDataEditorPanel<G extends GenericFileData, E extends Enum<E>> extends JPanel {
+    private final DefaultDataEditor<G, E> editor;
     private final PokeditorManager manager;
 
-    public DefaultEditorPanel(PokeditorManager manager, DefaultEditor<G, E> editor) {
+    public DefaultDataEditorPanel(PokeditorManager manager, DefaultDataEditor<G, E> editor) {
         initComponents();
         this.manager = manager;
         this.editor = editor;
@@ -101,13 +101,13 @@ public class DefaultEditorPanel<G extends GenericFileData, E extends Enum<E>> ex
             toolBar1.add(entrySelectorComboBox);
 
             //---- saveButton ----
-            saveButton.setText(bundle.getString("DefaultEditorPanel.saveButton.text"));
+            saveButton.setText(bundle.getString("DefaultSheetPanel.saveSheetButton.text"));
             saveButton.addActionListener(e -> saveButtonPressed(e));
             toolBar1.add(saveButton);
             toolBar1.addSeparator();
 
             //---- resetChangesButton ----
-            resetChangesButton.setText(bundle.getString("DefaultEditorPanel.resetChangesButton.text"));
+            resetChangesButton.setText(bundle.getString("DefaultSheetPanel.reloadSheetButton.text"));
             resetChangesButton.addActionListener(e -> reloadDataButtonPressed(e));
             toolBar1.add(resetChangesButton);
             toolBar1.addSeparator();

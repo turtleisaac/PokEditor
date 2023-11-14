@@ -1,7 +1,7 @@
-package io.github.turtleisaac.pokeditor.gui.sheets.tables.renderers;
+package io.github.turtleisaac.pokeditor.gui.sheets.tables.cells.renderers;
 
 import io.github.turtleisaac.pokeditor.formats.personal.PersonalParser;
-import io.github.turtleisaac.pokeditor.gui.sheets.tables.editors.ComboBoxCellEditor;
+import io.github.turtleisaac.pokeditor.gui.sheets.tables.cells.editors.ComboBoxCellEditor;
 
 import javax.swing.*;
 import javax.swing.table.TableCellRenderer;

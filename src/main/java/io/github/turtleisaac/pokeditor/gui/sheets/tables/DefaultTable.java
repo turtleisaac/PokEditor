@@ -5,11 +5,12 @@ import io.github.turtleisaac.pokeditor.DataManager;
 import io.github.turtleisaac.pokeditor.formats.GenericFileData;
 import io.github.turtleisaac.pokeditor.formats.text.TextBankData;
 import io.github.turtleisaac.pokeditor.gui.PokeditorManager;
-import io.github.turtleisaac.pokeditor.gui.sheets.tables.editors.BitfieldComboBoxEditor;
-import io.github.turtleisaac.pokeditor.gui.sheets.tables.editors.CheckBoxEditor;
-import io.github.turtleisaac.pokeditor.gui.sheets.tables.editors.ComboBoxCellEditor;
-import io.github.turtleisaac.pokeditor.gui.sheets.tables.editors.NumberOnlyCellEditor;
-import io.github.turtleisaac.pokeditor.gui.sheets.tables.renderers.*;
+import io.github.turtleisaac.pokeditor.gui.sheets.tables.cells.CellTypes;
+import io.github.turtleisaac.pokeditor.gui.sheets.tables.cells.editors.BitfieldComboBoxEditor;
+import io.github.turtleisaac.pokeditor.gui.sheets.tables.cells.editors.CheckBoxEditor;
+import io.github.turtleisaac.pokeditor.gui.sheets.tables.cells.editors.ComboBoxCellEditor;
+import io.github.turtleisaac.pokeditor.gui.sheets.tables.cells.editors.NumberOnlyCellEditor;
+import io.github.turtleisaac.pokeditor.gui.sheets.tables.cells.renderers.*;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableCellRenderer;

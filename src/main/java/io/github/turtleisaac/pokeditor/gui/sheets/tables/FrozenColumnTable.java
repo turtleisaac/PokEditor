@@ -1,16 +1,10 @@
 package io.github.turtleisaac.pokeditor.gui.sheets.tables;
 
 import io.github.turtleisaac.pokeditor.formats.GenericFileData;
-import io.github.turtleisaac.pokeditor.gui.PokeditorManager;
-import io.github.turtleisaac.pokeditor.gui.sheets.tables.editors.ComboBoxCellEditor;
-import io.github.turtleisaac.pokeditor.gui.sheets.tables.editors.NumberOnlyCellEditor;
-import io.github.turtleisaac.pokeditor.gui.sheets.tables.renderers.CheckBoxRenderer;
-import io.github.turtleisaac.pokeditor.gui.sheets.tables.renderers.DefaultSheetCellRenderer;
-import io.github.turtleisaac.pokeditor.gui.sheets.tables.renderers.IndexedStringCellRenderer;
-import io.github.turtleisaac.pokeditor.gui.sheets.tables.renderers.MultiLineTableHeaderRenderer;
+import io.github.turtleisaac.pokeditor.gui.sheets.tables.cells.renderers.DefaultSheetCellRenderer;
+import io.github.turtleisaac.pokeditor.gui.sheets.tables.cells.renderers.MultiLineTableHeaderRenderer;
 
 import javax.swing.*;
-import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableColumn;
 import javax.swing.table.TableModel;

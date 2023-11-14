@@ -31,15 +31,11 @@ import io.github.turtleisaac.pokeditor.formats.trainers.TrainerData;
 import io.github.turtleisaac.pokeditor.formats.trainers.TrainerParser;
 import io.github.turtleisaac.pokeditor.gamedata.GameCodeBinaries;
 import io.github.turtleisaac.pokeditor.gamedata.GameFiles;
-import io.github.turtleisaac.pokeditor.gamedata.Tables;
-import io.github.turtleisaac.pokeditor.gamedata.TextFiles;
 import io.github.turtleisaac.pokeditor.gui.PokeditorManager;
-import io.github.turtleisaac.pokeditor.gui.editors.DefaultEditorPanel;
-import io.github.turtleisaac.pokeditor.gui.editors.formats.pokemon_sprite.PokemonSpriteEditor;
+import io.github.turtleisaac.pokeditor.gui.editors.data.DefaultDataEditorPanel;
+import io.github.turtleisaac.pokeditor.gui.editors.data.formats.pokemon_sprite.PokemonSpriteEditor;
 import io.github.turtleisaac.pokeditor.gui.sheets.DefaultSheetPanel;
-import io.github.turtleisaac.pokeditor.gui.sheets.tables.editors.ComboBoxCellEditor;
 import io.github.turtleisaac.pokeditor.gui.sheets.tables.formats.*;
-import io.github.turtleisaac.pokeditor.gui.sheets.tables.renderers.ComboBoxHeaderRenderer;
 
 import java.lang.reflect.ParameterizedType;
 import java.util.HashMap;
@@ -88,11 +84,11 @@ public class DataManager
         return new DefaultSheetPanel<>(manager, new MovesTable(data, textData));
     }
 
-    public static DefaultEditorPanel<PokemonSpriteData, ?> createPokemonSpriteEditor(PokeditorManager manager, NintendoDsRom rom)
+    public static DefaultDataEditorPanel<PokemonSpriteData, ?> createPokemonSpriteEditor(PokeditorManager manager, NintendoDsRom rom)
     {
         List<TextBankData> textData = DataManager.getData(rom, TextBankData.class);
         List<PokemonSpriteData> data = DataManager.getData(rom, PokemonSpriteData.class);
-        return new DefaultEditorPanel<>(manager, new PokemonSpriteEditor(data, textData));
+        return new DefaultDataEditorPanel<>(manager, new PokemonSpriteEditor(data, textData));
     }
 
     private static final Injector injector = Guice.createInjector(

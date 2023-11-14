@@ -3,7 +3,8 @@ package io.github.turtleisaac.pokeditor.gui.sheets.tables;
 import io.github.turtleisaac.pokeditor.DataManager;
 import io.github.turtleisaac.pokeditor.formats.GenericFileData;
 import io.github.turtleisaac.pokeditor.formats.text.TextBankData;
-import io.github.turtleisaac.pokeditor.gui.editors.EditorDataModel;
+import io.github.turtleisaac.pokeditor.gui.editors.data.EditorDataModel;
+import io.github.turtleisaac.pokeditor.gui.sheets.tables.cells.CellTypes;
 
 import javax.swing.table.AbstractTableModel;
 import java.util.List;

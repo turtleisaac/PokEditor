@@ -1,0 +1,57 @@
+JFDML JFormDesigner: "8.0.5.0.268" Java: "17.0.8" encoding: "UTF-8"
+
+new FormModel {
+	"i18n.autoExternalize": true
+	"i18n.bundlePackage": "pokeditor"
+	"i18n.bundleName": "sheet_panel"
+	"i18n.keyPrefix": "StarterEditorPanel"
+	contentType: "form/swing"
+	root: new FormRoot {
+		add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class net.miginfocom.swing.MigLayout ) {
+			"$layoutConstraints": "hidemode 3"
+			"$columnConstraints": "[grow,fill][grow,fill][grow,fill]"
+			"$rowConstraints": "[][grow]"
+		} ) {
+			name: "this"
+			add( new FormComponent( "javax.swing.JLabel" ) {
+				name: "starterLabel1"
+				"text": new FormMessage( null, "StarterEditorPanel.starterLabel1.text" )
+				"horizontalAlignment": 0
+			}, new FormLayoutConstraints( class net.miginfocom.layout.CC ) {
+				"value": "cell 0 0,alignx center,growx 0"
+			} )
+			add( new FormComponent( "javax.swing.JLabel" ) {
+				name: "starterLabel2"
+				"text": new FormMessage( null, "StarterEditorPanel.starterLabel2.text" )
+				"horizontalAlignment": 0
+			}, new FormLayoutConstraints( class net.miginfocom.layout.CC ) {
+				"value": "cell 1 0,alignx center,growx 0"
+			} )
+			add( new FormComponent( "javax.swing.JLabel" ) {
+				name: "starterLabel3"
+				"text": new FormMessage( null, "StarterEditorPanel.starterLabel3.text" )
+				"horizontalAlignment": 0
+			}, new FormLayoutConstraints( class net.miginfocom.layout.CC ) {
+				"value": "cell 2 0,alignx center,growx 0"
+			} )
+			add( new FormComponent( "io.github.turtleisaac.pokeditor.gui.EditorComboBox" ) {
+				name: "starterComboBox1"
+			}, new FormLayoutConstraints( class net.miginfocom.layout.CC ) {
+				"value": "cell 0 1,aligny top,growy 0"
+			} )
+			add( new FormComponent( "io.github.turtleisaac.pokeditor.gui.EditorComboBox" ) {
+				name: "starterComboBox2"
+			}, new FormLayoutConstraints( class net.miginfocom.layout.CC ) {
+				"value": "cell 1 1,aligny top,growy 0"
+			} )
+			add( new FormComponent( "io.github.turtleisaac.pokeditor.gui.EditorComboBox" ) {
+				name: "starterComboBox3"
+			}, new FormLayoutConstraints( class net.miginfocom.layout.CC ) {
+				"value": "cell 2 1,aligny top,growy 0"
+			} )
+		}, new FormLayoutConstraints( null ) {
+			"location": new java.awt.Point( 0, 0 )
+			"size": new java.awt.Dimension( 400, 300 )
+		} )
+	}
+}

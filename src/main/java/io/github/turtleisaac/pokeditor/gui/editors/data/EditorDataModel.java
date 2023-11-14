@@ -1,4 +1,4 @@
-package io.github.turtleisaac.pokeditor.gui.editors;
+package io.github.turtleisaac.pokeditor.gui.editors.data;
 
 public interface EditorDataModel<E extends Enum<E>>
 {

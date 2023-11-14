@@ -1,7 +1,6 @@
-package io.github.turtleisaac.pokeditor.gui.sheets.tables.renderers;
+package io.github.turtleisaac.pokeditor.gui.sheets.tables.cells.renderers;
 
 import javax.swing.*;
-import javax.swing.table.TableCellRenderer;
 import java.awt.*;
 
 public class CheckBoxRenderer extends DefaultSheetCellRenderer
@@ -21,7 +20,7 @@ public class CheckBoxRenderer extends DefaultSheetCellRenderer
 //        add(checkBox);
 //        add(new JButton());
         setPreferredSize(getPreferredSize());
-        setHorizontalAlignment(JLabel.CENTER);
+        setHorizontalAlignment(CENTER);
     }
 
     @Override

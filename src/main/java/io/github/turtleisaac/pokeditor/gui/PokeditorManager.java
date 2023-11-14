@@ -17,7 +17,7 @@ import io.github.turtleisaac.pokeditor.formats.personal.PersonalData;
 import io.github.turtleisaac.pokeditor.formats.pokemon_sprites.PokemonSpriteData;
 import io.github.turtleisaac.pokeditor.formats.text.TextBankData;
 import io.github.turtleisaac.pokeditor.gamedata.*;
-import io.github.turtleisaac.pokeditor.gui.editors.DefaultEditorPanel;
+import io.github.turtleisaac.pokeditor.gui.editors.data.DefaultDataEditorPanel;
 import io.github.turtleisaac.pokeditor.gui.sheets.DefaultSheetPanel;
 
 import javax.swing.*;
@@ -144,7 +144,7 @@ public class PokeditorManager extends PanelManager
 //        placeholder.setPreferredSize(dimension);
 //        placeholder.setMinimumSize(dimension);
 
-        DefaultEditorPanel<PokemonSpriteData, ?> battleSpriteEditor = DataManager.createPokemonSpriteEditor(this, rom);
+        DefaultDataEditorPanel<PokemonSpriteData, ?> battleSpriteEditor = DataManager.createPokemonSpriteEditor(this, rom);
         battleSpriteEditor.setName("Pokemon Sprites");
         battleSpriteEditor.setPreferredSize(battleSpriteEditor.getPreferredSize());
 

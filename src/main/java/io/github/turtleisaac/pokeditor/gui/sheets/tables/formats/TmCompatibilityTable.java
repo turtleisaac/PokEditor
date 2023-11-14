@@ -4,11 +4,10 @@ import io.github.turtleisaac.pokeditor.formats.personal.PersonalData;
 import io.github.turtleisaac.pokeditor.formats.personal.PersonalParser;
 import io.github.turtleisaac.pokeditor.formats.text.TextBankData;
 import io.github.turtleisaac.pokeditor.gamedata.TextFiles;
-import io.github.turtleisaac.pokeditor.gui.sheets.tables.CellTypes;
+import io.github.turtleisaac.pokeditor.gui.sheets.tables.cells.CellTypes;
 import io.github.turtleisaac.pokeditor.gui.sheets.tables.DefaultTable;
 import io.github.turtleisaac.pokeditor.gui.sheets.tables.FormatModel;
-import io.github.turtleisaac.pokeditor.gui.sheets.tables.renderers.ComboBoxHeaderRenderer;
-import io.github.turtleisaac.pokeditor.gui.sheets.tables.renderers.IndexedStringCellRenderer;
+import io.github.turtleisaac.pokeditor.gui.sheets.tables.cells.renderers.IndexedStringCellRenderer;
 
 import javax.swing.table.TableColumn;
 import java.util.*;

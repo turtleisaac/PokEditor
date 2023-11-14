@@ -3,12 +3,12 @@ package io.github.turtleisaac.pokeditor.gui.sheets.tables.formats;
 import io.github.turtleisaac.pokeditor.formats.evolutions.EvolutionData;
 import io.github.turtleisaac.pokeditor.formats.text.TextBankData;
 import io.github.turtleisaac.pokeditor.gamedata.TextFiles;
-import io.github.turtleisaac.pokeditor.gui.sheets.tables.CellTypes;
+import io.github.turtleisaac.pokeditor.gui.sheets.tables.cells.CellTypes;
 import io.github.turtleisaac.pokeditor.gui.sheets.tables.DefaultTable;
 import io.github.turtleisaac.pokeditor.gui.sheets.tables.FormatModel;
-import io.github.turtleisaac.pokeditor.gui.sheets.tables.editors.ComboBoxCellEditor;
-import io.github.turtleisaac.pokeditor.gui.sheets.tables.editors.NumberOnlyCellEditor;
-import io.github.turtleisaac.pokeditor.gui.sheets.tables.renderers.IndexedStringCellRenderer;
+import io.github.turtleisaac.pokeditor.gui.sheets.tables.cells.editors.ComboBoxCellEditor;
+import io.github.turtleisaac.pokeditor.gui.sheets.tables.cells.editors.NumberOnlyCellEditor;
+import io.github.turtleisaac.pokeditor.gui.sheets.tables.cells.renderers.IndexedStringCellRenderer;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableCellRenderer;

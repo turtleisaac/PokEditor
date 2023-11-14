@@ -1,16 +1,16 @@
-package io.github.turtleisaac.pokeditor.gui.editors;
+package io.github.turtleisaac.pokeditor.gui.editors.data;
 
 import io.github.turtleisaac.pokeditor.formats.GenericFileData;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;
 
-public abstract class DefaultEditor<G extends GenericFileData, E extends Enum<E>> extends JPanel
+public abstract class DefaultDataEditor<G extends GenericFileData, E extends Enum<E>> extends JPanel
 {
     private EditorDataModel<E> model;
     private int selectedIndex;
 
-    public DefaultEditor(EditorDataModel<E> model)
+    public DefaultDataEditor(EditorDataModel<E> model)
     {
         this.model = model;
         selectedIndex = -1;

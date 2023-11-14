@@ -1,0 +1,47 @@
+JFDML JFormDesigner: "8.0.5.0.268" Java: "17.0.8" encoding: "UTF-8"
+
+new FormModel {
+	"i18n.autoExternalize": true
+	"i18n.bundlePackage": "pokeditor"
+	"i18n.bundleName": "sheet_panel"
+	"i18n.keyPrefix": "GeneralEditorPanel"
+	contentType: "form/swing"
+	root: new FormRoot {
+		add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class net.miginfocom.swing.MigLayout ) {
+			"$layoutConstraints": "hidemode 3"
+			"$columnConstraints": "[grow,fill]"
+			"$rowConstraints": "[grow]"
+		} ) {
+			name: "this"
+			add( new FormContainer( "javax.swing.JToolBar", new FormLayoutManager( class javax.swing.JToolBar ) ) {
+				name: "toolBar1"
+				"floatable": false
+				add( new FormComponent( "javax.swing.JButton" ) {
+					name: "saveChangesButton"
+					"text": new FormMessage( null, "DefaultSheetPanel.saveSheetButton.text" )
+				} )
+				add( new FormComponent( "javax.swing.JToolBar$Separator" ) {
+					name: "separator1"
+				} )
+				add( new FormComponent( "javax.swing.JButton" ) {
+					name: "resetChangesButton"
+					"text": new FormMessage( null, "DefaultSheetPanel.reloadSheetButton.text" )
+				} )
+			}, new FormLayoutConstraints( class net.miginfocom.layout.CC ) {
+				"value": "north"
+			} )
+			add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class net.miginfocom.swing.MigLayout ) {
+				"$layoutConstraints": "fill,insets 0,hidemode 3"
+				"$columnConstraints": "[fill]"
+				"$rowConstraints": "[grow,fill]"
+			} ) {
+				name: "contentPanel"
+			}, new FormLayoutConstraints( class net.miginfocom.layout.CC ) {
+				"value": "cell 0 0,grow"
+			} )
+		}, new FormLayoutConstraints( null ) {
+			"location": new java.awt.Point( 0, 0 )
+			"size": new java.awt.Dimension( 400, 300 )
+		} )
+	}
+}

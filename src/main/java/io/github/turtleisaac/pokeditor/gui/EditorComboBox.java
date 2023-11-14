@@ -5,7 +5,7 @@ import com.jidesoft.swing.ComboBoxSearchable;
 import javax.swing.*;
 import java.util.Arrays;
 
-public class EditorComboBox extends JComboBox<ComboBoxItem>
+public class EditorComboBox extends JComboBox<EditorComboBox.ComboBoxItem>
 {
     private final ComboBoxSearchable searchable;
 
@@ -31,5 +31,28 @@ public class EditorComboBox extends JComboBox<ComboBoxItem>
     {
         super(model);
         searchable= new ComboBoxSearchable(this);
+    }
+
+    public static class ComboBoxItem
+    {
+        private String str;
+
+        public ComboBoxItem(String str)
+        {
+            this.str= str;
+        }
+
+        public ComboBoxItem(int num)
+        {
+            str= "" + num;
+        }
+
+        public void setName(String str) {this.str= str;}
+
+        @Override
+        public String toString()
+        {
+            return str;
+        }
     }
 }

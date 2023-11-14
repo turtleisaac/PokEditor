@@ -1,4 +1,4 @@
-package io.github.turtleisaac.pokeditor.gui.sheets.tables.editors;
+package io.github.turtleisaac.pokeditor.gui.sheets.tables.cells.editors;
 
 import io.github.turtleisaac.pokeditor.gui.EditorComboBox;
 
