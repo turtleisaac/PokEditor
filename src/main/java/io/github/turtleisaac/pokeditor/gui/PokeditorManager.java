@@ -15,6 +15,7 @@ import io.github.turtleisaac.pokeditor.formats.learnsets.LearnsetData;
 import io.github.turtleisaac.pokeditor.formats.moves.MoveData;
 import io.github.turtleisaac.pokeditor.formats.personal.PersonalData;
 import io.github.turtleisaac.pokeditor.formats.pokemon_sprites.PokemonSpriteData;
+import io.github.turtleisaac.pokeditor.formats.scripts.GenericScriptData;
 import io.github.turtleisaac.pokeditor.formats.text.TextBankData;
 import io.github.turtleisaac.pokeditor.gamedata.*;
 import io.github.turtleisaac.pokeditor.gui.editors.data.DefaultDataEditorPanel;
@@ -166,6 +167,11 @@ public class PokeditorManager extends PanelManager
         DefaultSheetPanel<MoveData, ?> movesPanel = DataManager.createMoveSheet(this, rom);
         movesPanel.setName("Moves Sheet");
 
+        DefaultDataEditorPanel<GenericScriptData, ?> fieldScriptEditor = DataManager.createFieldScriptEditor(this, rom);
+        fieldScriptEditor.setName("Field Scripts");
+        fieldScriptEditor.setPreferredSize(fieldScriptEditor.getPreferredSize());
+
+
         JPanel fieldPanel = new JPanel();
         fieldPanel.setName("Field");
         JPanel waterPanel = new JPanel();
@@ -177,6 +183,7 @@ public class PokeditorManager extends PanelManager
 //        panels.add(battleSpriteEditor);
         panels.add(movesPanel);
         panels.add(encounters);
+        panels.add(fieldScriptEditor);
 //        panels.add(placeholder);
     }
 

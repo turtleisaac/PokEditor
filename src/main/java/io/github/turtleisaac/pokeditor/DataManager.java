@@ -25,6 +25,8 @@ import io.github.turtleisaac.pokeditor.formats.personal.PersonalData;
 import io.github.turtleisaac.pokeditor.formats.personal.PersonalParser;
 import io.github.turtleisaac.pokeditor.formats.pokemon_sprites.PokemonSpriteData;
 import io.github.turtleisaac.pokeditor.formats.pokemon_sprites.PokemonSpriteParser;
+import io.github.turtleisaac.pokeditor.formats.scripts.GenericScriptData;
+import io.github.turtleisaac.pokeditor.formats.scripts.ScriptParser;
 import io.github.turtleisaac.pokeditor.formats.text.TextBankData;
 import io.github.turtleisaac.pokeditor.formats.text.TextBankParser;
 import io.github.turtleisaac.pokeditor.formats.trainers.TrainerData;
@@ -33,6 +35,7 @@ import io.github.turtleisaac.pokeditor.gamedata.GameCodeBinaries;
 import io.github.turtleisaac.pokeditor.gamedata.GameFiles;
 import io.github.turtleisaac.pokeditor.gui.PokeditorManager;
 import io.github.turtleisaac.pokeditor.gui.editors.data.DefaultDataEditorPanel;
+import io.github.turtleisaac.pokeditor.gui.editors.data.formats.field_scripts.FieldScriptEditor;
 import io.github.turtleisaac.pokeditor.gui.editors.data.formats.pokemon_sprite.PokemonSpriteEditor;
 import io.github.turtleisaac.pokeditor.gui.sheets.DefaultSheetPanel;
 import io.github.turtleisaac.pokeditor.gui.sheets.tables.formats.*;
@@ -91,6 +94,13 @@ public class DataManager
         return new DefaultDataEditorPanel<>(manager, new PokemonSpriteEditor(data, textData));
     }
 
+    public static DefaultDataEditorPanel<GenericScriptData, ?> createFieldScriptEditor(PokeditorManager manager, NintendoDsRom rom)
+    {
+        List<TextBankData> textData = DataManager.getData(rom, TextBankData.class);
+        List<GenericScriptData> data = DataManager.getData(rom, GenericScriptData.class);
+        return new DefaultDataEditorPanel<>(manager, new FieldScriptEditor(data, textData));
+    }
+
     private static final Injector injector = Guice.createInjector(
             new PersonalModule(),
             new LearnsetsModule(),
@@ -103,15 +113,21 @@ public class DataManager
             new TextBankModule(),
             new PokemonSpriteModule());
 
+    @SuppressWarnings("unchecked")
     public static <E extends GenericFileData> GenericParser<E> getParser(Class<E> eClass)
     {
-        ParameterizedType type = Types.newParameterizedType(GenericParser.class, eClass);
-        return (GenericParser<E>) injector.getInstance(Key.get(TypeLiteral.get(type)));
+        if (eClass != GenericScriptData.class) {
+            ParameterizedType type = Types.newParameterizedType(GenericParser.class, eClass);
+            return (GenericParser<E>) injector.getInstance(Key.get(TypeLiteral.get(type)));
+        } else {
+            return (GenericParser<E>) new ScriptParser();
+        }
     }
 
     private static final Map<Class<? extends GenericFileData>, List<? extends GenericFileData>> dataMap = new HashMap<>();
     private static final Map<GameCodeBinaries, CodeBinary> codeBinaries = new HashMap<>();
 
+    @SuppressWarnings("unchecked")
     public static <E extends GenericFileData> List<E> getData(NintendoDsRom rom, Class<E> eClass)
     {
         if (dataMap.containsKey(eClass))
@@ -143,6 +159,7 @@ public class DataManager
         }
     }
 
+    @SuppressWarnings("unchecked")
     public static <E extends GenericFileData> void resetData(NintendoDsRom rom, Class<E> eClass)
     {
         if (!dataMap.containsKey(eClass))
