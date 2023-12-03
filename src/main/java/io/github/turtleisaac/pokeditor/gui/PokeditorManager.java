@@ -167,9 +167,9 @@ public class PokeditorManager extends PanelManager
         DefaultSheetPanel<MoveData, ?> movesPanel = DataManager.createMoveSheet(this, rom);
         movesPanel.setName("Moves Sheet");
 
-        DefaultDataEditorPanel<GenericScriptData, ?> fieldScriptEditor = DataManager.createFieldScriptEditor(this, rom);
-        fieldScriptEditor.setName("Field Scripts");
-        fieldScriptEditor.setPreferredSize(fieldScriptEditor.getPreferredSize());
+//        DefaultDataEditorPanel<GenericScriptData, ?> fieldScriptEditor = DataManager.createFieldScriptEditor(this, rom);
+//        fieldScriptEditor.setName("Field Scripts");
+//        fieldScriptEditor.setPreferredSize(fieldScriptEditor.getPreferredSize());
 
 
         JPanel fieldPanel = new JPanel();
@@ -183,7 +183,7 @@ public class PokeditorManager extends PanelManager
 //        panels.add(battleSpriteEditor);
         panels.add(movesPanel);
         panels.add(encounters);
-        panels.add(fieldScriptEditor);
+//        panels.add(fieldScriptEditor);
 //        panels.add(placeholder);
     }
 
