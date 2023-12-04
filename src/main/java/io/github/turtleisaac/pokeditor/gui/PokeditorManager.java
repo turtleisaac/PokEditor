@@ -172,17 +172,17 @@ public class PokeditorManager extends PanelManager
 //        fieldScriptEditor.setPreferredSize(fieldScriptEditor.getPreferredSize());
 
 
-        JPanel fieldPanel = new JPanel();
-        fieldPanel.setName("Field");
-        JPanel waterPanel = new JPanel();
-        waterPanel.setName("Water");
-        PanelGroup encounters = new PanelGroup("Encounters", fieldPanel, waterPanel);
+//        JPanel fieldPanel = new JPanel();
+//        fieldPanel.setName("Field");
+//        JPanel waterPanel = new JPanel();
+//        waterPanel.setName("Water");
+//        PanelGroup encounters = new PanelGroup("Encounters", fieldPanel, waterPanel);
 
         PanelGroup pokemonGroup = new PanelGroup("Pokémon Editing", personalPanel, tmCompatibilityPanel, learnsetsPanel, evolutionsPanel, battleSpriteEditor);
         panels.add(pokemonGroup);
 //        panels.add(battleSpriteEditor);
         panels.add(movesPanel);
-        panels.add(encounters);
+//        panels.add(encounters);
 //        panels.add(fieldScriptEditor);
 //        panels.add(placeholder);
     }

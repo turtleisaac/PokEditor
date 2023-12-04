@@ -84,7 +84,7 @@ public class MovesTable extends DefaultTable<MoveData, MovesTable.MovesColumn>
 
             aValue = prepareObjectForWriting(aValue, property.cellType);
 
-            switch (MovesColumn.getColumn(entryIdx)) {
+            switch (property) {
                 case ID -> {}
                 case NAME -> {
                     TextBankData.Message message = moveNames.get(entryIdx);
