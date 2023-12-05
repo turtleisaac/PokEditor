@@ -81,7 +81,7 @@ public class TmCompatibilityTable extends DefaultTable<PersonalData, TmCompatibi
             if (columnIndex >= 0) {
                 TmCompatibilityColumns c = TmCompatibilityColumns.getColumn(0);
                 c.repetition = columnIndex;
-                setValueFor(aValue, rowIndex, TmCompatibilityColumns.getColumn(columnIndex));
+                setValueFor(aValue, rowIndex, c);
             }
         }
 
