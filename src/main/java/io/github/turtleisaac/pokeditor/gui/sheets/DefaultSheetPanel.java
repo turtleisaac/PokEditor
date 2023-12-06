@@ -15,6 +15,8 @@ import io.github.turtleisaac.pokeditor.formats.GenericFileData;
 import io.github.turtleisaac.pokeditor.gui.PokeditorManager;
 import io.github.turtleisaac.pokeditor.gui.sheets.tables.DefaultTable;
 import io.github.turtleisaac.pokeditor.gui.sheets.tables.FrozenColumnTable;
+import io.github.turtleisaac.pokeditor.gui.sheets.tables.cells.CellTypes;
+import io.github.turtleisaac.pokeditor.gui.sheets.tables.cells.renderers.IndexedStringCellRenderer;
 import net.miginfocom.swing.*;
 
 import java.awt.*;
@@ -202,29 +204,7 @@ public class DefaultSheetPanel<G extends GenericFileData, E extends Enum<E>> ext
 
     public void thing(TableCellEditor editor)
     {
-        JTable moio = new JTable(new DefaultTableModel() {
-            @Override
-            public int getColumnCount()
-            {
-                return getTable().getColumnCount();
-            }
-        });
-        moio.setDefaultEditor(String.class, editor);
 
-        System.out.println("fuck");
-//        JPanel moo = new JPanel();
-        Dimension d = new Dimension(scrollPane1.getWidth(), 50);
-//        moo.setPreferredSize(d);
-//        moo.setMinimumSize(d);
-//        moo.setBackground(Color.green);
-
-//        moio.setPreferredSize(d);
-//        moio.setMinimumSize(d);
-        moio.setBackground(Color.green);
-
-        scrollPane1.setColumnHeaderView(moio);
-        scrollPane1.getColumnHeader().setMinimumSize(d);
-        scrollPane1.getColumnHeader().setPreferredSize(d);
     }
 
     private void initComponents() {
@@ -247,7 +227,7 @@ public class DefaultSheetPanel<G extends GenericFileData, E extends Enum<E>> ext
 
         //======== this ========
         setLayout(new MigLayout(
-            "hidemode 3",
+            "insets 0,hidemode 3",
             // columns
             "[grow,fill]",
             // rows

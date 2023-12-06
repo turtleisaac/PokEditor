@@ -1,22 +1,29 @@
 package io.github.turtleisaac.pokeditor.gui.sheets.tables.formats;
 
+import com.formdev.flatlaf.extras.components.FlatPopupMenu;
+import io.github.turtleisaac.pokeditor.DataManager;
+import io.github.turtleisaac.pokeditor.formats.moves.MoveData;
 import io.github.turtleisaac.pokeditor.formats.personal.PersonalData;
 import io.github.turtleisaac.pokeditor.formats.personal.PersonalParser;
 import io.github.turtleisaac.pokeditor.formats.text.TextBankData;
 import io.github.turtleisaac.pokeditor.gamedata.TextFiles;
+import io.github.turtleisaac.pokeditor.gui.EditorComboBox;
 import io.github.turtleisaac.pokeditor.gui.sheets.tables.cells.CellTypes;
 import io.github.turtleisaac.pokeditor.gui.sheets.tables.DefaultTable;
 import io.github.turtleisaac.pokeditor.gui.sheets.tables.FormatModel;
-import io.github.turtleisaac.pokeditor.gui.sheets.tables.cells.renderers.IndexedStringCellRenderer;
 
-import javax.swing.table.TableColumn;
+import javax.swing.*;
+import javax.swing.table.*;
+import java.awt.*;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.util.*;
+import java.util.List;
 
 public class TmCompatibilityTable extends DefaultTable<PersonalData, TmCompatibilityTable.TmCompatibilityColumns>
 {
     //todo 0xF0BFC is address of TMs table
     static final int[] columnWidths = new int[102];
-
     static {
         Arrays.fill(columnWidths, 120);
     }
@@ -26,12 +33,41 @@ public class TmCompatibilityTable extends DefaultTable<PersonalData, TmCompatibi
         super(new TmCompatibilityModel(data, textData), textData, columnWidths, null);
         String[] moveNames = textData.get(TextFiles.MOVE_NAMES.getValue()).getStringList().toArray(String[]::new);
 
-        IndexedStringCellRenderer renderer = new IndexedStringCellRenderer(moveNames);
+        TableCellRenderer renderer = new DefaultTableCellRenderer() {
+            @Override
+            public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column)
+            {
+                super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
+
+                if (value != null)
+                {
+                    if (value instanceof Integer val)
+                    {
+                        if (val < moveNames.length)
+                        {
+                            this.setText(moveNames[val]);
+                        }
+                    }
+                    else if (value instanceof String s)
+                    {
+                        int val = Integer.parseInt(s);
+                        if (val < moveNames.length)
+                        {
+                            this.setText(moveNames[val]);
+                        }
+                    }
+                }
+
+                return this;
+            }
+        };
+
         Enumeration<TableColumn> columns = getColumnModel().getColumns();
         while (columns.hasMoreElements())
         {
             columns.nextElement().setHeaderRenderer(renderer);
         }
+        setupEditableHeader();
     }
 
     @Override
@@ -203,5 +239,50 @@ public class TmCompatibilityTable extends DefaultTable<PersonalData, TmCompatibi
             }
             return NUMBER_OF_COLUMNS;
         }
+    }
+
+    public void setupEditableHeader()
+    {
+        String[] moveNames = getFormatModel().getTextBankData().get(TextFiles.MOVE_NAMES.getValue()).getStringList().toArray(String[]::new);
+        tableHeader.setEnabled(true);
+
+        tableHeader.addMouseListener(new MouseAdapter(){
+            @Override
+            public void mouseClicked(MouseEvent event)
+            {
+                if (event.getClickCount() == 2)
+                {
+                    int columnIndex = tableHeader.columnAtPoint(event.getPoint());
+
+                    if (columnIndex >= 0)
+                    {
+                        TableColumn column = tableHeader.getColumnModel().getColumn(columnIndex);
+
+                        Rectangle rect = tableHeader.getHeaderRect(columnIndex);
+
+                        JPopupMenu popupMenu = new JPopupMenu();
+
+                        DefaultListModel<EditorComboBox.ComboBoxItem> items = new DefaultListModel<>();
+                        for (String moveName : moveNames) {
+                            items.addElement(new EditorComboBox.ComboBoxItem(moveName));
+                        }
+                        JList<EditorComboBox.ComboBoxItem> list = new JList<>(items);
+                        list.setSelectedIndex(PersonalParser.tmMoveIdNumbers[columnIndex]);
+
+                        list.addListSelectionListener(e -> {
+                            PersonalParser.updateTmType(columnIndex, list.getSelectedIndex(), DataManager.getData(null, MoveData.class));
+                            column.setHeaderValue(list.getSelectedIndex());
+                        });
+
+                        popupMenu.setPreferredSize(
+                                new Dimension(rect.width, rect.height * 5));
+
+                        popupMenu.add(new JScrollPane(list));
+                        list.scrollRectToVisible(list.getCellBounds(list.getSelectedIndex(), list.getSelectedIndex()));
+                        popupMenu.show(tableHeader, rect.x, 0);
+                    }
+                }
+            }
+        });
     }
 }
