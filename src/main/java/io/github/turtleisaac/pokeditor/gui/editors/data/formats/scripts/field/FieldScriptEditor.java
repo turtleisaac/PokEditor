@@ -2,23 +2,22 @@
  * Created by JFormDesigner
  */
 
-package io.github.turtleisaac.pokeditor.gui.editors.data.formats.field_scripts;
+package io.github.turtleisaac.pokeditor.gui.editors.data.formats.scripts.field;
 
 import javax.swing.*;
+import javax.swing.border.*;
+import javax.swing.text.*;
 
-import io.github.turtleisaac.nds4j.images.IndexedImage;
-import io.github.turtleisaac.nds4j.images.Palette;
-import io.github.turtleisaac.pokeditor.formats.pokemon_sprites.PokemonSpriteData;
 import io.github.turtleisaac.pokeditor.formats.scripts.GenericScriptData;
 import io.github.turtleisaac.pokeditor.formats.scripts.ScriptData;
 import io.github.turtleisaac.pokeditor.formats.text.TextBankData;
-import io.github.turtleisaac.pokeditor.gamedata.TextFiles;
 import io.github.turtleisaac.pokeditor.gui.editors.data.DefaultDataEditor;
 import io.github.turtleisaac.pokeditor.gui.editors.data.EditorDataModel;
-import io.github.turtleisaac.pokeditor.gui.editors.data.formats.pokemon_sprite.PokemonSpriteEditor;
+import io.github.turtleisaac.pokeditor.gui.editors.data.formats.scripts.ScriptDocument;
 import io.github.turtleisaac.pokeditor.gui.sheets.tables.FormatModel;
 import net.miginfocom.swing.*;
 
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.util.List;
 
@@ -30,6 +29,10 @@ public class FieldScriptEditor extends DefaultDataEditor<GenericScriptData, Fiel
     public FieldScriptEditor(List<GenericScriptData> data, List<TextBankData> textBankData) {
         super(new FieldScriptModel(data, textBankData));
         initComponents();
+//        FieldScriptEditorKit editorKit = new FieldScriptEditorKit();
+        StyledDocument document = new ScriptDocument();
+        textPane1.setDocument(document);
+        textPane1.setBackground(new Color(0x45494a));
     }
 
     @Override
@@ -38,38 +41,79 @@ public class FieldScriptEditor extends DefaultDataEditor<GenericScriptData, Fiel
         super.selectedIndexedChanged(idx, e);
         EditorDataModel<FieldScriptContents> model = getModel();
         GenericScriptData data = (GenericScriptData) model.getValueFor(idx, null);
-        list1.removeAll();
+//        list1.removeAll();
 
         DefaultListModel<ScriptData.ScriptComponent> listModel = new DefaultListModel<>();
 
-        if (data instanceof ScriptData) {
+        StyledDocument document = new ScriptDocument();
+        textPane1.setDocument(document);
+
+        if (data instanceof ScriptData scriptData) {
             listModel.addAll(data);
+
+            try {
+                for (ScriptData.ScriptComponent component : scriptData)
+                {
+                    if (component instanceof ScriptData.ScriptLabel label)
+                    {
+                        if (scriptData.getScripts().contains(label))
+                        {
+                            document.insertString(document.getLength(), "script(" + (scriptData.getScripts().indexOf(label)+1) + ") ", document.getStyle("regular"));
+                            document.insertString(document.getLength(), label.getName() + ":\n", document.getStyle("regular"));
+                        }
+                        else
+                        {
+                            document.insertString(document.getLength(), label + "\n", document.getStyle("regular"));
+                        }
+
+                    }
+                    if (component instanceof ScriptData.ScriptCommand scriptCommand)
+                    {
+                        document.insertString(document.getLength(), scriptCommand.getName(), document.getStyle("regular"));
+                        String[] parameters = scriptCommand.getParameterStrings();
+
+                        for (String parameter : parameters) {
+                            Style style = document.getStyle("regular");
+                            document.insertString(document.getLength(), " " + parameter, style);
+                        }
+
+                        if (scriptCommand.getName().equals("end") || scriptCommand.getName().equals("goto"))
+                        {
+                            document.insertString(document.getLength(), "\n", document.getStyle("regular"));
+                        }
+                        document.insertString(document.getLength(), "\n", document.getStyle("regular"));
+                    }
+                }
+
+            } catch (BadLocationException ble) {
+                System.err.println("Couldn't insert initial text into text pane.");
+            }
         }
-        list1.setModel(listModel);
+//        list1.setModel(listModel);
     }
 
     private void initComponents() {
         // JFormDesigner - Component initialization - DO NOT MODIFY  //GEN-BEGIN:initComponents  @formatter:off
         // Generated using JFormDesigner non-commercial license
         scrollPane1 = new JScrollPane();
-        list1 = new JList<>();
+        textPane1 = new JTextPane();
 
         //======== this ========
         setLayout(new MigLayout(
             "hidemode 3",
             // columns
-            "[grow,fill]" +
+            "[fill]" +
+            "[fill]" +
             "[fill]",
             // rows
-            "[grow,fill]" +
-            "[]" +
             "[]"));
 
         //======== scrollPane1 ========
         {
-            scrollPane1.setViewportView(list1);
+            scrollPane1.setBorder(new SoftBevelBorder(SoftBevelBorder.LOWERED));
+            scrollPane1.setViewportView(textPane1);
         }
-        add(scrollPane1, "cell 0 0 2 3,grow,wmin 300,hmin 500");
+        add(scrollPane1, "cell 0 0,grow,width 500:500:500,height 500:500:500");
         // JFormDesigner - End of component initialization  //GEN-END:initComponents  @formatter:on
     }
 
@@ -82,7 +126,7 @@ public class FieldScriptEditor extends DefaultDataEditor<GenericScriptData, Fiel
     // JFormDesigner - Variables declaration - DO NOT MODIFY  //GEN-BEGIN:variables  @formatter:off
     // Generated using JFormDesigner non-commercial license
     private JScrollPane scrollPane1;
-    private JList<ScriptData.ScriptComponent> list1;
+    private JTextPane textPane1;
     // JFormDesigner - End of variables declaration  //GEN-END:variables  @formatter:on
 
     static class FieldScriptModel extends FormatModel<GenericScriptData, FieldScriptContents>

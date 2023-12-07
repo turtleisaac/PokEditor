@@ -9,24 +9,22 @@ new FormModel {
 	root: new FormRoot {
 		add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class net.miginfocom.swing.MigLayout ) {
 			"$layoutConstraints": "hidemode 3"
-			"$columnConstraints": "[grow,fill][fill]"
-			"$rowConstraints": "[grow,fill][][]"
+			"$columnConstraints": "[fill][fill][fill]"
+			"$rowConstraints": "[]"
 		} ) {
 			name: "this"
 			add( new FormContainer( "javax.swing.JScrollPane", new FormLayoutManager( class javax.swing.JScrollPane ) ) {
 				name: "scrollPane1"
-				add( new FormComponent( "javax.swing.JList" ) {
-					name: "list1"
-					auxiliary() {
-						"JavaCodeGenerator.typeParameters": "ScriptData.ScriptComponent"
-					}
+				"border": new javax.swing.border.SoftBevelBorder( 1, null, null, null, null )
+				add( new FormComponent( "javax.swing.JTextPane" ) {
+					name: "textPane1"
 				} )
 			}, new FormLayoutConstraints( class net.miginfocom.layout.CC ) {
-				"value": "cell 0 0 2 3,grow,wmin 300,hmin 500"
+				"value": "cell 0 0,grow,width 500:500:500,height 500:500:500"
 			} )
 		}, new FormLayoutConstraints( null ) {
-			"location": new java.awt.Point( 0, 0 )
-			"size": new java.awt.Dimension( 400, 300 )
+			"location": new java.awt.Point( 15, 0 )
+			"size": new java.awt.Dimension( 725, 640 )
 		} )
 	}
 }
