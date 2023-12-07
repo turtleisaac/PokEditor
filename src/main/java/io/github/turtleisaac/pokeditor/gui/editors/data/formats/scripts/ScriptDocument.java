@@ -94,15 +94,23 @@ public class ScriptDocument extends DefaultStyledDocument
         @Override
         public Void visitLabel_definition(ScriptFileParser.Label_definitionContext ctx)
         {
-            int len = ctx.stop.getStopIndex() - ctx.start.getStartIndex();
+            int len = ctx.stop.getStopIndex() - ctx.start.getStartIndex() + 1;
             setCharacterAttributes(ctx.start.getStartIndex(), len, getStyle(LABEL), true);
             return super.visitLabel_definition(ctx);
         }
 
         @Override
+        public Void visitLabel(ScriptFileParser.LabelContext ctx)
+        {
+            int len = ctx.stop.getStopIndex() - ctx.start.getStartIndex() + 1;
+            setCharacterAttributes(ctx.start.getStartIndex(), len, getStyle(LABEL), true);
+            return super.visitLabel(ctx);
+        }
+
+        @Override
         public Void visitScript_definition(ScriptFileParser.Script_definitionContext ctx)
         {
-            int len = ctx.stop.getStopIndex() - ctx.start.getStartIndex();
+            int len = ctx.stop.getStopIndex() - ctx.start.getStartIndex() + 1;
             setCharacterAttributes(ctx.start.getStartIndex(), len, getStyle(SCRIPT), true);
             return super.visitScript_definition(ctx);
         }
@@ -110,7 +118,7 @@ public class ScriptDocument extends DefaultStyledDocument
         @Override
         public Void visitCommand(ScriptFileParser.CommandContext ctx)
         {
-            int len = ctx.stop.getStopIndex() - ctx.start.getStartIndex();
+            int len = ctx.stop.getStopIndex() - ctx.start.getStartIndex() + 1;
             CommandMacro commandMacro = null;
             for (CommandMacro macro : ScriptParser.commandMacros)
             {

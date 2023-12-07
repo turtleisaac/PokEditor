@@ -35,7 +35,7 @@ import io.github.turtleisaac.pokeditor.gamedata.GameCodeBinaries;
 import io.github.turtleisaac.pokeditor.gamedata.GameFiles;
 import io.github.turtleisaac.pokeditor.gui.PokeditorManager;
 import io.github.turtleisaac.pokeditor.gui.editors.data.DefaultDataEditorPanel;
-import io.github.turtleisaac.pokeditor.gui.editors.data.formats.field_scripts.FieldScriptEditor;
+import io.github.turtleisaac.pokeditor.gui.editors.data.formats.scripts.field.FieldScriptEditor;
 import io.github.turtleisaac.pokeditor.gui.editors.data.formats.pokemon_sprite.PokemonSpriteEditor;
 import io.github.turtleisaac.pokeditor.gui.sheets.DefaultSheetPanel;
 import io.github.turtleisaac.pokeditor.gui.sheets.tables.formats.*;

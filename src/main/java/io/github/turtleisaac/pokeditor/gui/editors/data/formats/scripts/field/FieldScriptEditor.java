@@ -52,39 +52,45 @@ public class FieldScriptEditor extends DefaultDataEditor<GenericScriptData, Fiel
             listModel.addAll(data);
 
             try {
+                StringBuilder builder = new StringBuilder();
                 for (ScriptData.ScriptComponent component : scriptData)
                 {
                     if (component instanceof ScriptData.ScriptLabel label)
                     {
                         if (scriptData.getScripts().contains(label))
                         {
-                            document.insertString(document.getLength(), "script(" + (scriptData.getScripts().indexOf(label)+1) + ") ", document.getStyle("regular"));
-                            document.insertString(document.getLength(), label.getName() + ":\n", document.getStyle("regular"));
+                            builder.append("script(").append(scriptData.getScripts().indexOf(label) + 1).append(") ");
+                            builder.append(label.getName()).append(":\n");
                         }
                         else
                         {
-                            document.insertString(document.getLength(), label + "\n", document.getStyle("regular"));
+                            builder.append(label).append("\n");
                         }
 
+//                        if (scriptData.getScripts().contains(label))
+//                        {
+//                            builder.append("script(").append(scriptData.getScripts().indexOf(label) + 1).append(") ");
+//                        }
+//                        builder.append("label_").append(scriptData.getLabels().indexOf(label)).append(":\n");
+
                     }
-                    if (component instanceof ScriptData.ScriptCommand scriptCommand)
+                    else if (component instanceof ScriptData.ScriptCommand scriptCommand)
                     {
-                        document.insertString(document.getLength(), scriptCommand.getName(), document.getStyle("regular"));
+                        builder.append(scriptCommand.getName());
                         String[] parameters = scriptCommand.getParameterStrings();
 
                         for (String parameter : parameters) {
-                            Style style = document.getStyle("regular");
-                            document.insertString(document.getLength(), " " + parameter, style);
+                            builder.append(" ").append(parameter);
                         }
 
                         if (scriptCommand.getName().equals("end") || scriptCommand.getName().equals("goto"))
                         {
-                            document.insertString(document.getLength(), "\n", document.getStyle("regular"));
+                            builder.append("\n");
                         }
-                        document.insertString(document.getLength(), "\n", document.getStyle("regular"));
+                        builder.append("\n");
                     }
                 }
-
+                document.insertString(0, builder.toString().strip(), document.getStyle("regular"));
             } catch (BadLocationException ble) {
                 System.err.println("Couldn't insert initial text into text pane.");
             }
