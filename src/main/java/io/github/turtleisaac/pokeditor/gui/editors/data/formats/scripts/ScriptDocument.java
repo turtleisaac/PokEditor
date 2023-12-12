@@ -1,68 +1,101 @@
 package io.github.turtleisaac.pokeditor.gui.editors.data.formats.scripts;
 
+import io.github.turtleisaac.nds4j.ui.ThemeUtils;
 import io.github.turtleisaac.pokeditor.formats.scripts.*;
 import io.github.turtleisaac.pokeditor.formats.scripts.antlr4.CommandMacro;
+import io.github.turtleisaac.pokeditor.gui.PokeditorManager;
 import org.antlr.v4.runtime.CharStreams;
 import org.antlr.v4.runtime.CommonTokenStream;
 import org.antlr.v4.runtime.tree.ParseTree;
-import org.antlr.v4.runtime.tree.TerminalNode;
+import org.antlr.v4.runtime.tree.TerminalNodeImpl;
 
+import javax.swing.*;
 import javax.swing.text.*;
 import java.awt.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Set;
 
 public class ScriptDocument extends DefaultStyledDocument
 {
-    static final Color ORANGE = new Color(185, 125, 25);
-    static final Color BLUE = new Color(25, 148, 185);
-    static final Color YELLOW = new Color(180, 185, 25);
-    static final Color GREEN = new Color(75, 194, 94);
-    static final Color RED = new Color(250, 92, 48);
+    private int lineCount = 1;
 
-    public ScriptDocument()
+    private final ScriptElementList scriptElementList;
+    private final StyleContext context;
+
+    private JTextPane lineNumberPane;
+
+    public ScriptDocument(ScriptPane pane)
     {
+        super(StyleContext.getDefaultStyleContext());
+        context = (StyleContext) getAttributeContext();
+        scriptElementList = new ScriptElementList();
         addStylesToDocument(this);
+        pane.insertComponent(new JButton("test"));
+        setLineNumberPane(pane.getLineNumberPane());
+    }
+
+    public ScriptData getScriptData() throws BadLocationException
+    {
+        ScriptDataProducer visitor = new ScriptDataProducer();
+
+        return visitor.produceScriptData(getText(0, getLength()));
     }
 
     @Override
     public void insertString(int offs, String str, AttributeSet a) throws BadLocationException
     {
         super.insertString(offs, str, a);
+        setSyntaxAttributes();
+        int count = getDefaultRootElement().getElementCount();
 
-        ScriptFileLexer lexer = new ScriptFileLexer(CharStreams.fromString(getText(0, getLength())));
+        if (lineNumberPane != null)
+        {
+            Document numberDoc = lineNumberPane.getDocument();
+            numberDoc.remove(0, numberDoc.getLength());
 
-        CommonTokenStream tokens = new CommonTokenStream(lexer);
-        ScriptFileParser parser = new ScriptFileParser(tokens);
+            for (int i = 0; i < count; i++)
+            {
+                numberDoc.insertString(numberDoc.getLength(), i  + "\n", null);
+            }
+        }
 
-        ScriptFileVisitor visitor = new ScriptFileVisitor();
-        visitor.visitScript_file(parser.script_file());
     }
 
     @Override
     public void remove(int offs, int len) throws BadLocationException
     {
         super.remove(offs, len);
+        setSyntaxAttributes();
+    }
 
+    protected void setSyntaxAttributes() throws BadLocationException
+    {
         ScriptFileLexer lexer = new ScriptFileLexer(CharStreams.fromString(getText(0, getLength())));
+        lexer.removeErrorListeners();
 
         CommonTokenStream tokens = new CommonTokenStream(lexer);
         ScriptFileParser parser = new ScriptFileParser(tokens);
+        parser.removeErrorListeners();
 
-        ScriptFileVisitor visitor = new ScriptFileVisitor();
+        ScriptFileSyntaxVisitor visitor = new ScriptFileSyntaxVisitor();
         visitor.visitScript_file(parser.script_file());
     }
 
-    protected void addStylesToDocument(StyledDocument doc) {
+    private void addStylesToDocument(StyledDocument doc) {
         //Initialize some styles.
-        Style def = StyleContext.getDefaultStyleContext().
-                getStyle(StyleContext.DEFAULT_STYLE);
+        Style def = context.getStyle(StyleContext.DEFAULT_STYLE);
 
         Style regular = doc.addStyle("regular", def);
         StyleConstants.setFontSize(def, 14);
-        StyleConstants.setFontFamily(def, "SansSerif");
+        StyleConstants.setFontFamily(regular, "Monospaced");
+//        StyleConstants.setTabSet(regular, tabSet);
+        StyleConstants.setLeftIndent(regular, 100);
+//        StyleConstants.setFirstLineIndent(regular, -100);
 
         Style command = doc.addStyle(COMMAND, regular);
         StyleConstants.setForeground(command, BLUE);
-        StyleConstants.setItalic(command, true);
 
         Style s = doc.addStyle(INCORRECT, command);
         StyleConstants.setBackground(s, RED);
@@ -72,6 +105,7 @@ public class ScriptDocument extends DefaultStyledDocument
 
         s = doc.addStyle(PARAMETER, regular);
         StyleConstants.setForeground(s, YELLOW);
+        StyleConstants.setItalic(s, true);
 
         s = doc.addStyle(LABEL, regular);
         StyleConstants.setBold(s, true);
@@ -80,7 +114,27 @@ public class ScriptDocument extends DefaultStyledDocument
         s = doc.addStyle(SCRIPT, regular);
         StyleConstants.setBold(s, true);
         StyleConstants.setForeground(s, GREEN);
+
+        s = doc.addStyle(GOTO_LABEL, regular);
+        StyleConstants.setBold(s, true);
+        StyleConstants.setUnderline(s, true);
     }
+
+    public ScriptElementList getScriptElementList()
+    {
+        return scriptElementList;
+    }
+
+    public void setLineNumberPane(JTextPane lineNumberPane)
+    {
+        this.lineNumberPane = lineNumberPane;
+    }
+
+    static final Color ORANGE = new Color(185, 125, 25);
+    static final Color BLUE = new Color(25, 148, 185);
+    static final Color YELLOW = new Color(180, 185, 25);
+    static final Color GREEN = new Color(75, 194, 94);
+    static final Color RED = new Color(250, 92, 48);
 
     static final String UNKNOWN_COMMAND = "unknown_command";
     static final String COMMAND = "command";
@@ -88,13 +142,35 @@ public class ScriptDocument extends DefaultStyledDocument
     static final String PARAMETER = "parameter";
     static final String LABEL = "label";
     static final String SCRIPT = "script";
+    static final String GOTO_LABEL = "goto_label";
 
-    class ScriptFileVisitor extends ScriptFileBaseVisitor<Void>
+    class ScriptFileSyntaxVisitor extends ScriptFileBaseVisitor<Void>
     {
+        private List<Integer> scriptNumbers;
+        private List<String> labelNames;
+
+        private boolean invalid = false;
+
+        public boolean wasSuccessful()
+        {
+            return !invalid;
+        }
+
+        @Override
+        public Void visitScript_file(ScriptFileParser.Script_fileContext ctx)
+        {
+            scriptElementList.clear();
+            scriptNumbers = new ArrayList<>();
+            labelNames = new ArrayList<>();
+            return super.visitScript_file(ctx);
+        }
+
         @Override
         public Void visitLabel_definition(ScriptFileParser.Label_definitionContext ctx)
         {
-            int len = ctx.stop.getStopIndex() - ctx.start.getStartIndex() + 1;
+            int stopExclusive = ctx.stop.getStopIndex() + 1;
+            int len = stopExclusive - ctx.start.getStartIndex();
+
             setCharacterAttributes(ctx.start.getStartIndex(), len, getStyle(LABEL), true);
             return super.visitLabel_definition(ctx);
         }
@@ -102,32 +178,112 @@ public class ScriptDocument extends DefaultStyledDocument
         @Override
         public Void visitLabel(ScriptFileParser.LabelContext ctx)
         {
-            int len = ctx.stop.getStopIndex() - ctx.start.getStartIndex() + 1;
-            setCharacterAttributes(ctx.start.getStartIndex(), len, getStyle(LABEL), true);
+            int stopExclusive = ctx.stop.getStopIndex() + 1;
+            int len = stopExclusive - ctx.start.getStartIndex();
+
+            if (!(ctx.parent instanceof ScriptFileParser.Label_definitionContext))
+            {
+                scriptElementList.add(new ElementRange(ctx.start.getStartIndex(), stopExclusive, null, ElementType.LABEL));
+                setCharacterAttributes(ctx.start.getStartIndex(), len, getStyle(LABEL), true);
+            }
+            else if (labelNames.contains(ctx.getText()))
+            {
+                scriptElementList.add(new ElementRange(ctx.start.getStartIndex(), stopExclusive, "A label with this name already exists"));
+                setCharacterAttributes(ctx.start.getStartIndex(), len, getStyle(INCORRECT), true);
+                this.invalid = true;
+            }
+            else
+            {
+                setCharacterAttributes(ctx.start.getStartIndex(), len, getStyle(LABEL), true);
+                labelNames.add(ctx.getText());
+            }
+
             return super.visitLabel(ctx);
         }
 
         @Override
         public Void visitScript_definition(ScriptFileParser.Script_definitionContext ctx)
         {
-            int len = ctx.stop.getStopIndex() - ctx.start.getStartIndex() + 1;
-            setCharacterAttributes(ctx.start.getStartIndex(), len, getStyle(SCRIPT), true);
+            int stopExclusive = ctx.stop.getStopIndex() + 1;
+            int len = stopExclusive - ctx.start.getStartIndex();
+
+            boolean invalid = false;
+            for (ParseTree child : ctx.children)
+            {
+                if (child instanceof TerminalNodeImpl terminalNode)
+                {
+                    if (terminalNode.symbol.getType() == ScriptFileLexer.NUMBER)
+                    {
+                        if (terminalNode.symbol.getStartIndex() == -1)
+                        {
+                            scriptElementList.add(new ElementRange(ctx.start.getStartIndex(), stopExclusive, "You are missing a script number here"));
+                            invalid = true;
+                            this.invalid = true;
+                        }
+                        else
+                        {
+                            int scriptID = Integer.parseInt(terminalNode.getText());
+                            if (scriptID == 0)
+                            {
+                                scriptElementList.add(new ElementRange(ctx.start.getStartIndex(), stopExclusive, "You can't use index 0 for a script"));
+                                invalid = true;
+                                this.invalid = true;
+                            }
+                            else if (scriptNumbers.contains(scriptID))
+                            {
+                                scriptElementList.add(new ElementRange(ctx.start.getStartIndex(), stopExclusive, "This script ID number is already in use"));
+                                invalid = true;
+                                this.invalid = true;
+                            }
+                            else
+                            {
+                                scriptNumbers.add(scriptID);
+                            }
+                        }
+
+                        break;
+                    }
+                }
+            }
+
+            if (!invalid)
+                setCharacterAttributes(ctx.start.getStartIndex(), len, getStyle(SCRIPT), true);
+            else
+                setCharacterAttributes(ctx.start.getStartIndex(), len, getStyle(INCORRECT), true);
+
             return super.visitScript_definition(ctx);
         }
 
         @Override
         public Void visitCommand(ScriptFileParser.CommandContext ctx)
         {
-            int len = ctx.stop.getStopIndex() - ctx.start.getStartIndex() + 1;
+            int stopExclusive = ctx.stop.getStopIndex() + 1;
+            int len = stopExclusive - ctx.start.getStartIndex();
+
+            String toolTipText;
+
+            String name = "";
+
             CommandMacro commandMacro = null;
-            for (CommandMacro macro : ScriptParser.commandMacros)
+            for (ParseTree child : ctx.children)
             {
-                if (macro.getName().equals(ctx.getChild(0).getText()))
+                if (child instanceof TerminalNodeImpl terminalNode)
                 {
-                    commandMacro = macro;
-                    break;
+                    if (terminalNode.symbol.getType() == ScriptFileLexer.NAME)
+                    {
+                        name = terminalNode.getText();
+                        for (CommandMacro macro : ScriptParser.commandMacros)
+                        {
+                            if (macro.getName().equals(terminalNode.getText()))
+                            {
+                                commandMacro = macro;
+                                break;
+                            }
+                        }
+                    }
                 }
             }
+
 
             if (commandMacro != null)
             {
@@ -154,17 +310,38 @@ public class ScriptDocument extends DefaultStyledDocument
                 if (paramCount == actualCount)
                 {
                     setCharacterAttributes(ctx.start.getStartIndex(), len, getStyle(COMMAND), true);
+                    scriptElementList.add(new ElementRange(ctx.start.getStartIndex(), stopExclusive, commandMacro.toString(), ElementType.COMMAND));
                     return super.visitCommand(ctx);
                 }
                 else
                 {
+                    this.invalid = true;
+                    StringBuilder text = new StringBuilder();
+                    if (paramCount > actualCount)
+                    {
+                        text.append("You have too many parameters for this command");
+                    }
+                    else
+                    {
+                        text.append("You have too few parameters for this command");
+                    }
+                    text.append("\n").append(commandMacro);
+
+                    toolTipText = text.toString();
+
                     setCharacterAttributes(ctx.start.getStartIndex(), len, getStyle(INCORRECT), true);
+                    scriptElementList.add(new ElementRange(ctx.start.getStartIndex(), stopExclusive, toolTipText, ElementType.COMMAND));
+                    return null;
                 }
             }
             else
             {
+                toolTipText = String.format("'%s' is not a valid command", name);
                 setCharacterAttributes(ctx.start.getStartIndex(), len, getStyle(UNKNOWN_COMMAND), true);
+                this.invalid = true;
             }
+
+            scriptElementList.add(new ElementRange(ctx.start.getStartIndex(), stopExclusive, toolTipText));
 
             return null;
         }
@@ -172,9 +349,325 @@ public class ScriptDocument extends DefaultStyledDocument
         @Override
         public Void visitParameters(ScriptFileParser.ParametersContext ctx)
         {
-            int len = ctx.stop.getStopIndex() - ctx.start.getStartIndex() + 1;
+            int stopExclusive = ctx.stop.getStopIndex() + 1;
+            int len = stopExclusive - ctx.start.getStartIndex();
+
             setCharacterAttributes(ctx.start.getStartIndex(), len, getStyle(PARAMETER), false);
             return super.visitParameters(ctx);
+        }
+    }
+
+    static class ScriptDataProducer extends ScriptFileBaseVisitor<Void>
+    {
+        private ScriptData data;
+
+        private HashMap<Integer, ScriptData.ScriptLabel> scriptEntryPoints;
+
+        ScriptData produceScriptData(String text)
+        {
+            data = new ScriptData();
+            scriptEntryPoints = new HashMap<>();
+
+            ScriptFileLexer lexer = new ScriptFileLexer(CharStreams.fromString(text));
+
+            CommonTokenStream tokens = new CommonTokenStream(lexer);
+            ScriptFileParser parser = new ScriptFileParser(tokens);
+            visitScript_file(parser.script_file());
+
+            Set<Integer> keys = scriptEntryPoints.keySet();
+            List<Integer> scriptNumbers = keys.stream().sorted().toList();
+
+            for (int i = 1; i < scriptNumbers.size(); i++)
+            {
+                int last = scriptNumbers.get(i-1);
+                int current = scriptNumbers.get(i);
+
+                if (last != current - 1)
+                {
+                    if (last == current)
+                        throw new RuntimeException("You have two scripts with the same ID number: " + last);
+                    else
+                        throw new RuntimeException("You are missing a script with ID number: " + (current-1));
+                }
+
+            }
+
+
+
+            return data;
+        }
+
+        @Override
+        public Void visitLabel_definition(ScriptFileParser.Label_definitionContext ctx)
+        {
+            String labelName = null;
+            boolean script = false;
+            int scriptNumber = -1;
+
+            for (ParseTree child : ctx.children)
+            {
+                if (child instanceof ScriptFileParser.LabelContext)
+                {
+                    labelName = child.getText();
+                    break;
+                }
+
+                if (child instanceof ScriptFileParser.Script_definitionContext scriptDefinitionContext)
+                {
+                    script = true;
+                    for (ParseTree scriptChild : scriptDefinitionContext.children)
+                    {
+                        if (scriptChild instanceof TerminalNodeImpl terminalNode)
+                        {
+                            if (terminalNode.symbol.getType() == ScriptFileLexer.NUMBER)
+                            {
+                                if (terminalNode.symbol.getStartIndex() == -1)
+                                {
+                                    throw new RuntimeException("Missing a script number at: " + scriptDefinitionContext.getText());
+                                }
+                                else if (Integer.parseInt(terminalNode.getText()) != 0)
+                                {
+                                    scriptNumber = Integer.parseInt(terminalNode.getText());
+                                }
+                                break;
+                            }
+                        }
+                    }
+
+//                    scriptDefinitionContext.accept(this);
+//                    break;
+                }
+            }
+
+            if (labelName != null)
+            {
+                ScriptData.ScriptLabel label = new ScriptData.ScriptLabel(labelName);
+                data.add(label);
+                if (script && scriptNumber != -1)
+                    scriptEntryPoints.put(scriptNumber, label);
+            }
+
+
+            return null;
+        }
+
+        @Override
+        public Void visitCommand(ScriptFileParser.CommandContext ctx)
+        {
+            CommandMacro commandMacro = null;
+            Object[] parameters = null;
+
+            for (ParseTree child : ctx.children)
+            {
+                if (child instanceof TerminalNodeImpl terminalNode)
+                {
+                    if (terminalNode.symbol.getType() == ScriptFileLexer.NAME)
+                    {
+                        for (CommandMacro macro : ScriptParser.commandMacros)
+                        {
+                            if (macro.getName().equals(terminalNode.getText()))
+                            {
+                                commandMacro = macro;
+                                break;
+                            }
+                        }
+                    }
+                }
+                else if (child instanceof ScriptFileParser.ParametersContext)
+                {
+                    parameters = child.accept(new ScriptFileBaseVisitor<>()
+                    {
+                        @Override
+                        public Object[] visitParameters(ScriptFileParser.ParametersContext ctx)
+                        {
+                            if (ctx.children == null)
+                                return null;
+
+                            List<Object> objects = new ArrayList<>();
+                            for(ParseTree parametersChild : ctx.children) {
+                                if(parametersChild instanceof ScriptFileParser.ParameterContext parameterContext) {
+                                    objects.add(visitParameterAction(parameterContext));
+                                }
+                            }
+
+                            return objects.toArray(Object[]::new);
+                        }
+                    });
+                }
+            }
+
+            if (commandMacro == null) {
+                return null; //todo better
+            }
+
+            ScriptData.ScriptCommand command = new ScriptData.ScriptCommand(commandMacro);
+            command.setParameters(parameters);
+            data.add(command);
+
+            return super.visitCommand(ctx);
+        }
+
+        private Object visitParameterAction(ScriptFileParser.ParameterContext ctx)
+        {
+            Object result = null;
+            for (ParseTree child : ctx.children)
+            {
+                if (child instanceof TerminalNodeImpl terminalNode)
+                {
+                    String text = terminalNode.getText();
+                    int type = terminalNode.symbol.getType();
+
+                    if (type == ScriptFileLexer.NUMBER)
+                    {
+                        if (text.contains("0x"))
+                            return Integer.parseInt(text, 16);
+                        else
+                            return Integer.parseInt(text);
+                    }
+                    else if (type == ScriptFileLexer.NAME)
+                    {
+                        if (text.startsWith("0x"))
+                        {
+                            try {
+                                return Integer.parseInt(text.substring(2), 16);
+                            } catch(NumberFormatException ignored) {}
+                        }
+                        return text;
+                    }
+                }
+                else if (child instanceof ScriptFileParser.LabelContext labelContext)
+                {
+                    return labelContext.getText();
+                }
+            }
+
+            return ctx.getText();
+        }
+    }
+
+    public enum ElementType {
+        LABEL,
+        COMMAND,
+        IGNORED
+    }
+
+    public class ElementRange
+    {
+        private final int min;
+        private final int maxExclusive;
+        private String toolTipText;
+        private final ElementType elementType;
+
+        public ElementRange(int min, int maxExclusive, String toolTipText)
+        {
+            if (maxExclusive <= min)
+            {
+                throw new RuntimeException(String.format("maxExclusive (%d) must be greater than min (%d)", maxExclusive, min));
+            }
+            this.min = min;
+            this.maxExclusive = maxExclusive;
+            this.toolTipText = toolTipText;
+            this.elementType = ElementType.IGNORED;
+        }
+
+        public ElementRange(int min, int maxExclusive, String toolTipText, ElementType elementType)
+        {
+            if (maxExclusive <= min)
+            {
+                throw new RuntimeException(String.format("maxExclusive (%d) must be greater than min (%d)", maxExclusive, min));
+            }
+            this.min = min;
+            this.maxExclusive = maxExclusive;
+            this.toolTipText = toolTipText;
+            this.elementType = elementType;
+        }
+
+        public int getLength()
+        {
+            return maxExclusive - min;
+        }
+
+        public boolean contains(int value)
+        {
+            return value >= min && value < maxExclusive - 1;
+        }
+
+        public boolean contains(ElementRange range)
+        {
+            return contains(range.min) && (contains(range.maxExclusive-1) || range.maxExclusive == maxExclusive);
+        }
+
+        public String getToolTipText()
+        {
+            return toolTipText;
+        }
+
+        public ElementType getElementType()
+        {
+            return elementType;
+        }
+
+        public int getMin()
+        {
+            return min;
+        }
+
+        public int getMaxExclusive()
+        {
+            return maxExclusive;
+        }
+
+        @Override
+        public String toString()
+        {
+            try {
+                return getText(min, maxExclusive - min + 1);
+            }
+            catch(BadLocationException e) {
+                throw new RuntimeException(e);
+            }
+        }
+    }
+
+    public static class ScriptElementList
+    {
+        private ArrayList<ElementRange> elementRanges = new ArrayList<>();
+
+        public void add(ElementRange newRange)
+        {
+            boolean found = false;
+            for (ElementRange existingRange : elementRanges)
+            {
+                if (existingRange.contains(newRange) && existingRange.getLength() != newRange.getLength())
+                {
+                    elementRanges.remove(existingRange);
+                    elementRanges.add(newRange);
+                    found = true;
+                }
+            }
+
+            if (!found)
+            {
+                elementRanges.add(newRange);
+            }
+        }
+
+        public void clear()
+        {
+            elementRanges.clear();
+        }
+
+        public ElementRange find(int offset)
+        {
+            for (ElementRange range : elementRanges)
+            {
+                if (range.contains(offset))
+                {
+                    return range;
+                }
+            }
+
+            return null;
         }
     }
 }
