@@ -25,7 +25,7 @@ public class Main
         Tool tool = Tool.create();
         tool.setType(ProgramType.PROJECT)
                 .setName("PokEditor")
-                .setVersion("3.0.0")
+                .setVersion("3.1.1")
 //                .setFlavorText("Did you know that Jay likes Moemon?")
                 .setFlavorText(mainMenuJokes[(int) (Math.random()*(mainMenuJokes.length))])
                 .setAuthor("Developed by Turtleisaac")

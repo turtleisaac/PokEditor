@@ -9,7 +9,7 @@ new FormModel {
 	root: new FormRoot {
 		add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class net.miginfocom.swing.MigLayout ) {
 			"$layoutConstraints": "hidemode 3"
-			"$columnConstraints": "[fill][fill][fill][fill]"
+			"$columnConstraints": "[fill][fill][grow,fill][grow,fill]"
 			"$rowConstraints": "[][]"
 		} ) {
 			name: "this"
@@ -23,6 +23,33 @@ new FormModel {
 			}, new FormLayoutConstraints( class net.miginfocom.layout.CC ) {
 				"value": "cell 1 0,grow,width 500:500:1000,height 500:500:500"
 			} )
+			add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class net.miginfocom.swing.MigLayout ) {
+				"$layoutConstraints": "insets 0 0 0 10,hidemode 3"
+				"$columnConstraints": "[grow,fill]"
+				"$rowConstraints": "[][]"
+			} ) {
+				name: "panel1"
+				add( new FormComponent( "javax.swing.JLabel" ) {
+					name: "label1"
+					"text": new FormMessage( null, "FieldScriptEditor.label1.text" )
+					"font": new com.jformdesigner.model.SwingDerivedFont( null, 0, 5, false )
+				}, new FormLayoutConstraints( class net.miginfocom.layout.CC ) {
+					"value": "cell 0 0"
+				} )
+				add( new FormContainer( "javax.swing.JScrollPane", new FormLayoutManager( class javax.swing.JScrollPane ) ) {
+					name: "scrollPane2"
+					add( new FormComponent( "javax.swing.JList" ) {
+						name: "list1"
+						auxiliary() {
+							"JavaCodeGenerator.typeParameters": "String"
+						}
+					} )
+				}, new FormLayoutConstraints( class net.miginfocom.layout.CC ) {
+					"value": "cell 0 1"
+				} )
+			}, new FormLayoutConstraints( class net.miginfocom.layout.CC ) {
+				"value": "cell 3 0,grow"
+			} )
 			add( new FormComponent( "javax.swing.JButton" ) {
 				name: "button1"
 				"text": new FormMessage( null, "FieldScriptEditor.button1.text" )
@@ -32,7 +59,17 @@ new FormModel {
 			} )
 		}, new FormLayoutConstraints( null ) {
 			"location": new java.awt.Point( 15, 0 )
-			"size": new java.awt.Dimension( 725, 640 )
+			"size": new java.awt.Dimension( 1030, 640 )
+		} )
+		add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class net.miginfocom.swing.MigLayout ) {
+			"$layoutConstraints": "hidemode 3"
+			"$columnConstraints": "[fill][fill]"
+			"$rowConstraints": "[][][]"
+		} ) {
+			name: "panel2"
+		}, new FormLayoutConstraints( null ) {
+			"location": new java.awt.Point( 45, 900 )
+			"size": new java.awt.Dimension( 200, 200 )
 		} )
 	}
 }

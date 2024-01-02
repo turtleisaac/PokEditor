@@ -11,6 +11,7 @@ import javax.swing.text.*;
 
 import io.github.turtleisaac.pokeditor.formats.scripts.GenericScriptData;
 import io.github.turtleisaac.pokeditor.formats.scripts.ScriptData;
+import io.github.turtleisaac.pokeditor.formats.scripts.antlr4.ScriptDataProducer;
 import io.github.turtleisaac.pokeditor.formats.text.TextBankData;
 import io.github.turtleisaac.pokeditor.gui.editors.data.DefaultDataEditor;
 import io.github.turtleisaac.pokeditor.gui.editors.data.EditorDataModel;
@@ -70,44 +71,7 @@ public class FieldScriptEditor extends DefaultDataEditor<GenericScriptData, Fiel
             listModel.addAll(data);
 
             try {
-                StringBuilder builder = new StringBuilder();
-                for (ScriptData.ScriptComponent component : scriptData)
-                {
-                    if (component instanceof ScriptData.ScriptLabel label)
-                    {
-//                        if (scriptData.getScripts().contains(label))
-//                        {
-//                            builder.append("script(").append(scriptData.getScripts().indexOf(label) + 1).append(") ");
-//                            builder.append(label.getName()).append(":\n");
-//                        }
-//                        else
-//                        {
-//                            builder.append(label).append("\n");
-//                        }
-
-                        if (scriptData.getScripts().contains(label))
-                        {
-                            builder.append("script(").append(scriptData.getScripts().indexOf(label) + 1).append(") ");
-                        }
-                        builder.append(label.getName()).append(":\n");
-                    }
-                    else if (component instanceof ScriptData.ScriptCommand scriptCommand)
-                    {
-                        builder.append("    ").append(scriptCommand.getName());
-                        String[] parameters = scriptCommand.getParameterStrings();
-
-                        for (String parameter : parameters) {
-                            builder.append(" ").append(parameter);
-                        }
-
-                        if (scriptCommand.getName().equals("end") || scriptCommand.getName().equals("goto") || scriptCommand.getName().equals("Jump") || scriptCommand.getName().equals("End"))
-                        {
-                            builder.append("\n");
-                        }
-                        builder.append("\n");
-                    }
-                }
-                document.insertString(0, builder.toString().strip() + "\n", document.getStyle("regular"));
+                document.insertString(0, scriptData.toString(), document.getStyle("regular"));
             } catch (BadLocationException ble) {
                 System.err.println("Couldn't insert initial text into text pane.");
             }
@@ -127,6 +91,15 @@ public class FieldScriptEditor extends DefaultDataEditor<GenericScriptData, Fiel
             catch(BadLocationException ex) {
                 throw new RuntimeException(ex);
             }
+            catch(ScriptDataProducer.ScriptCompilationException ex) {
+                DefaultListModel<String> errorListModel = new DefaultListModel<>();
+                for (Throwable throwable : ex.getSuppressed())
+                {
+                    errorListModel.addElement(throwable.getMessage());
+                    System.err.println(throwable.getMessage());
+                }
+                list1.setModel(errorListModel);
+            }
         }
     }
 
@@ -136,7 +109,12 @@ public class FieldScriptEditor extends DefaultDataEditor<GenericScriptData, Fiel
         ResourceBundle bundle = ResourceBundle.getBundle("pokeditor.sheet_panel");
         scrollPane1 = new JScrollPane();
         textPane1 = new ScriptPane();
+        panel1 = new JPanel();
+        label1 = new JLabel();
+        scrollPane2 = new JScrollPane();
+        list1 = new JList<>();
         button1 = new JButton();
+        panel2 = new JPanel();
 
         //======== this ========
         setLayout(new MigLayout(
@@ -144,8 +122,8 @@ public class FieldScriptEditor extends DefaultDataEditor<GenericScriptData, Fiel
             // columns
             "[fill]" +
             "[fill]" +
-            "[fill]" +
-            "[fill]",
+            "[grow,fill]" +
+            "[grow,fill]",
             // rows
             "[]" +
             "[]"));
@@ -160,10 +138,46 @@ public class FieldScriptEditor extends DefaultDataEditor<GenericScriptData, Fiel
         }
         add(scrollPane1, "cell 1 0,grow,width 500:500:1000,height 500:500:500");
 
+        //======== panel1 ========
+        {
+            panel1.setLayout(new MigLayout(
+                "insets 0 0 0 10,hidemode 3",
+                // columns
+                "[grow,fill]",
+                // rows
+                "[]" +
+                "[]"));
+
+            //---- label1 ----
+            label1.setText(bundle.getString("FieldScriptEditor.label1.text"));
+            label1.setFont(label1.getFont().deriveFont(label1.getFont().getSize() + 5f));
+            panel1.add(label1, "cell 0 0");
+
+            //======== scrollPane2 ========
+            {
+                scrollPane2.setViewportView(list1);
+            }
+            panel1.add(scrollPane2, "cell 0 1");
+        }
+        add(panel1, "cell 3 0,grow");
+
         //---- button1 ----
         button1.setText(bundle.getString("FieldScriptEditor.button1.text"));
         button1.addActionListener(e -> button1(e));
         add(button1, "cell 1 1");
+
+        //======== panel2 ========
+        {
+            panel2.setLayout(new MigLayout(
+                "hidemode 3",
+                // columns
+                "[fill]" +
+                "[fill]",
+                // rows
+                "[]" +
+                "[]" +
+                "[]"));
+        }
         // JFormDesigner - End of component initialization  //GEN-END:initComponents  @formatter:on
     }
 
@@ -177,7 +191,12 @@ public class FieldScriptEditor extends DefaultDataEditor<GenericScriptData, Fiel
     // Generated using JFormDesigner non-commercial license
     private JScrollPane scrollPane1;
     private ScriptPane textPane1;
+    private JPanel panel1;
+    private JLabel label1;
+    private JScrollPane scrollPane2;
+    private JList<String> list1;
     private JButton button1;
+    private JPanel panel2;
     // JFormDesigner - End of variables declaration  //GEN-END:variables  @formatter:on
 
     static class FieldScriptModel extends FormatModel<GenericScriptData, FieldScriptContents>

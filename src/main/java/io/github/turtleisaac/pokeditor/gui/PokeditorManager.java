@@ -123,6 +123,7 @@ public class PokeditorManager extends PanelManager
 
     private NintendoDsRom rom;
     private Game baseRom;
+    private boolean gitEnabled;
 
     public PokeditorManager(Tool tool)
     {
@@ -130,6 +131,7 @@ public class PokeditorManager extends PanelManager
 
         rom = tool.getRom();
         baseRom = Game.parseBaseRom(rom.getGameCode());
+        gitEnabled = tool.isGitEnabled();
         GameFiles.initialize(baseRom);
         TextFiles.initialize(baseRom);
         GameCodeBinaries.initialize(baseRom);
@@ -191,11 +193,26 @@ public class PokeditorManager extends PanelManager
     {
         DataManager.saveData(rom, dataClass);
         DataManager.saveData(rom, TextBankData.class);
-        DataManager.saveCodeBinaries(rom, List.of(GameCodeBinaries.ARM9));
+//        DataManager.saveCodeBinaries(rom, List.of(GameCodeBinaries.ARM9));
 
 //        if (!wipeAndWriteUnpacked())
 //            throw new RuntimeException("An error occurred while deleting or writing a file, please check write permissions");
-        wipeAndWriteUnpacked();
+        String message = null;
+        if (gitEnabled)
+        {
+            message = JOptionPane.showInputDialog(null, "Enter commit message:", "Save & Commit Changes", JOptionPane.INFORMATION_MESSAGE);
+            if (message == null)
+            {
+                JOptionPane.showMessageDialog(null, "Save aborted", "Abort", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+            else if (message.isEmpty())
+            {
+                message = null;
+            }
+        }
+
+        wipeAndWriteUnpacked(message);
     }
 
     public <E extends GenericFileData> void resetData(Class<E> dataClass)

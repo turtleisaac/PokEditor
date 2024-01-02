@@ -3,6 +3,7 @@ package io.github.turtleisaac.pokeditor.gui.editors.data.formats.scripts;
 import io.github.turtleisaac.nds4j.ui.ThemeUtils;
 import io.github.turtleisaac.pokeditor.formats.scripts.*;
 import io.github.turtleisaac.pokeditor.formats.scripts.antlr4.CommandMacro;
+import io.github.turtleisaac.pokeditor.formats.scripts.antlr4.ScriptDataProducer;
 import io.github.turtleisaac.pokeditor.gui.PokeditorManager;
 import org.antlr.v4.runtime.CharStreams;
 import org.antlr.v4.runtime.CommonTokenStream;
@@ -36,7 +37,7 @@ public class ScriptDocument extends DefaultStyledDocument
         setLineNumberPane(pane.getLineNumberPane());
     }
 
-    public ScriptData getScriptData() throws BadLocationException
+    public ScriptData getScriptData() throws BadLocationException, ScriptDataProducer.ScriptCompilationException
     {
         ScriptDataProducer visitor = new ScriptDataProducer();
 
@@ -103,6 +104,9 @@ public class ScriptDocument extends DefaultStyledDocument
         s = doc.addStyle(UNKNOWN_COMMAND, command);
         StyleConstants.setForeground(s, RED);
 
+        s = doc.addStyle(ACTION_COMMAND, regular);
+        StyleConstants.setForeground(s, PURPLE);
+
         s = doc.addStyle(PARAMETER, regular);
         StyleConstants.setForeground(s, YELLOW);
         StyleConstants.setItalic(s, true);
@@ -110,6 +114,10 @@ public class ScriptDocument extends DefaultStyledDocument
         s = doc.addStyle(LABEL, regular);
         StyleConstants.setBold(s, true);
         StyleConstants.setForeground(s, ORANGE);
+
+        s = doc.addStyle(ACTION_LABEL, regular);
+        StyleConstants.setBold(s, true);
+        StyleConstants.setForeground(s, PINK);
 
         s = doc.addStyle(SCRIPT, regular);
         StyleConstants.setBold(s, true);
@@ -135,6 +143,8 @@ public class ScriptDocument extends DefaultStyledDocument
     static final Color YELLOW = new Color(180, 185, 25);
     static final Color GREEN = new Color(75, 194, 94);
     static final Color RED = new Color(250, 92, 48);
+    static final Color PURPLE = new Color(196, 82, 252);
+    static final Color PINK = new Color(239, 163, 255);
 
     static final String UNKNOWN_COMMAND = "unknown_command";
     static final String COMMAND = "command";
@@ -143,11 +153,14 @@ public class ScriptDocument extends DefaultStyledDocument
     static final String LABEL = "label";
     static final String SCRIPT = "script";
     static final String GOTO_LABEL = "goto_label";
+    static final String ACTION_COMMAND = "action_command";
+    static final String ACTION_LABEL = "action_label";
 
     class ScriptFileSyntaxVisitor extends ScriptFileBaseVisitor<Void>
     {
         private List<Integer> scriptNumbers;
         private List<String> labelNames;
+        private List<String> actionNames;
 
         private boolean invalid = false;
 
@@ -162,6 +175,7 @@ public class ScriptDocument extends DefaultStyledDocument
             scriptElementList.clear();
             scriptNumbers = new ArrayList<>();
             labelNames = new ArrayList<>();
+            actionNames = new ArrayList<>();
             return super.visitScript_file(ctx);
         }
 
@@ -199,6 +213,42 @@ public class ScriptDocument extends DefaultStyledDocument
             }
 
             return super.visitLabel(ctx);
+        }
+
+        @Override
+        public Void visitAction_definition(ScriptFileParser.Action_definitionContext ctx)
+        {
+            int stopExclusive = ctx.stop.getStopIndex() + 1;
+            int len = stopExclusive - ctx.start.getStartIndex();
+
+            setCharacterAttributes(ctx.start.getStartIndex(), len, getStyle(ACTION_LABEL), true);
+            return super.visitAction_definition(ctx);
+        }
+
+        @Override
+        public Void visitAction(ScriptFileParser.ActionContext ctx)
+        {
+            int stopExclusive = ctx.stop.getStopIndex() + 1;
+            int len = stopExclusive - ctx.start.getStartIndex();
+
+            if (!(ctx.parent instanceof ScriptFileParser.Action_definitionContext))
+            {
+                scriptElementList.add(new ElementRange(ctx.start.getStartIndex(), stopExclusive, null, ElementType.LABEL));
+                setCharacterAttributes(ctx.start.getStartIndex(), len, getStyle(ACTION_LABEL), true);
+            }
+            else if (actionNames.contains(ctx.getText()))
+            {
+                scriptElementList.add(new ElementRange(ctx.start.getStartIndex(), stopExclusive, "An action with this name already exists"));
+                setCharacterAttributes(ctx.start.getStartIndex(), len, getStyle(INCORRECT), true);
+                this.invalid = true;
+            }
+            else
+            {
+                setCharacterAttributes(ctx.start.getStartIndex(), len, getStyle(ACTION_LABEL), true);
+                actionNames.add(ctx.getText());
+            }
+
+            return super.visitAction(ctx);
         }
 
         @Override
@@ -355,193 +405,26 @@ public class ScriptDocument extends DefaultStyledDocument
             setCharacterAttributes(ctx.start.getStartIndex(), len, getStyle(PARAMETER), false);
             return super.visitParameters(ctx);
         }
-    }
 
-    static class ScriptDataProducer extends ScriptFileBaseVisitor<Void>
-    {
-        private ScriptData data;
-
-        private HashMap<Integer, ScriptData.ScriptLabel> scriptEntryPoints;
-
-        ScriptData produceScriptData(String text)
+        @Override
+        public Void visitAction_command(ScriptFileParser.Action_commandContext ctx)
         {
-            data = new ScriptData();
-            scriptEntryPoints = new HashMap<>();
+            int stopExclusive = ctx.stop.getStopIndex() + 1;
+            int len = stopExclusive - ctx.start.getStartIndex();
 
-            ScriptFileLexer lexer = new ScriptFileLexer(CharStreams.fromString(text));
+            setCharacterAttributes(ctx.start.getStartIndex(), len, getStyle(ACTION_COMMAND), false);
 
-            CommonTokenStream tokens = new CommonTokenStream(lexer);
-            ScriptFileParser parser = new ScriptFileParser(tokens);
-            visitScript_file(parser.script_file());
-
-            Set<Integer> keys = scriptEntryPoints.keySet();
-            List<Integer> scriptNumbers = keys.stream().sorted().toList();
-
-            for (int i = 1; i < scriptNumbers.size(); i++)
-            {
-                int last = scriptNumbers.get(i-1);
-                int current = scriptNumbers.get(i);
-
-                if (last != current - 1)
-                {
-                    if (last == current)
-                        throw new RuntimeException("You have two scripts with the same ID number: " + last);
-                    else
-                        throw new RuntimeException("You are missing a script with ID number: " + (current-1));
-                }
-
-            }
-
-
-
-            return data;
+            return super.visitAction_command(ctx);
         }
 
         @Override
-        public Void visitLabel_definition(ScriptFileParser.Label_definitionContext ctx)
+        public Void visitAction_parameters(ScriptFileParser.Action_parametersContext ctx)
         {
-            String labelName = null;
-            boolean script = false;
-            int scriptNumber = -1;
+            int stopExclusive = ctx.stop.getStopIndex() + 1;
+            int len = stopExclusive - ctx.start.getStartIndex();
 
-            for (ParseTree child : ctx.children)
-            {
-                if (child instanceof ScriptFileParser.LabelContext)
-                {
-                    labelName = child.getText();
-                    break;
-                }
-
-                if (child instanceof ScriptFileParser.Script_definitionContext scriptDefinitionContext)
-                {
-                    script = true;
-                    for (ParseTree scriptChild : scriptDefinitionContext.children)
-                    {
-                        if (scriptChild instanceof TerminalNodeImpl terminalNode)
-                        {
-                            if (terminalNode.symbol.getType() == ScriptFileLexer.NUMBER)
-                            {
-                                if (terminalNode.symbol.getStartIndex() == -1)
-                                {
-                                    throw new RuntimeException("Missing a script number at: " + scriptDefinitionContext.getText());
-                                }
-                                else if (Integer.parseInt(terminalNode.getText()) != 0)
-                                {
-                                    scriptNumber = Integer.parseInt(terminalNode.getText());
-                                }
-                                break;
-                            }
-                        }
-                    }
-
-//                    scriptDefinitionContext.accept(this);
-//                    break;
-                }
-            }
-
-            if (labelName != null)
-            {
-                ScriptData.ScriptLabel label = new ScriptData.ScriptLabel(labelName);
-                data.add(label);
-                if (script && scriptNumber != -1)
-                    scriptEntryPoints.put(scriptNumber, label);
-            }
-
-
-            return null;
-        }
-
-        @Override
-        public Void visitCommand(ScriptFileParser.CommandContext ctx)
-        {
-            CommandMacro commandMacro = null;
-            Object[] parameters = null;
-
-            for (ParseTree child : ctx.children)
-            {
-                if (child instanceof TerminalNodeImpl terminalNode)
-                {
-                    if (terminalNode.symbol.getType() == ScriptFileLexer.NAME)
-                    {
-                        for (CommandMacro macro : ScriptParser.commandMacros)
-                        {
-                            if (macro.getName().equals(terminalNode.getText()))
-                            {
-                                commandMacro = macro;
-                                break;
-                            }
-                        }
-                    }
-                }
-                else if (child instanceof ScriptFileParser.ParametersContext)
-                {
-                    parameters = child.accept(new ScriptFileBaseVisitor<>()
-                    {
-                        @Override
-                        public Object[] visitParameters(ScriptFileParser.ParametersContext ctx)
-                        {
-                            if (ctx.children == null)
-                                return null;
-
-                            List<Object> objects = new ArrayList<>();
-                            for(ParseTree parametersChild : ctx.children) {
-                                if(parametersChild instanceof ScriptFileParser.ParameterContext parameterContext) {
-                                    objects.add(visitParameterAction(parameterContext));
-                                }
-                            }
-
-                            return objects.toArray(Object[]::new);
-                        }
-                    });
-                }
-            }
-
-            if (commandMacro == null) {
-                return null; //todo better
-            }
-
-            ScriptData.ScriptCommand command = new ScriptData.ScriptCommand(commandMacro);
-            command.setParameters(parameters);
-            data.add(command);
-
-            return super.visitCommand(ctx);
-        }
-
-        private Object visitParameterAction(ScriptFileParser.ParameterContext ctx)
-        {
-            Object result = null;
-            for (ParseTree child : ctx.children)
-            {
-                if (child instanceof TerminalNodeImpl terminalNode)
-                {
-                    String text = terminalNode.getText();
-                    int type = terminalNode.symbol.getType();
-
-                    if (type == ScriptFileLexer.NUMBER)
-                    {
-                        if (text.contains("0x"))
-                            return Integer.parseInt(text, 16);
-                        else
-                            return Integer.parseInt(text);
-                    }
-                    else if (type == ScriptFileLexer.NAME)
-                    {
-                        if (text.startsWith("0x"))
-                        {
-                            try {
-                                return Integer.parseInt(text.substring(2), 16);
-                            } catch(NumberFormatException ignored) {}
-                        }
-                        return text;
-                    }
-                }
-                else if (child instanceof ScriptFileParser.LabelContext labelContext)
-                {
-                    return labelContext.getText();
-                }
-            }
-
-            return ctx.getText();
+            setCharacterAttributes(ctx.start.getStartIndex(), len, getStyle(PARAMETER), false);
+            return super.visitAction_parameters(ctx);
         }
     }
 
