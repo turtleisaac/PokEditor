@@ -8,68 +8,255 @@ new FormModel {
 	contentType: "form/swing"
 	root: new FormRoot {
 		add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class net.miginfocom.swing.MigLayout ) {
-			"$layoutConstraints": "hidemode 3"
-			"$columnConstraints": "[fill][fill][grow,fill][grow,fill]"
-			"$rowConstraints": "[][]"
+			"$layoutConstraints": "hidemode 3,alignx center"
+			"$columnConstraints": "[fill][grow,fill]"
+			"$rowConstraints": "[]"
 		} ) {
 			name: "this"
-			add( new FormContainer( "javax.swing.JScrollPane", new FormLayoutManager( class javax.swing.JScrollPane ) ) {
-				name: "scrollPane1"
-				"border": new javax.swing.border.SoftBevelBorder( 1, null, null, null, null )
-				add( new FormComponent( "io.github.turtleisaac.pokeditor.gui.editors.data.formats.scripts.ScriptPane" ) {
-					name: "textPane1"
-					"toolTipText": "moo"
-				} )
-			}, new FormLayoutConstraints( class net.miginfocom.layout.CC ) {
-				"value": "cell 1 0,grow,width 500:500:1000,height 500:500:500"
-			} )
 			add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class net.miginfocom.swing.MigLayout ) {
-				"$layoutConstraints": "insets 0 0 0 10,hidemode 3"
-				"$columnConstraints": "[grow,fill]"
+				"$columnConstraints": "[fill][grow,fill][grow,fill]"
 				"$rowConstraints": "[][]"
+				"$layoutConstraints": "insets 0,hidemode 3"
 			} ) {
-				name: "panel1"
-				add( new FormComponent( "javax.swing.JLabel" ) {
-					name: "label1"
-					"text": new FormMessage( null, "FieldScriptEditor.label1.text" )
-					"font": new com.jformdesigner.model.SwingDerivedFont( null, 0, 5, false )
-				}, new FormLayoutConstraints( class net.miginfocom.layout.CC ) {
-					"value": "cell 0 0"
-				} )
+				name: "fieldScriptPanel"
 				add( new FormContainer( "javax.swing.JScrollPane", new FormLayoutManager( class javax.swing.JScrollPane ) ) {
-					name: "scrollPane2"
-					add( new FormComponent( "javax.swing.JList" ) {
-						name: "list1"
-						auxiliary() {
-							"JavaCodeGenerator.typeParameters": "String"
-						}
+					name: "scrollPane1"
+					"border": new javax.swing.border.SoftBevelBorder( 1, null, null, null, null )
+					add( new FormComponent( "io.github.turtleisaac.pokeditor.gui.editors.data.formats.scripts.ScriptPane" ) {
+						name: "textPane1"
+						"toolTipText": "moo"
 					} )
+				}, new FormLayoutConstraints( class net.miginfocom.layout.CC ) {
+					"value": "cell 0 0,grow,width 500:500:1000,height 500:500:500"
+				} )
+				add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class net.miginfocom.swing.MigLayout ) {
+					"$layoutConstraints": "insets 0 0 0 10,hidemode 3"
+					"$columnConstraints": "[grow,fill]"
+					"$rowConstraints": "[][][]unrel[][]"
+				} ) {
+					name: "panel1"
+					add( new FormComponent( "javax.swing.JLabel" ) {
+						name: "labelJumpListLabel"
+						"text": new FormMessage( null, "FieldScriptEditor.labelJumpListLabel.text" )
+						"font": &SwingDerivedFont0 new com.jformdesigner.model.SwingDerivedFont( null, 0, 5, false )
+					}, new FormLayoutConstraints( class net.miginfocom.layout.CC ) {
+						"value": "cell 0 0"
+					} )
+					add( new FormComponent( "javax.swing.JRadioButton" ) {
+						name: "displayOnlyScriptsRadioButton"
+						"text": new FormMessage( null, "FieldScriptEditor.displayOnlyScriptsRadioButton.text" )
+						"$buttonGroup": new FormReference( "labelListDisplayControlButtonGroup" )
+						addEvent( new FormEvent( "java.awt.event.ActionListener", "actionPerformed", "labelListDisplayControlButtonPressed", true ) )
+					}, new FormLayoutConstraints( class net.miginfocom.layout.CC ) {
+						"value": "cell 0 1,alignx left,growx 0"
+					} )
+					add( new FormComponent( "javax.swing.JRadioButton" ) {
+						name: "displayOnlyLabelsRadioButton"
+						"text": new FormMessage( null, "FieldScriptEditor.displayOnlyLabelsRadioButton.text" )
+						"$buttonGroup": new FormReference( "labelListDisplayControlButtonGroup" )
+						"selected": true
+						addEvent( new FormEvent( "java.awt.event.ActionListener", "actionPerformed", "labelListDisplayControlButtonPressed", true ) )
+					}, new FormLayoutConstraints( class net.miginfocom.layout.CC ) {
+						"value": "cell 0 1,alignx left,growx 0"
+					} )
+					add( new FormComponent( "javax.swing.JRadioButton" ) {
+						name: "displayOnlyActionLabelsRadioButton"
+						"text": new FormMessage( null, "FieldScriptEditor.displayOnlyActionLabelsRadioButton.text" )
+						"$buttonGroup": new FormReference( "labelListDisplayControlButtonGroup" )
+						addEvent( new FormEvent( "java.awt.event.ActionListener", "actionPerformed", "labelListDisplayControlButtonPressed", true ) )
+					}, new FormLayoutConstraints( class net.miginfocom.layout.CC ) {
+						"value": "cell 0 1"
+					} )
+					add( new FormContainer( "javax.swing.JScrollPane", new FormLayoutManager( class javax.swing.JScrollPane ) ) {
+						name: "scriptsScrollPane"
+						add( new FormComponent( "javax.swing.JList" ) {
+							name: "labelDisplayList"
+							"selectionMode": 0
+							auxiliary() {
+								"JavaCodeGenerator.typeParameters": "GenericScriptData.ScriptComponent"
+							}
+							addEvent( new FormEvent( "javax.swing.event.ListSelectionListener", "valueChanged", "labelDisplayListSelectionChanged", true ) )
+						} )
+					}, new FormLayoutConstraints( class net.miginfocom.layout.CC ) {
+						"value": "cell 0 2"
+					} )
+					add( new FormComponent( "javax.swing.JLabel" ) {
+						name: "errorsLabel"
+						"text": new FormMessage( null, "FieldScriptEditor.errorsLabel.text" )
+						"font": #SwingDerivedFont0
+					}, new FormLayoutConstraints( class net.miginfocom.layout.CC ) {
+						"value": "cell 0 3"
+					} )
+					add( new FormContainer( "javax.swing.JScrollPane", new FormLayoutManager( class javax.swing.JScrollPane ) ) {
+						name: "errorsScrollPane"
+						add( new FormComponent( "javax.swing.JList" ) {
+							name: "errorsList"
+							auxiliary() {
+								"JavaCodeGenerator.typeParameters": "String"
+							}
+						} )
+					}, new FormLayoutConstraints( class net.miginfocom.layout.CC ) {
+						"value": "cell 0 4"
+					} )
+				}, new FormLayoutConstraints( class net.miginfocom.layout.CC ) {
+					"value": "cell 2 0,grow"
+				} )
+				add( new FormComponent( "javax.swing.JButton" ) {
+					name: "saveFieldScriptButton"
+					"text": new FormMessage( null, "FieldScriptEditor.saveFieldScriptButton.text" )
+					addEvent( new FormEvent( "java.awt.event.ActionListener", "actionPerformed", "saveScriptChangesButtonPressed", true ) )
 				}, new FormLayoutConstraints( class net.miginfocom.layout.CC ) {
 					"value": "cell 0 1"
 				} )
 			}, new FormLayoutConstraints( class net.miginfocom.layout.CC ) {
-				"value": "cell 3 0,grow"
-			} )
-			add( new FormComponent( "javax.swing.JButton" ) {
-				name: "button1"
-				"text": new FormMessage( null, "FieldScriptEditor.button1.text" )
-				addEvent( new FormEvent( "java.awt.event.ActionListener", "actionPerformed", "button1", true ) )
-			}, new FormLayoutConstraints( class net.miginfocom.layout.CC ) {
-				"value": "cell 1 1"
+				"value": "cell 1 0"
 			} )
 		}, new FormLayoutConstraints( null ) {
-			"location": new java.awt.Point( 15, 0 )
+			"location": new java.awt.Point( 0, 0 )
 			"size": new java.awt.Dimension( 1030, 640 )
 		} )
 		add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class net.miginfocom.swing.MigLayout ) {
-			"$layoutConstraints": "hidemode 3"
-			"$columnConstraints": "[fill][fill]"
-			"$rowConstraints": "[][][]"
+			"$layoutConstraints": "insets null 200 null null,hidemode 3,alignx center"
+			"$columnConstraints": "[left]ind[grow,fill]"
+			"$rowConstraints": "[][][][][][][][grow][][][]"
 		} ) {
-			name: "panel2"
+			name: "levelScriptPanel"
+			add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class net.miginfocom.swing.MigLayout ) {
+				"$columnConstraints": "[grow,fill]"
+				"$rowConstraints": "[][][][][][][][grow][][][]"
+				"$layoutConstraints": "insets 0,hidemode 3"
+			} ) {
+				name: "panel2"
+				add( new FormComponent( "javax.swing.JLabel" ) {
+					name: "configLabel"
+					"text": new FormMessage( null, "FieldScriptEditor.configLabel.text" )
+					"font": new java.awt.Font( ".AppleSystemUIFont", 0, 16 )
+				}, new FormLayoutConstraints( class net.miginfocom.layout.CC ) {
+					"value": "cell 0 0"
+				} )
+				add( new FormComponent( "javax.swing.JComboBox" ) {
+					name: "levelScriptTypeComboBox"
+					"model": new javax.swing.DefaultComboBoxModel {
+						selectedItem: "Variable Value"
+						addElement( "Variable Value" )
+						addElement( "Map Change" )
+						addElement( "Screen Reset" )
+						addElement( "Load Game" )
+					}
+					addEvent( new FormEvent( "java.awt.event.ActionListener", "actionPerformed", "levelScriptTypeSelectionChanged", true ) )
+				}, new FormLayoutConstraints( class net.miginfocom.layout.CC ) {
+					"value": "cell 0 0"
+				} )
+				add( new FormComponent( "javax.swing.JLabel" ) {
+					name: "scriptLabel"
+					"text": new FormMessage( null, "FieldScriptEditor.scriptLabel.text" )
+				}, new FormLayoutConstraints( class net.miginfocom.layout.CC ) {
+					"value": "cell 0 2"
+				} )
+				add( new FormComponent( "javax.swing.JSpinner" ) {
+					name: "scriptNoField"
+					"model": new javax.swing.SpinnerNumberModel( 0, 0, 65535, 1 )
+				}, new FormLayoutConstraints( class net.miginfocom.layout.CC ) {
+					"value": "cell 0 3,aligny top,grow 100 0"
+				} )
+				add( new FormComponent( "javax.swing.JLabel" ) {
+					name: "variableLabel"
+					"text": new FormMessage( null, "FieldScriptEditor.variableLabel.text" )
+				}, new FormLayoutConstraints( class net.miginfocom.layout.CC ) {
+					"value": "cell 0 4,aligny top,growy 0"
+				} )
+				add( new FormComponent( "io.github.turtleisaac.pokeditor.gui.HexadecimalSpinner" ) {
+					name: "variableField"
+				}, new FormLayoutConstraints( class net.miginfocom.layout.CC ) {
+					"value": "cell 0 5,aligny top,grow 100 0"
+				} )
+				add( new FormComponent( "javax.swing.JLabel" ) {
+					name: "valueLabel"
+					"text": new FormMessage( null, "FieldScriptEditor.valueLabel.text" )
+				}, new FormLayoutConstraints( class net.miginfocom.layout.CC ) {
+					"value": "cell 0 6,aligny top,growy 0"
+				} )
+				add( new FormComponent( "javax.swing.JSpinner" ) {
+					name: "valueField"
+					"model": new javax.swing.SpinnerNumberModel( 0, 0, 65535, 1 )
+				}, new FormLayoutConstraints( class net.miginfocom.layout.CC ) {
+					"value": "cell 0 7,aligny top,grow 100 0"
+				} )
+				add( new FormComponent( "javax.swing.JButton" ) {
+					name: "confirmButton"
+					"text": new FormMessage( null, "FieldScriptEditor.confirmButton.text" )
+					"icon": new com.jformdesigner.model.SwingIcon( 0, "/pokeditor/icons/tick.png" )
+					"enabled": false
+					addEvent( new FormEvent( "java.awt.event.ActionListener", "actionPerformed", "confirmButtonActionPerformed", true ) )
+				}, new FormLayoutConstraints( class net.miginfocom.layout.CC ) {
+					"value": "cell 0 8"
+				} )
+				add( new FormComponent( "javax.swing.JButton" ) {
+					name: "discardButton"
+					"text": new FormMessage( null, "FieldScriptEditor.discardButton.text" )
+					"icon": new com.jformdesigner.model.SwingIcon( 0, "/pokeditor/icons/cross.png" )
+					"enabled": false
+					addEvent( new FormEvent( "java.awt.event.ActionListener", "actionPerformed", "discardButtonActionPerformed", true ) )
+				}, new FormLayoutConstraints( class net.miginfocom.layout.CC ) {
+					"value": "cell 0 8"
+				} )
+				add( new FormComponent( "javax.swing.JCheckBox" ) {
+					name: "paddingCheckbox"
+					"text": new FormMessage( null, "FieldScriptEditor.paddingCheckbox.text" )
+				}, new FormLayoutConstraints( class net.miginfocom.layout.CC ) {
+					"value": "cell 0 9"
+				} )
+				add( new FormComponent( "javax.swing.JButton" ) {
+					name: "addButton"
+					"text": new FormMessage( null, "FieldScriptEditor.addButton.text" )
+					"icon": sfield com.jformdesigner.model.FormObject NULL_VALUE
+					"enabled": false
+					addEvent( new FormEvent( "java.awt.event.ActionListener", "actionPerformed", "addButtonActionPerformed", true ) )
+				}, new FormLayoutConstraints( class net.miginfocom.layout.CC ) {
+					"value": "cell 0 10"
+				} )
+				add( new FormComponent( "javax.swing.JButton" ) {
+					name: "removeButton"
+					"text": new FormMessage( null, "FieldScriptEditor.removeButton.text" )
+					"icon": sfield com.jformdesigner.model.FormObject NULL_VALUE
+					"enabled": false
+					addEvent( new FormEvent( "java.awt.event.ActionListener", "actionPerformed", "removeButtonActionPerformed", true ) )
+				}, new FormLayoutConstraints( class net.miginfocom.layout.CC ) {
+					"value": "cell 0 10"
+				} )
+			}, new FormLayoutConstraints( class net.miginfocom.layout.CC ) {
+				"value": "cell 0 0 1 11"
+			} )
+			add( new FormContainer( "javax.swing.JScrollPane", new FormLayoutManager( class javax.swing.JScrollPane ) ) {
+				name: "scrollPane3"
+				add( new FormComponent( "javax.swing.JList" ) {
+					name: "levelScriptList"
+					"selectionMode": 0
+					auxiliary() {
+						"JavaCodeGenerator.typeParameters": "ScriptData.ScriptComponent"
+					}
+					addEvent( new FormEvent( "javax.swing.event.ListSelectionListener", "valueChanged", "levelScriptListValueChanged", true ) )
+					addEvent( new FormEvent( "java.awt.event.MouseListener", "mousePressed", "levelScriptListMousePressed", true ) )
+				} )
+			}, new FormLayoutConstraints( class net.miginfocom.layout.CC ) {
+				"value": "cell 1 0 1 11,grow"
+			} )
+			add( new FormComponent( "javax.swing.JSeparator" ) {
+				name: "separator2"
+			}, new FormLayoutConstraints( class net.miginfocom.layout.CC ) {
+				"value": "cell 0 1"
+			} )
 		}, new FormLayoutConstraints( null ) {
-			"location": new java.awt.Point( 45, 900 )
-			"size": new java.awt.Dimension( 200, 200 )
+			"location": new java.awt.Point( 1115, 120 )
+			"size": new java.awt.Dimension( 598, 382 )
+		} )
+		add( new FormNonVisual( "javax.swing.ButtonGroup" ) {
+			name: "labelListDisplayControlButtonGroup"
+			auxiliary() {
+				"JavaCodeGenerator.variableLocal": false
+			}
+		}, new FormLayoutConstraints( null ) {
+			"location": new java.awt.Point( 0, 656 )
 		} )
 	}
 }

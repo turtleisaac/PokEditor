@@ -1,10 +1,8 @@
 package io.github.turtleisaac.pokeditor.gui.editors.data.formats.scripts;
 
-import io.github.turtleisaac.nds4j.ui.ThemeUtils;
 import io.github.turtleisaac.pokeditor.formats.scripts.*;
 import io.github.turtleisaac.pokeditor.formats.scripts.antlr4.CommandMacro;
 import io.github.turtleisaac.pokeditor.formats.scripts.antlr4.ScriptDataProducer;
-import io.github.turtleisaac.pokeditor.gui.PokeditorManager;
 import org.antlr.v4.runtime.CharStreams;
 import org.antlr.v4.runtime.CommonTokenStream;
 import org.antlr.v4.runtime.tree.ParseTree;
@@ -14,9 +12,7 @@ import javax.swing.*;
 import javax.swing.text.*;
 import java.awt.*;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Set;
 
 public class ScriptDocument extends DefaultStyledDocument
 {
@@ -115,7 +111,7 @@ public class ScriptDocument extends DefaultStyledDocument
         StyleConstants.setBold(s, true);
         StyleConstants.setForeground(s, ORANGE);
 
-        s = doc.addStyle(ACTION_LABEL, regular);
+        s = doc.addStyle(ACTION_OR_TABLE_LABEL, regular);
         StyleConstants.setBold(s, true);
         StyleConstants.setForeground(s, PINK);
 
@@ -154,7 +150,7 @@ public class ScriptDocument extends DefaultStyledDocument
     static final String SCRIPT = "script";
     static final String GOTO_LABEL = "goto_label";
     static final String ACTION_COMMAND = "action_command";
-    static final String ACTION_LABEL = "action_label";
+    static final String ACTION_OR_TABLE_LABEL = "action_label";
 
     class ScriptFileSyntaxVisitor extends ScriptFileBaseVisitor<Void>
     {
@@ -221,8 +217,38 @@ public class ScriptDocument extends DefaultStyledDocument
             int stopExclusive = ctx.stop.getStopIndex() + 1;
             int len = stopExclusive - ctx.start.getStartIndex();
 
-            setCharacterAttributes(ctx.start.getStartIndex(), len, getStyle(ACTION_LABEL), true);
+            setCharacterAttributes(ctx.start.getStartIndex(), len, getStyle(ACTION_OR_TABLE_LABEL), true);
             return super.visitAction_definition(ctx);
+        }
+
+        @Override
+        public Void visitTable_definition(ScriptFileParser.Table_definitionContext ctx)
+        {
+            int stopExclusive = ctx.stop.getStopIndex() + 1;
+            int len = stopExclusive - ctx.start.getStartIndex();
+
+            setCharacterAttributes(ctx.start.getStartIndex(), len, getStyle(ACTION_OR_TABLE_LABEL), true);
+            return super.visitTable_definition(ctx);
+        }
+
+        @Override
+        public Void visitTable_entry(ScriptFileParser.Table_entryContext ctx)
+        {
+            int stopExclusive = ctx.stop.getStopIndex() + 1;
+            int len = stopExclusive - ctx.start.getStartIndex();
+
+            setCharacterAttributes(ctx.start.getStartIndex(), len, getStyle(ACTION_COMMAND), true);
+            return super.visitTable_entry(ctx);
+        }
+
+        @Override
+        public Void visitEnd_table(ScriptFileParser.End_tableContext ctx)
+        {
+            int stopExclusive = ctx.stop.getStopIndex() + 1;
+            int len = stopExclusive - ctx.start.getStartIndex();
+
+            setCharacterAttributes(ctx.start.getStartIndex(), len, getStyle(ACTION_OR_TABLE_LABEL), true);
+            return super.visitEnd_table(ctx);
         }
 
         @Override
@@ -234,7 +260,7 @@ public class ScriptDocument extends DefaultStyledDocument
             if (!(ctx.parent instanceof ScriptFileParser.Action_definitionContext))
             {
                 scriptElementList.add(new ElementRange(ctx.start.getStartIndex(), stopExclusive, null, ElementType.LABEL));
-                setCharacterAttributes(ctx.start.getStartIndex(), len, getStyle(ACTION_LABEL), true);
+                setCharacterAttributes(ctx.start.getStartIndex(), len, getStyle(ACTION_OR_TABLE_LABEL), true);
             }
             else if (actionNames.contains(ctx.getText()))
             {
@@ -244,7 +270,7 @@ public class ScriptDocument extends DefaultStyledDocument
             }
             else
             {
-                setCharacterAttributes(ctx.start.getStartIndex(), len, getStyle(ACTION_LABEL), true);
+                setCharacterAttributes(ctx.start.getStartIndex(), len, getStyle(ACTION_OR_TABLE_LABEL), true);
                 actionNames.add(ctx.getText());
             }
 

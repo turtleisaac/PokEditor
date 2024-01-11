@@ -44,16 +44,18 @@ public class ScriptPane extends JTextPane
     @Override
     public void setStyledDocument(StyledDocument doc)
     {
-        if (doc instanceof ScriptDocument scriptDoc)
-        {
-            this.scriptDocument = scriptDoc;
-        }
-        else
-        {
-            this.scriptDocument = null;
-        }
-
         super.setStyledDocument(doc);
+    }
+
+    public void setScriptDocument(ScriptDocument scriptDocument)
+    {
+        this.scriptDocument = scriptDocument;
+        super.setStyledDocument(scriptDocument);
+    }
+
+    public ScriptDocument getScriptDocument()
+    {
+        return scriptDocument;
     }
 
     @Override
@@ -100,6 +102,12 @@ public class ScriptPane extends JTextPane
     protected void processMouseEvent(MouseEvent e)
     {
         int modifiers = e.getModifiersEx();
+
+        if (e.getClickCount() != 0)
+        {
+            getHighlighter().removeAllHighlights();
+        }
+
         if ((modifiers & (MouseEvent.CTRL_DOWN_MASK | MouseEvent.META_DOWN_MASK)) != 0 && (modifiers & MouseEvent.SHIFT_DOWN_MASK) == 0)
         {
             int offset = viewToModel2D(e.getPoint());
@@ -133,6 +141,9 @@ public class ScriptPane extends JTextPane
                     centerLineInScrollPane(this);
                     try {
                         scriptDocument.setSyntaxAttributes();
+
+                        DefaultHighlighter.DefaultHighlightPainter highlightPainter = new DefaultHighlighter.DefaultHighlightPainter(Color.YELLOW);
+                        getHighlighter().addHighlight(definitionOffset, definitionOffset + labelName.length(), highlightPainter);
                     }
                     catch(BadLocationException ex) {
                         throw new RuntimeException(ex);
