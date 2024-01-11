@@ -48,6 +48,9 @@ new FormModel {
 				} )
 				add( new FormComponent( "javax.swing.JToolBar$Separator" ) {
 					name: "separator3"
+					auxiliary() {
+						"JavaCodeGenerator.variableLocal": false
+					}
 				} )
 				add( new FormComponent( "javax.swing.JButton" ) {
 					name: "deleteButton"
@@ -56,17 +59,48 @@ new FormModel {
 				} )
 				add( new FormComponent( "javax.swing.JToolBar$Separator" ) {
 					name: "separator6"
+					auxiliary() {
+						"JavaCodeGenerator.variableLocal": false
+					}
 				} )
 				add( new FormComponent( "javax.swing.JButton" ) {
 					name: "copyEntryButton"
 					"text": new FormMessage( null, "DefaultEditorPanel.copyEntryButton.text" )
+					addEvent( new FormEvent( "java.awt.event.ActionListener", "actionPerformed", "copyEntryButtonPressed", true ) )
 				} )
 				add( new FormComponent( "javax.swing.JToolBar$Separator" ) {
 					name: "separator5"
+					auxiliary() {
+						"JavaCodeGenerator.variableLocal": false
+					}
 				} )
 				add( new FormComponent( "javax.swing.JButton" ) {
 					name: "pasteEntryButton"
 					"text": new FormMessage( null, "DefaultEditorPanel.pasteEntryButton.text" )
+					"enabled": false
+					addEvent( new FormEvent( "java.awt.event.ActionListener", "actionPerformed", "pasteEntryButtonPressed", true ) )
+				} )
+				add( new FormComponent( "javax.swing.JToolBar$Separator" ) {
+					name: "separator7"
+					auxiliary() {
+						"JavaCodeGenerator.variableLocal": false
+					}
+				} )
+				add( new FormComponent( "javax.swing.JButton" ) {
+					name: "exportFileButton"
+					"text": new FormMessage( null, "DefaultEditorPanel.exportFileButton.text" )
+					addEvent( new FormEvent( "java.awt.event.ActionListener", "actionPerformed", "exportFileButtonPressed", true ) )
+				} )
+				add( new FormComponent( "javax.swing.JToolBar$Separator" ) {
+					name: "separator8"
+					auxiliary() {
+						"JavaCodeGenerator.variableLocal": false
+					}
+				} )
+				add( new FormComponent( "javax.swing.JButton" ) {
+					name: "importFileButton"
+					"text": new FormMessage( null, "DefaultEditorPanel.importFileButton.text" )
+					addEvent( new FormEvent( "java.awt.event.ActionListener", "actionPerformed", "importFileButtonPressed", true ) )
 				} )
 			}, new FormLayoutConstraints( class net.miginfocom.layout.CC ) {
 				"value": "north"

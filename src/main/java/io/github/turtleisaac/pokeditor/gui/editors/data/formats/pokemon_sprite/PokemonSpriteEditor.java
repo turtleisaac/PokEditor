@@ -21,6 +21,7 @@ import io.github.turtleisaac.pokeditor.formats.text.TextBankData;
 import io.github.turtleisaac.pokeditor.gamedata.TextFiles;
 import io.github.turtleisaac.pokeditor.gui.PokeditorManager;
 import io.github.turtleisaac.pokeditor.gui.editors.data.DefaultDataEditor;
+import io.github.turtleisaac.pokeditor.gui.editors.data.DefaultDataEditorPanel;
 import io.github.turtleisaac.pokeditor.gui.editors.data.EditorDataModel;
 import io.github.turtleisaac.pokeditor.gui.sheets.tables.cells.CellTypes;
 import io.github.turtleisaac.pokeditor.gui.sheets.tables.FormatModel;
@@ -87,10 +88,32 @@ public class PokemonSpriteEditor extends DefaultDataEditor<PokemonSpriteData, Po
         repaint();
     }
 
+//    @Override
+//    public void addNewEntry()
+//    {
+//
+//    }
+//
+//    @Override
+//    public void deleteCurrentEntry()
+//    {
+//
+//    }
+
     @Override
     public Class<PokemonSpriteData> getDataClass()
     {
         return PokemonSpriteData.class;
+    }
+
+    @Override
+    public Set<DefaultDataEditorPanel.DataEditorButtons> getEnabledToolbarButtons()
+    {
+        return Set.of(DefaultDataEditorPanel.DataEditorButtons.ADD_ENTRY,
+                DefaultDataEditorPanel.DataEditorButtons.DELETE_ENTRY,
+                DefaultDataEditorPanel.DataEditorButtons.COPY_ENTRY,
+                DefaultDataEditorPanel.DataEditorButtons.PASTE_ENTRY
+        );
     }
 
     private void thisComponentResized(ComponentEvent e) {

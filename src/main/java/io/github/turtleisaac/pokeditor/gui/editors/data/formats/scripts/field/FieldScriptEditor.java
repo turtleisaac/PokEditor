@@ -12,6 +12,7 @@ import javax.swing.event.*;
 import javax.swing.text.*;
 
 import io.github.turtleisaac.nds4j.ui.ThemeUtils;
+import io.github.turtleisaac.pokeditor.formats.GenericFileData;
 import io.github.turtleisaac.pokeditor.formats.scripts.GenericScriptData;
 import io.github.turtleisaac.pokeditor.formats.scripts.ScriptData;
 import io.github.turtleisaac.pokeditor.formats.scripts.LevelScriptData;
@@ -20,6 +21,7 @@ import io.github.turtleisaac.pokeditor.formats.text.TextBankData;
 import io.github.turtleisaac.pokeditor.gui.*;
 import io.github.turtleisaac.pokeditor.gui.PokeditorManager;
 import io.github.turtleisaac.pokeditor.gui.editors.data.DefaultDataEditor;
+import io.github.turtleisaac.pokeditor.gui.editors.data.DefaultDataEditorPanel;
 import io.github.turtleisaac.pokeditor.gui.editors.data.EditorDataModel;
 import io.github.turtleisaac.pokeditor.gui.editors.data.formats.scripts.*;
 import io.github.turtleisaac.pokeditor.gui.editors.data.formats.scripts.ScriptDocument;
@@ -129,6 +131,45 @@ public class FieldScriptEditor extends DefaultDataEditor<GenericScriptData, Fiel
 
 
 //        errorsList.setModel(listModel);
+    }
+
+    @Override
+    public void addNewEntry()
+    {
+        ResourceBundle bundle = ResourceBundle.getBundle("pokeditor.sheet_panel");
+        String message = bundle.getString("FieldScriptEditor.newEntryDialog.text");
+        String fieldScript = bundle.getString("FieldScriptEditor.newEntryDialog.option1.text");
+        String levelScript = bundle.getString("FieldScriptEditor.newEntryDialog.option2.text");
+
+        Object selection = JOptionPane.showInputDialog(this, message, "PokEditor", JOptionPane.INFORMATION_MESSAGE, null, new Object[] {fieldScript, levelScript}, fieldScript);
+
+        EditorDataModel<FieldScriptContents> model = getModel();
+
+        if (model instanceof FormatModel<?, ?> formatModel)
+        {
+            List<GenericFileData> data = (List<GenericFileData>) formatModel.getData();
+            int newIndex = data.size();
+            if (selection.equals(fieldScript))
+            {
+                data.add(new ScriptData());
+            }
+            else if (selection.equals(levelScript))
+            {
+                data.add(new LevelScriptData());
+            }
+            else
+                return;
+
+            selectedIndexedChanged(newIndex, null);
+            updateUI();
+        }
+
+    }
+
+    @Override
+    public void deleteCurrentEntry()
+    {
+
     }
 
     private void resetDisplayedFieldScriptData(ScriptData scriptData)
@@ -754,6 +795,16 @@ public class FieldScriptEditor extends DefaultDataEditor<GenericScriptData, Fiel
     public Class<GenericScriptData> getDataClass()
     {
         return GenericScriptData.class;
+    }
+
+    @Override
+    public Set<DefaultDataEditorPanel.DataEditorButtons> getEnabledToolbarButtons()
+    {
+        return Set.of(DefaultDataEditorPanel.DataEditorButtons.ADD_ENTRY,
+                DefaultDataEditorPanel.DataEditorButtons.DELETE_ENTRY,
+                DefaultDataEditorPanel.DataEditorButtons.EXPORT_FILE,
+                DefaultDataEditorPanel.DataEditorButtons.IMPORT_FILE
+        );
     }
 
     // JFormDesigner - Variables declaration - DO NOT MODIFY  //GEN-BEGIN:variables  @formatter:off
