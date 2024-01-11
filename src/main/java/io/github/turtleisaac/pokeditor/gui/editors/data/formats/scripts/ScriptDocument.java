@@ -18,6 +18,8 @@ public class ScriptDocument extends DefaultStyledDocument
 {
     private int lineCount = 1;
 
+    private static final int FONT_SIZE = 14;
+
     private final ScriptElementList scriptElementList;
     private final StyleContext context;
 
@@ -45,19 +47,6 @@ public class ScriptDocument extends DefaultStyledDocument
     {
         super.insertString(offs, str, a);
         setSyntaxAttributes();
-        int count = getDefaultRootElement().getElementCount();
-
-        if (lineNumberPane != null)
-        {
-            Document numberDoc = lineNumberPane.getDocument();
-            numberDoc.remove(0, numberDoc.getLength());
-
-            for (int i = 0; i < count; i++)
-            {
-                numberDoc.insertString(numberDoc.getLength(), i  + "\n", null);
-            }
-        }
-
     }
 
     @Override
@@ -85,7 +74,7 @@ public class ScriptDocument extends DefaultStyledDocument
         Style def = context.getStyle(StyleContext.DEFAULT_STYLE);
 
         Style regular = doc.addStyle("regular", def);
-        StyleConstants.setFontSize(def, 14);
+        StyleConstants.setFontSize(def, FONT_SIZE);
         StyleConstants.setFontFamily(regular, "Monospaced");
 //        StyleConstants.setTabSet(regular, tabSet);
         StyleConstants.setLeftIndent(regular, 100);
@@ -132,6 +121,29 @@ public class ScriptDocument extends DefaultStyledDocument
     public void setLineNumberPane(JTextPane lineNumberPane)
     {
         this.lineNumberPane = lineNumberPane;
+        if (lineNumberPane != null)
+        {
+            StyledDocument document = new DefaultStyledDocument();
+            lineNumberPane.setStyledDocument(document);
+
+            Style def = context.getStyle(StyleContext.DEFAULT_STYLE);
+
+            StyleConstants.setFontSize(def, FONT_SIZE);
+            StyleConstants.setFontFamily(def, "Monospaced");
+
+            Document numberDoc = lineNumberPane.getDocument();
+
+            try{
+                for (int i = 0; i < 2000; i++)
+                {
+                    numberDoc.insertString(numberDoc.getLength(), i  + "\n", null);
+                }
+            }
+            catch (BadLocationException e) {
+                throw new RuntimeException(e);
+            }
+
+        }
     }
 
     static final Color ORANGE = new Color(185, 125, 25);

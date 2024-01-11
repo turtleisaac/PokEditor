@@ -73,7 +73,7 @@ new FormModel {
 							name: "labelDisplayList"
 							"selectionMode": 0
 							auxiliary() {
-								"JavaCodeGenerator.typeParameters": "GenericScriptData.ScriptComponent"
+								"JavaCodeGenerator.typeParameters": "String"
 							}
 							addEvent( new FormEvent( "javax.swing.event.ListSelectionListener", "valueChanged", "labelDisplayListSelectionChanged", true ) )
 						} )

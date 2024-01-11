@@ -36,9 +36,9 @@ import java.util.List;
 public class FieldScriptEditor extends DefaultDataEditor<GenericScriptData, FieldScriptEditor.FieldScriptContents>
 {
     private DefaultListModel<GenericScriptData.ScriptComponent> levelScriptDataListModel = new DefaultListModel<>();
-    private DefaultListModel<GenericScriptData.ScriptComponent> labelDisplayListModel = new DefaultListModel<>();
-    private DefaultListModel<GenericScriptData.ScriptComponent> actionDisplayListModel = new DefaultListModel<>();
-    private DefaultListModel<GenericScriptData.ScriptComponent> scriptDisplayListModel = new DefaultListModel<>();
+    private DefaultListModel<String> labelDisplayListModel = new DefaultListModel<>();
+    private DefaultListModel<String> actionDisplayListModel = new DefaultListModel<>();
+    private DefaultListModel<String> scriptDisplayListModel = new DefaultListModel<>();
 
     private boolean editMode;
     private GenericScriptData.ScriptComponent selected;
@@ -103,31 +103,10 @@ public class FieldScriptEditor extends DefaultDataEditor<GenericScriptData, Fiel
             remove(levelScriptPanel);
             add(fieldScriptPanel, "cell 1 0");
 
-            labelDisplayListModel = new DefaultListModel<>();
-            scriptDisplayListModel = new DefaultListModel<>();
-            actionDisplayListModel = new DefaultListModel<>();
-
-            for (GenericScriptData.ScriptComponent component : scriptData)
-            {
-                if (component instanceof GenericScriptData.ScriptLabel label)
-                {
-                    if (label.getScriptID() == -1)
-                        labelDisplayListModel.addElement(component);
-                    else
-                        scriptDisplayListModel.addElement(component);
-                }
-                else if (component instanceof ScriptData.ActionLabel actionLabel)
-                {
-                    actionDisplayListModel.addElement(actionLabel);
-                }
-            }
-
-
             ScriptDocument document = new ScriptDocument(textPane1);
             textPane1.setScriptDocument(document);
 
-            displayOnlyScriptsRadioButton.setSelected(true);
-            labelDisplayList.setModel(scriptDisplayListModel);
+            resetDisplayedFieldScriptData(scriptData);
 
             try {
                 document.insertString(0, scriptData.toString(), document.getStyle("regular"));
@@ -152,13 +131,51 @@ public class FieldScriptEditor extends DefaultDataEditor<GenericScriptData, Fiel
 //        errorsList.setModel(listModel);
     }
 
+    private void resetDisplayedFieldScriptData(ScriptData scriptData)
+    {
+        labelDisplayListModel = new DefaultListModel<>();
+        scriptDisplayListModel = new DefaultListModel<>();
+        actionDisplayListModel = new DefaultListModel<>();
+
+        int scriptCount = 1;
+        for (GenericScriptData.ScriptComponent component : scriptData)
+        {
+            if (component instanceof GenericScriptData.ScriptLabel label)
+            {
+                if (label.getScriptID() == -1)
+                {
+                    String str = component.toString();
+                    if (str.contains(" "))
+                        str = str.split(" ")[1];
+                    labelDisplayListModel.addElement(str);
+                }
+                else
+                    scriptDisplayListModel.addElement("Script " + scriptCount++);
+            }
+            else if (component instanceof ScriptData.ActionLabel actionLabel)
+            {
+                actionDisplayListModel.addElement(actionLabel.toString());
+            }
+        }
+
+        displayOnlyScriptsRadioButton.setSelected(true);
+        labelDisplayList.setModel(scriptDisplayListModel);
+
+        updateUI();
+    }
+
     private void saveScriptChangesButtonPressed(ActionEvent e) {
         if (textPane1.getDocument() instanceof ScriptDocument scriptDocument)
         {
             try
             {
                 ScriptData data = scriptDocument.getScriptData();
-                System.currentTimeMillis();
+                JOptionPane.showMessageDialog(this, "Script file saved!", "Field Script Editor", JOptionPane.INFORMATION_MESSAGE);
+
+                EditorDataModel<FieldScriptContents> model = getModel();
+                model.setValueFor(data, getSelectedIndex(), null);
+
+                resetDisplayedFieldScriptData(data);
             }
             catch(BadLocationException ex) {
                 throw new RuntimeException(ex);
@@ -424,7 +441,14 @@ public class FieldScriptEditor extends DefaultDataEditor<GenericScriptData, Fiel
             try {
                 text = document.getText(0, document.getLength());
 
-                String toFind = labelDisplayList.getSelectedValue().getName() + ":";
+                String toFind;
+                if (labelDisplayList.getModel().equals(scriptDisplayListModel))
+                {
+                    toFind = "script(" + (labelDisplayList.getSelectedIndex()+1) + ")";
+                }
+                else
+                    toFind = labelDisplayList.getSelectedValue() + ":";
+
                 int index = text.indexOf(toFind);
 
                 ScriptPane.gotoStartOfLine(textPane1, ScriptPane.getLineAtOffset(textPane1, index));
@@ -743,7 +767,7 @@ public class FieldScriptEditor extends DefaultDataEditor<GenericScriptData, Fiel
     private JRadioButton displayOnlyLabelsRadioButton;
     private JRadioButton displayOnlyActionLabelsRadioButton;
     private JScrollPane scriptsScrollPane;
-    private JList<GenericScriptData.ScriptComponent> labelDisplayList;
+    private JList<String> labelDisplayList;
     private JLabel errorsLabel;
     private JScrollPane errorsScrollPane;
     private JList<String> errorsList;
