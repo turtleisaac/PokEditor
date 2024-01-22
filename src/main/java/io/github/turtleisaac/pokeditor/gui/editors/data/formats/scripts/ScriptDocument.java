@@ -3,6 +3,7 @@ package io.github.turtleisaac.pokeditor.gui.editors.data.formats.scripts;
 import io.github.turtleisaac.pokeditor.formats.scripts.*;
 import io.github.turtleisaac.pokeditor.formats.scripts.antlr4.CommandMacro;
 import io.github.turtleisaac.pokeditor.formats.scripts.antlr4.ScriptDataProducer;
+import io.github.turtleisaac.variabletracker.ScriptVariable;
 import org.antlr.v4.runtime.CharStreams;
 import org.antlr.v4.runtime.CommonTokenStream;
 import org.antlr.v4.runtime.tree.ParseTree;
@@ -13,6 +14,8 @@ import javax.swing.text.*;
 import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class ScriptDocument extends DefaultStyledDocument
 {
@@ -25,6 +28,8 @@ public class ScriptDocument extends DefaultStyledDocument
 
     private JTextPane lineNumberPane;
 
+    private List<ScriptVariable> variableList;
+
     public ScriptDocument(ScriptPane pane)
     {
         super(StyleContext.getDefaultStyleContext());
@@ -35,7 +40,12 @@ public class ScriptDocument extends DefaultStyledDocument
         setLineNumberPane(pane.getLineNumberPane());
     }
 
-    public ScriptData getScriptData() throws BadLocationException, ScriptDataProducer.ScriptCompilationException
+    public void setVariableList(List<ScriptVariable> variableList)
+    {
+        this.variableList = variableList;
+    }
+
+    public FieldScriptData getScriptData() throws BadLocationException, ScriptDataProducer.ScriptCompilationException
     {
         ScriptDataProducer visitor = new ScriptDataProducer();
 
@@ -143,6 +153,41 @@ public class ScriptDocument extends DefaultStyledDocument
                 throw new RuntimeException(e);
             }
 
+        }
+    }
+
+    public void refactorString(String oldName, String newName)
+    {
+        try {
+            String text = getText(0, getLength());
+//            int idx;
+//            while ((idx = text.indexOf(oldName)) != -1)
+//            {
+//                char after = text.charAt(idx + 1);
+//                if (after == '\n' || after == '\r' || after == '\t' || after == ' ')
+//                {
+//                    if (idx != 0)
+//                    {
+//                        char before = text.charAt(idx-1);
+//                        if (before != '\n' && after != '\r' && before != '\t' && before != ' ')
+//                            continue;
+//                    }
+//                    text = text.replaceFirst(oldName, newName);
+//                }
+//            }
+
+        Pattern pattern = Pattern.compile(String.format("\\\\b%s\\\\b", oldName));
+        Matcher matcher = pattern.matcher(text);
+        if (matcher.find()) {
+            System.currentTimeMillis();
+//            parameterToValueMap.put(matcher.group().substring(1), ret);
+        }
+
+//            replace();
+//            text.replaceAll("","");
+        }
+        catch(BadLocationException e) {
+            throw new RuntimeException(e);
         }
     }
 
@@ -360,7 +405,7 @@ public class ScriptDocument extends DefaultStyledDocument
                     if (terminalNode.symbol.getType() == ScriptFileLexer.NAME)
                     {
                         name = terminalNode.getText();
-                        for (CommandMacro macro : ScriptParser.commandMacros)
+                        for (CommandMacro macro : FieldScriptParser.commandMacros)
                         {
                             if (macro.getName().equals(terminalNode.getText()))
                             {
@@ -442,6 +487,27 @@ public class ScriptDocument extends DefaultStyledDocument
 
             setCharacterAttributes(ctx.start.getStartIndex(), len, getStyle(PARAMETER), false);
             return super.visitParameters(ctx);
+        }
+
+        @Override
+        public Void visitParameter(ScriptFileParser.ParameterContext ctx)
+        {
+            int stopExclusive = ctx.stop.getStopIndex() + 1;
+//            int len = stopExclusive - ctx.start.getStartIndex();
+
+            if (variableList != null)
+            {
+                for (ScriptVariable variable : variableList)
+                {
+                    if (variable.getVariableName().equalsIgnoreCase(ctx.getText().trim()))
+                    {
+                        scriptElementList.add(new ElementRange(ctx.start.getStartIndex(), stopExclusive, "0x" + Integer.toHexString(variable.getVariableID()).toUpperCase()));
+                        break;
+                    }
+                }
+            }
+
+            return super.visitParameter(ctx);
         }
 
         @Override
@@ -557,12 +623,14 @@ public class ScriptDocument extends DefaultStyledDocument
         public void add(ElementRange newRange)
         {
             boolean found = false;
-            for (ElementRange existingRange : elementRanges)
+            for (int i = 0; i < elementRanges.size(); i++)
             {
+                ElementRange existingRange = elementRanges.get(i);
                 if (existingRange.contains(newRange) && existingRange.getLength() != newRange.getLength())
                 {
-                    elementRanges.remove(existingRange);
-                    elementRanges.add(newRange);
+//                    elementRanges.remove(existingRange);
+                    elementRanges.add(0, newRange);
+                    i++;
                     found = true;
                 }
             }

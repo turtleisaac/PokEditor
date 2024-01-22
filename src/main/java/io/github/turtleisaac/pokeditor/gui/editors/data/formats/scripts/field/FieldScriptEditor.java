@@ -4,21 +4,23 @@
 
 package io.github.turtleisaac.pokeditor.gui.editors.data.formats.scripts.field;
 
+import java.awt.datatransfer.Clipboard;
+import java.awt.datatransfer.StringSelection;
 import java.awt.event.*;
 import java.util.*;
 import javax.swing.*;
 import javax.swing.border.*;
 import javax.swing.event.*;
 import javax.swing.text.*;
+import io.github.turtleisaac.nds4j.ui.*;
 
 import io.github.turtleisaac.nds4j.ui.ThemeUtils;
 import io.github.turtleisaac.pokeditor.formats.GenericFileData;
 import io.github.turtleisaac.pokeditor.formats.scripts.GenericScriptData;
-import io.github.turtleisaac.pokeditor.formats.scripts.ScriptData;
+import io.github.turtleisaac.pokeditor.formats.scripts.FieldScriptData;
 import io.github.turtleisaac.pokeditor.formats.scripts.LevelScriptData;
 import io.github.turtleisaac.pokeditor.formats.scripts.antlr4.ScriptDataProducer;
 import io.github.turtleisaac.pokeditor.formats.text.TextBankData;
-import io.github.turtleisaac.pokeditor.gui.*;
 import io.github.turtleisaac.pokeditor.gui.PokeditorManager;
 import io.github.turtleisaac.pokeditor.gui.editors.data.DefaultDataEditor;
 import io.github.turtleisaac.pokeditor.gui.editors.data.DefaultDataEditorPanel;
@@ -26,6 +28,9 @@ import io.github.turtleisaac.pokeditor.gui.editors.data.EditorDataModel;
 import io.github.turtleisaac.pokeditor.gui.editors.data.formats.scripts.*;
 import io.github.turtleisaac.pokeditor.gui.editors.data.formats.scripts.ScriptDocument;
 import io.github.turtleisaac.pokeditor.gui.sheets.tables.FormatModel;
+import io.github.turtleisaac.variabletracker.ScriptVariable;
+import io.github.turtleisaac.variabletracker.gui.flags.FlagTracker;
+import io.github.turtleisaac.variabletracker.gui.variables.VariableTracker;
 import net.miginfocom.swing.*;
 
 import java.awt.*;
@@ -44,6 +49,12 @@ public class FieldScriptEditor extends DefaultDataEditor<GenericScriptData, Fiel
 
     private boolean editMode;
     private GenericScriptData.ScriptComponent selected;
+
+    private JFrame variableTrackerFrame;
+    private VariableTracker variableTracker;
+
+    private JFrame flagTrackerFrame;
+    private FlagTracker flagTracker;
 
     public FieldScriptEditor(List<GenericScriptData> data, List<TextBankData> textBankData) {
         super(new FieldScriptModel(data, textBankData));
@@ -68,7 +79,6 @@ public class FieldScriptEditor extends DefaultDataEditor<GenericScriptData, Fiel
 //        variableField.addChangeListener(e -> paramFieldTextChange());
         removeButton.setEnabled(false);
 
-
         try
         {
             JTextPane numberPane = new JTextPane();
@@ -82,7 +92,148 @@ public class FieldScriptEditor extends DefaultDataEditor<GenericScriptData, Fiel
         }
 
         setIcons();
+        setupVariableTracker();
+        setupFlagTracker();
+        replaceVariableNumbersWithNames();
     }
+
+    private void setupVariableTracker()
+    {
+        variableTrackerFrame = new JFrame("Variable Tracker");
+        variableTracker = new VariableTracker() {
+            @Override
+            public void postUpdateVariableTableAction()
+            {
+                replaceVariableNumbersWithNames();
+            }
+        };
+
+        JMenuItem renameVariableMenuItem = new JMenuItem("Rename");
+        renameVariableMenuItem.addActionListener(new ActionListener()
+        {
+            @Override
+            public void actionPerformed(ActionEvent e)
+            {
+                ScriptVariable variable = variableTracker.getSelectedVariable();
+                String oldName = variable.getVariableName();
+                String newName = JOptionPane.showInputDialog(variableTracker, "Enter the new name for this variable");
+
+                if (oldName.equalsIgnoreCase(newName))
+                {
+                    return;
+                }
+
+                for (ScriptVariable other : variableTracker.getVariableList())
+                {
+                    if (variable != other && newName.equalsIgnoreCase(other.getVariableName()))
+                    {
+                        JOptionPane.showMessageDialog(variableTracker, "The specified variable name is already in use: \"" + other.getVariableName() + "\".\nAction aborted.", "Error", JOptionPane.ERROR_MESSAGE);
+                        return;
+                    }
+                }
+
+                for (GenericScriptData data : ((FormatModel<GenericScriptData, FieldScriptContents>) getModel()).getData())
+                {
+                    if (data instanceof FieldScriptData fieldScriptData)
+                    {
+                        for (GenericScriptData.ScriptComponent component : fieldScriptData)
+                        {
+                            if (component instanceof FieldScriptData.ScriptCommand scriptCommand)
+                            {
+                                Object[] parameters = scriptCommand.getParameters();
+                                if (parameters != null)
+                                {
+                                    for (int i = 0; i < parameters.length; i++)
+                                    {
+                                        if (oldName.equals(parameters[i]))
+                                        {
+                                            parameters[i] = newName;
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+
+                variable.setVariableName(newName);
+                variableTracker.fireTableDataChanged();
+            }
+        });
+
+        variableTracker.addDeveloperDefinedPopupMenuItem(renameVariableMenuItem);
+        variableTrackerFrame.setContentPane(variableTracker);
+        variableTrackerFrame.setJMenuBar(variableTracker.getMenuBar());
+    }
+
+    private void setupFlagTracker()
+    {
+        flagTrackerFrame = new JFrame("Flag Tracker");
+        flagTracker = new FlagTracker();
+
+//        JMenuItem copyNameMenuItem = new JMenuItem("Copy variable name");
+//        copyNameMenuItem.addActionListener(new ActionListener()
+//        {
+//            @Override
+//            public void actionPerformed(ActionEvent e)
+//            {
+//                StringSelection selection = new StringSelection(variableTracker.getSelectedVariable().getVariableName());
+//                Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
+//                clipboard.setContents(selection, selection);
+//            }
+//        });
+//
+//        variableTracker.addDeveloperDefinedPopupMenuItem(copyNameMenuItem);
+        flagTrackerFrame.setContentPane(flagTracker);
+//        flagTrackerFrame.setJMenuBar(variableTracker.getMenuBar());
+    }
+
+    private void replaceVariableNumbersWithNames()
+    {
+        List<ScriptVariable> variableList = variableTracker.getVariableList();
+
+        Map<Integer, String> variableIdToNameMap = new HashMap<>();
+
+        for (ScriptVariable variable : variableList)
+        {
+            variableIdToNameMap.put(variable.getVariableID(),variable.getVariableName());
+        }
+
+//        ScriptDocument doc = textPane1.getScriptDocument();
+//        if (doc != null)
+//        {
+//            for (int i = 0x4000; i <= 0x800C; i++)
+//            {
+//                if (variableIdToNameMap.containsKey(i))
+//                    doc.refactorString("0x" + Integer.toHexString(i).toUpperCase(), variableIdToNameMap.get(i));
+//            }
+//        }
+
+        for (GenericScriptData data : ((FormatModel<GenericScriptData, FieldScriptContents>) getModel()).getData())
+        {
+            if (data instanceof FieldScriptData fieldScriptData)
+            {
+                for (GenericScriptData.ScriptComponent component : fieldScriptData)
+                {
+                    if (component instanceof FieldScriptData.ScriptCommand scriptCommand)
+                    {
+                        Object[] parameters = scriptCommand.getParameters();
+                        if (parameters != null)
+                        {
+                            for (int i = 0; i < parameters.length; i++)
+                            {
+                                if (parameters[i] instanceof Integer value && value >= 0x4000 && variableIdToNameMap.containsKey(value))
+                                {
+                                    parameters[i] = variableIdToNameMap.get(value);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
 
     private void setIcons()
     {
@@ -100,12 +251,13 @@ public class FieldScriptEditor extends DefaultDataEditor<GenericScriptData, Fiel
         GenericScriptData data = (GenericScriptData) model.getValueFor(idx, null);
 //        errorsList.removeAll();
 
-        if (data instanceof ScriptData scriptData)
+        if (data instanceof FieldScriptData scriptData)
         {
             remove(levelScriptPanel);
             add(fieldScriptPanel, "cell 1 0");
 
             ScriptDocument document = new ScriptDocument(textPane1);
+            document.setVariableList(variableTracker.getVariableList());
             textPane1.setScriptDocument(document);
 
             resetDisplayedFieldScriptData(scriptData);
@@ -151,7 +303,7 @@ public class FieldScriptEditor extends DefaultDataEditor<GenericScriptData, Fiel
             int newIndex = data.size();
             if (selection.equals(fieldScript))
             {
-                data.add(new ScriptData());
+                data.add(new FieldScriptData());
             }
             else if (selection.equals(levelScript))
             {
@@ -172,7 +324,7 @@ public class FieldScriptEditor extends DefaultDataEditor<GenericScriptData, Fiel
 
     }
 
-    private void resetDisplayedFieldScriptData(ScriptData scriptData)
+    private void resetDisplayedFieldScriptData(FieldScriptData scriptData)
     {
         labelDisplayListModel = new DefaultListModel<>();
         scriptDisplayListModel = new DefaultListModel<>();
@@ -193,7 +345,7 @@ public class FieldScriptEditor extends DefaultDataEditor<GenericScriptData, Fiel
                 else
                     scriptDisplayListModel.addElement("Script " + scriptCount++);
             }
-            else if (component instanceof ScriptData.ActionLabel actionLabel)
+            else if (component instanceof FieldScriptData.ActionLabel actionLabel)
             {
                 actionDisplayListModel.addElement(actionLabel.toString());
             }
@@ -210,7 +362,7 @@ public class FieldScriptEditor extends DefaultDataEditor<GenericScriptData, Fiel
         {
             try
             {
-                ScriptData data = scriptDocument.getScriptData();
+                FieldScriptData data = scriptDocument.getScriptData();
                 JOptionPane.showMessageDialog(this, "Script file saved!", "Field Script Editor", JOptionPane.INFORMATION_MESSAGE);
 
                 EditorDataModel<FieldScriptContents> model = getModel();
@@ -425,7 +577,6 @@ public class FieldScriptEditor extends DefaultDataEditor<GenericScriptData, Fiel
         toggleEditModeStates();
     }
 
-
     private void toggleEditModeStates()
     {
         if (editMode)
@@ -523,6 +674,16 @@ public class FieldScriptEditor extends DefaultDataEditor<GenericScriptData, Fiel
         }
     }
 
+    private void variableTrackerButtonPressed(ActionEvent e) {
+        variableTrackerFrame.setVisible(true);
+        variableTrackerFrame.pack();
+    }
+
+    private void flagTrackerButtonPressed(ActionEvent e) {
+        flagTrackerFrame.setVisible(true);
+        flagTrackerFrame.pack();
+    }
+
 
     private void initComponents() {
         // JFormDesigner - Component initialization - DO NOT MODIFY  //GEN-BEGIN:initComponents  @formatter:off
@@ -532,6 +693,8 @@ public class FieldScriptEditor extends DefaultDataEditor<GenericScriptData, Fiel
         scrollPane1 = new JScrollPane();
         textPane1 = new ScriptPane();
         panel1 = new JPanel();
+        variableTrackerButton = new JButton();
+        flagTrackerButton = new JButton();
         labelJumpListLabel = new JLabel();
         displayOnlyScriptsRadioButton = new JRadioButton();
         displayOnlyLabelsRadioButton = new JRadioButton();
@@ -602,30 +765,41 @@ public class FieldScriptEditor extends DefaultDataEditor<GenericScriptData, Fiel
                     // rows
                     "[]" +
                     "[]" +
+                    "[]" +
                     "[]unrel" +
                     "[]" +
                     "[]"));
 
+                //---- variableTrackerButton ----
+                variableTrackerButton.setText(bundle.getString("FieldScriptEditor.variableTrackerButton.text"));
+                variableTrackerButton.addActionListener(e -> variableTrackerButtonPressed(e));
+                panel1.add(variableTrackerButton, "cell 0 0");
+
+                //---- flagTrackerButton ----
+                flagTrackerButton.setText(bundle.getString("FieldScriptEditor.flagTrackerButton.text"));
+                flagTrackerButton.addActionListener(e -> flagTrackerButtonPressed(e));
+                panel1.add(flagTrackerButton, "cell 0 0");
+
                 //---- labelJumpListLabel ----
                 labelJumpListLabel.setText(bundle.getString("FieldScriptEditor.labelJumpListLabel.text"));
                 labelJumpListLabel.setFont(labelJumpListLabel.getFont().deriveFont(labelJumpListLabel.getFont().getSize() + 5f));
-                panel1.add(labelJumpListLabel, "cell 0 0");
+                panel1.add(labelJumpListLabel, "cell 0 1");
 
                 //---- displayOnlyScriptsRadioButton ----
                 displayOnlyScriptsRadioButton.setText(bundle.getString("FieldScriptEditor.displayOnlyScriptsRadioButton.text"));
                 displayOnlyScriptsRadioButton.addActionListener(e -> labelListDisplayControlButtonPressed(e));
-                panel1.add(displayOnlyScriptsRadioButton, "cell 0 1,alignx left,growx 0");
+                panel1.add(displayOnlyScriptsRadioButton, "cell 0 2,alignx left,growx 0");
 
                 //---- displayOnlyLabelsRadioButton ----
                 displayOnlyLabelsRadioButton.setText(bundle.getString("FieldScriptEditor.displayOnlyLabelsRadioButton.text"));
                 displayOnlyLabelsRadioButton.setSelected(true);
                 displayOnlyLabelsRadioButton.addActionListener(e -> labelListDisplayControlButtonPressed(e));
-                panel1.add(displayOnlyLabelsRadioButton, "cell 0 1,alignx left,growx 0");
+                panel1.add(displayOnlyLabelsRadioButton, "cell 0 2,alignx left,growx 0");
 
                 //---- displayOnlyActionLabelsRadioButton ----
                 displayOnlyActionLabelsRadioButton.setText(bundle.getString("FieldScriptEditor.displayOnlyActionLabelsRadioButton.text"));
                 displayOnlyActionLabelsRadioButton.addActionListener(e -> labelListDisplayControlButtonPressed(e));
-                panel1.add(displayOnlyActionLabelsRadioButton, "cell 0 1");
+                panel1.add(displayOnlyActionLabelsRadioButton, "cell 0 2");
 
                 //======== scriptsScrollPane ========
                 {
@@ -635,18 +809,18 @@ public class FieldScriptEditor extends DefaultDataEditor<GenericScriptData, Fiel
                     labelDisplayList.addListSelectionListener(e -> labelDisplayListSelectionChanged(e));
                     scriptsScrollPane.setViewportView(labelDisplayList);
                 }
-                panel1.add(scriptsScrollPane, "cell 0 2");
+                panel1.add(scriptsScrollPane, "cell 0 3");
 
                 //---- errorsLabel ----
                 errorsLabel.setText(bundle.getString("FieldScriptEditor.errorsLabel.text"));
                 errorsLabel.setFont(errorsLabel.getFont().deriveFont(errorsLabel.getFont().getSize() + 5f));
-                panel1.add(errorsLabel, "cell 0 3");
+                panel1.add(errorsLabel, "cell 0 4");
 
                 //======== errorsScrollPane ========
                 {
                     errorsScrollPane.setViewportView(errorsList);
                 }
-                panel1.add(errorsScrollPane, "cell 0 4");
+                panel1.add(errorsScrollPane, "cell 0 5");
             }
             fieldScriptPanel.add(panel1, "cell 2 0,grow");
 
@@ -813,6 +987,8 @@ public class FieldScriptEditor extends DefaultDataEditor<GenericScriptData, Fiel
     private JScrollPane scrollPane1;
     private ScriptPane textPane1;
     private JPanel panel1;
+    private JButton variableTrackerButton;
+    private JButton flagTrackerButton;
     private JLabel labelJumpListLabel;
     private JRadioButton displayOnlyScriptsRadioButton;
     private JRadioButton displayOnlyLabelsRadioButton;
@@ -839,7 +1015,7 @@ public class FieldScriptEditor extends DefaultDataEditor<GenericScriptData, Fiel
     private JButton addButton;
     private JButton removeButton;
     private JScrollPane scrollPane3;
-    private JList<ScriptData.ScriptComponent> levelScriptList;
+    private JList<GenericScriptData.ScriptComponent> levelScriptList;
     private JSeparator separator2;
     private ButtonGroup labelListDisplayControlButtonGroup;
     // JFormDesigner - End of variables declaration  //GEN-END:variables  @formatter:on

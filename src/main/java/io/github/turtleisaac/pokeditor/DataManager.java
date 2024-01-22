@@ -25,8 +25,8 @@ import io.github.turtleisaac.pokeditor.formats.personal.PersonalData;
 import io.github.turtleisaac.pokeditor.formats.personal.PersonalParser;
 import io.github.turtleisaac.pokeditor.formats.pokemon_sprites.PokemonSpriteData;
 import io.github.turtleisaac.pokeditor.formats.pokemon_sprites.PokemonSpriteParser;
+import io.github.turtleisaac.pokeditor.formats.scripts.FieldScriptParser;
 import io.github.turtleisaac.pokeditor.formats.scripts.GenericScriptData;
-import io.github.turtleisaac.pokeditor.formats.scripts.ScriptParser;
 import io.github.turtleisaac.pokeditor.formats.text.TextBankData;
 import io.github.turtleisaac.pokeditor.formats.text.TextBankParser;
 import io.github.turtleisaac.pokeditor.formats.trainers.TrainerData;
@@ -120,7 +120,7 @@ public class DataManager
             ParameterizedType type = Types.newParameterizedType(GenericParser.class, eClass);
             return (GenericParser<E>) injector.getInstance(Key.get(TypeLiteral.get(type)));
         } else {
-            return (GenericParser<E>) new ScriptParser();
+            return (GenericParser<E>) new FieldScriptParser();
         }
     }
 

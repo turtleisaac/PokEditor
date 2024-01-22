@@ -6,12 +6,16 @@ package io.github.turtleisaac.pokeditor.gui.editors.data;
 
 import java.awt.*;
 import java.awt.event.*;
+import java.io.IOException;
 import java.util.*;
 import javax.swing.*;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import io.github.turtleisaac.nds4j.ui.FileUtils;
 import io.github.turtleisaac.nds4j.ui.ThemeUtils;
 import io.github.turtleisaac.pokeditor.formats.BytesDataContainer;
 import io.github.turtleisaac.pokeditor.formats.GenericFileData;
+import io.github.turtleisaac.pokeditor.gamedata.GameFiles;
 import io.github.turtleisaac.pokeditor.gui.EditorComboBox.ComboBoxItem;
 import io.github.turtleisaac.pokeditor.gui.EditorComboBox;
 import io.github.turtleisaac.pokeditor.gui.PokeditorManager;
@@ -115,12 +119,47 @@ public class DefaultDataEditorPanel<G extends GenericFileData, E extends Enum<E>
         selectedEntryChanged(null);
     }
 
+    /**
+     * used to write a file to disk
+     * Should only be used for scenarios where there is a single file to output
+     * @param e ignored
+     */
     private void exportFileButtonPressed(ActionEvent e) {
-        // TODO add your code here
+        BytesDataContainer container = editor.writeSelectedEntryForCopy();
+        for (Map<BytesDataContainer.PatternIndex, byte[]> entry : container.values())
+        {
+            for (byte[] data : entry.values())
+            {
+                try {
+                    FileUtils.promptLocationAndWriteFile(this, "exportFile", data, "Script File", ".scr");
+                    JOptionPane.showMessageDialog(this, "Success!", "Success", JOptionPane.INFORMATION_MESSAGE);
+                }
+                catch(IOException ex) {
+                    throw new RuntimeException(ex);
+                }
+                return;
+            }
+        }
     }
 
+    /**
+     * used to read a file from disk
+     * Should only be used for scenarios where there is a single file to output
+     * @param e ignored
+     */
     private void importFileButtonPressed(ActionEvent e) {
-        // TODO add your code here
+        byte[] data;
+        try {
+            data = FileUtils.promptLocationAndReadFile(this, "exportFile", "Script File", ".scr");
+        }
+        catch(IOException ex) {
+            throw new RuntimeException(ex);
+        }
+
+        BytesDataContainer container = new BytesDataContainer();
+        container.insert(editor.writeSelectedEntryForCopy().keySet().toArray(GameFiles[]::new)[0], null, data);
+        editor.applyCopiedEntry(container);
+        selectedEntryChanged(null);
     }
 
     private void initComponents() {

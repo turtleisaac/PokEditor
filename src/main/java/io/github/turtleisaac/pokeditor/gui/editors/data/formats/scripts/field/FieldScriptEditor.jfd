@@ -32,15 +32,29 @@ new FormModel {
 				add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class net.miginfocom.swing.MigLayout ) {
 					"$layoutConstraints": "insets 0 0 0 10,hidemode 3"
 					"$columnConstraints": "[grow,fill]"
-					"$rowConstraints": "[][][]unrel[][]"
+					"$rowConstraints": "[][][][]unrel[][]"
 				} ) {
 					name: "panel1"
+					add( new FormComponent( "javax.swing.JButton" ) {
+						name: "variableTrackerButton"
+						"text": new FormMessage( null, "FieldScriptEditor.variableTrackerButton.text" )
+						addEvent( new FormEvent( "java.awt.event.ActionListener", "actionPerformed", "variableTrackerButtonPressed", true ) )
+					}, new FormLayoutConstraints( class net.miginfocom.layout.CC ) {
+						"value": "cell 0 0"
+					} )
+					add( new FormComponent( "javax.swing.JButton" ) {
+						name: "flagTrackerButton"
+						"text": new FormMessage( null, "FieldScriptEditor.flagTrackerButton.text" )
+						addEvent( new FormEvent( "java.awt.event.ActionListener", "actionPerformed", "flagTrackerButtonPressed", true ) )
+					}, new FormLayoutConstraints( class net.miginfocom.layout.CC ) {
+						"value": "cell 0 0"
+					} )
 					add( new FormComponent( "javax.swing.JLabel" ) {
 						name: "labelJumpListLabel"
 						"text": new FormMessage( null, "FieldScriptEditor.labelJumpListLabel.text" )
 						"font": &SwingDerivedFont0 new com.jformdesigner.model.SwingDerivedFont( null, 0, 5, false )
 					}, new FormLayoutConstraints( class net.miginfocom.layout.CC ) {
-						"value": "cell 0 0"
+						"value": "cell 0 1"
 					} )
 					add( new FormComponent( "javax.swing.JRadioButton" ) {
 						name: "displayOnlyScriptsRadioButton"
@@ -48,7 +62,7 @@ new FormModel {
 						"$buttonGroup": new FormReference( "labelListDisplayControlButtonGroup" )
 						addEvent( new FormEvent( "java.awt.event.ActionListener", "actionPerformed", "labelListDisplayControlButtonPressed", true ) )
 					}, new FormLayoutConstraints( class net.miginfocom.layout.CC ) {
-						"value": "cell 0 1,alignx left,growx 0"
+						"value": "cell 0 2,alignx left,growx 0"
 					} )
 					add( new FormComponent( "javax.swing.JRadioButton" ) {
 						name: "displayOnlyLabelsRadioButton"
@@ -57,7 +71,7 @@ new FormModel {
 						"selected": true
 						addEvent( new FormEvent( "java.awt.event.ActionListener", "actionPerformed", "labelListDisplayControlButtonPressed", true ) )
 					}, new FormLayoutConstraints( class net.miginfocom.layout.CC ) {
-						"value": "cell 0 1,alignx left,growx 0"
+						"value": "cell 0 2,alignx left,growx 0"
 					} )
 					add( new FormComponent( "javax.swing.JRadioButton" ) {
 						name: "displayOnlyActionLabelsRadioButton"
@@ -65,7 +79,7 @@ new FormModel {
 						"$buttonGroup": new FormReference( "labelListDisplayControlButtonGroup" )
 						addEvent( new FormEvent( "java.awt.event.ActionListener", "actionPerformed", "labelListDisplayControlButtonPressed", true ) )
 					}, new FormLayoutConstraints( class net.miginfocom.layout.CC ) {
-						"value": "cell 0 1"
+						"value": "cell 0 2"
 					} )
 					add( new FormContainer( "javax.swing.JScrollPane", new FormLayoutManager( class javax.swing.JScrollPane ) ) {
 						name: "scriptsScrollPane"
@@ -78,14 +92,14 @@ new FormModel {
 							addEvent( new FormEvent( "javax.swing.event.ListSelectionListener", "valueChanged", "labelDisplayListSelectionChanged", true ) )
 						} )
 					}, new FormLayoutConstraints( class net.miginfocom.layout.CC ) {
-						"value": "cell 0 2"
+						"value": "cell 0 3"
 					} )
 					add( new FormComponent( "javax.swing.JLabel" ) {
 						name: "errorsLabel"
 						"text": new FormMessage( null, "FieldScriptEditor.errorsLabel.text" )
 						"font": #SwingDerivedFont0
 					}, new FormLayoutConstraints( class net.miginfocom.layout.CC ) {
-						"value": "cell 0 3"
+						"value": "cell 0 4"
 					} )
 					add( new FormContainer( "javax.swing.JScrollPane", new FormLayoutManager( class javax.swing.JScrollPane ) ) {
 						name: "errorsScrollPane"
@@ -96,7 +110,7 @@ new FormModel {
 							}
 						} )
 					}, new FormLayoutConstraints( class net.miginfocom.layout.CC ) {
-						"value": "cell 0 4"
+						"value": "cell 0 5"
 					} )
 				}, new FormLayoutConstraints( class net.miginfocom.layout.CC ) {
 					"value": "cell 2 0,grow"
@@ -165,7 +179,7 @@ new FormModel {
 				}, new FormLayoutConstraints( class net.miginfocom.layout.CC ) {
 					"value": "cell 0 4,aligny top,growy 0"
 				} )
-				add( new FormComponent( "io.github.turtleisaac.pokeditor.gui.HexadecimalSpinner" ) {
+				add( new FormComponent( "io.github.turtleisaac.nds4j.ui.HexadecimalSpinner" ) {
 					name: "variableField"
 				}, new FormLayoutConstraints( class net.miginfocom.layout.CC ) {
 					"value": "cell 0 5,aligny top,grow 100 0"
@@ -233,7 +247,7 @@ new FormModel {
 					name: "levelScriptList"
 					"selectionMode": 0
 					auxiliary() {
-						"JavaCodeGenerator.typeParameters": "ScriptData.ScriptComponent"
+						"JavaCodeGenerator.typeParameters": "GenericScriptData.ScriptComponent"
 					}
 					addEvent( new FormEvent( "javax.swing.event.ListSelectionListener", "valueChanged", "levelScriptListValueChanged", true ) )
 					addEvent( new FormEvent( "java.awt.event.MouseListener", "mousePressed", "levelScriptListMousePressed", true ) )
