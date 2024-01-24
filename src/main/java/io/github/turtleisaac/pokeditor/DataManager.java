@@ -6,7 +6,9 @@ import io.github.turtleisaac.nds4j.Narc;
 import io.github.turtleisaac.nds4j.NintendoDsRom;
 import io.github.turtleisaac.nds4j.binaries.CodeBinary;
 import io.github.turtleisaac.nds4j.binaries.MainCodeFile;
+import io.github.turtleisaac.nds4j.framework.BinaryWriter;
 import io.github.turtleisaac.nds4j.framework.MemBuf;
+import io.github.turtleisaac.nds4j.ui.Tool;
 import io.github.turtleisaac.pokeditor.formats.GenericFileData;
 import io.github.turtleisaac.pokeditor.formats.GenericParser;
 import io.github.turtleisaac.pokeditor.formats.encounters.JohtoEncounterData;
@@ -44,6 +46,7 @@ import java.lang.reflect.ParameterizedType;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 public class DataManager
 {
@@ -146,10 +149,10 @@ public class DataManager
         return data;
     }
 
-    public static <E extends GenericFileData> void saveData(NintendoDsRom rom, Class<E> eClass)
+    public static <E extends GenericFileData> Set<GameFiles> saveData(NintendoDsRom rom, Class<E> eClass)
     {
         if (!dataMap.containsKey(eClass))
-            return;
+            return null;
 
         GenericParser<E> parser = DataManager.getParser(eClass);
         Map<GameFiles, Narc> map = parser.processDataList(getData(rom, eClass), codeBinaries);
@@ -157,6 +160,8 @@ public class DataManager
         {
             rom.setFileByName(gameFile.getPath(), map.get(gameFile).save());
         }
+
+        return map.keySet();
     }
 
     @SuppressWarnings("unchecked")

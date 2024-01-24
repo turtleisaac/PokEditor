@@ -1,6 +1,7 @@
 package io.github.turtleisaac.pokeditor.gui;
 
 import com.formdev.flatlaf.extras.FlatSVGIcon;
+import io.github.turtleisaac.nds4j.Narc;
 import io.github.turtleisaac.nds4j.NintendoDsRom;
 import io.github.turtleisaac.nds4j.framework.GenericNtrFile;
 import io.github.turtleisaac.nds4j.images.IndexedImage;
@@ -10,6 +11,7 @@ import io.github.turtleisaac.nds4j.ui.ThemeUtils;
 import io.github.turtleisaac.nds4j.ui.Tool;
 import io.github.turtleisaac.pokeditor.DataManager;
 import io.github.turtleisaac.pokeditor.formats.GenericFileData;
+import io.github.turtleisaac.pokeditor.formats.GenericParser;
 import io.github.turtleisaac.pokeditor.formats.evolutions.EvolutionData;
 import io.github.turtleisaac.pokeditor.formats.learnsets.LearnsetData;
 import io.github.turtleisaac.pokeditor.formats.moves.MoveData;
@@ -31,6 +33,8 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.*;
 import java.util.List;
+
+import static io.github.turtleisaac.pokeditor.DataManager.getData;
 
 public class PokeditorManager extends PanelManager
 {
@@ -191,12 +195,31 @@ public class PokeditorManager extends PanelManager
 
     public <E extends GenericFileData> void saveData(Class<E> dataClass)
     {
-        DataManager.saveData(rom, dataClass);
-        DataManager.saveData(rom, TextBankData.class);
+        Set<GameFiles> gameFileSet = DataManager.saveData(rom, dataClass);
+        if (gameFileSet == null)
+        {
+            JOptionPane.showMessageDialog(null, "A fatal error occurred while attempting to save.", "Abort", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        List<GameFiles> gameFiles = new ArrayList<>(gameFileSet);
+        gameFiles.addAll(DataManager.saveData(rom, TextBankData.class));
 //        DataManager.saveCodeBinaries(rom, List.of(GameCodeBinaries.ARM9));
 
-//        if (!wipeAndWriteUnpacked())
-//            throw new RuntimeException("An error occurred while deleting or writing a file, please check write permissions");
+        StringBuilder stringBuilder = new StringBuilder("This operation will write the following files:\n");
+        for (GameFiles gameFile : gameFiles)
+        {
+            stringBuilder.append(gameFile.name()).append(": ");
+            stringBuilder.append(gameFile.getPath()).append("\n");
+        }
+        stringBuilder.append("\nAre you sure you want to proceed?");
+
+        if (JOptionPane.showConfirmDialog(null, stringBuilder.toString(), "PokEditor", JOptionPane.YES_NO_OPTION) != JOptionPane.YES_OPTION)
+        {
+            JOptionPane.showMessageDialog(null, "Cancelled.", "PokEditor", JOptionPane.INFORMATION_MESSAGE);
+            return;
+        }
+
         String message = null;
         if (gitEnabled)
         {
@@ -212,7 +235,17 @@ public class PokeditorManager extends PanelManager
             }
         }
 
-        wipeAndWriteUnpacked(message);
+        for (GameFiles gameFile : gameFiles)
+        {
+            writeModifiedFile(gameFile.getPath());
+        }
+
+        if (gitEnabled)
+        {
+            commit(message);
+        }
+
+        JOptionPane.showMessageDialog(null, "Success! (If any error popups came before this message, then disregard).", "PokEditor", JOptionPane.INFORMATION_MESSAGE);
     }
 
     public <E extends GenericFileData> void resetData(Class<E> dataClass)
