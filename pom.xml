@@ -148,4 +148,24 @@
         </dependency>
     </dependencies>
 
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <version>3.2.5</version>
+                <configuration>
+                    <!--
+                        headless: the whole UI layer under test is Swing, and there is no display.
+                        add-opens: the paste action reads the system clipboard straight off the
+                        default Toolkit, which a headless toolkit refuses to provide; the test
+                        lends it a working one for the duration of the action instead of a seam
+                        being cut into production code for the tests' benefit.
+                    -->
+                    <argLine>-Djava.awt.headless=true --add-opens java.desktop/java.awt=ALL-UNNAMED</argLine>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+
 </project>
