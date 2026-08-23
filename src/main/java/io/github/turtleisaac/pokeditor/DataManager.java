@@ -131,9 +131,38 @@ public class DataManager
     private static final Map<Class<? extends GenericFileData>, List<? extends GenericFileData>> dataMap = new HashMap<>();
     private static final Map<GameCodeBinaries, CodeBinary> codeBinaries = new HashMap<>();
 
+    /**
+     * The ROM the two caches above hold data for.
+     * <p>
+     * They are keyed by data class alone, so without this they answer for whichever ROM was
+     * opened first. Opening a second ROM in the same session returned the first one's parsed
+     * data for every format - and since the cache was populated, nothing re-parsed, so saving
+     * wrote the first ROM's personal table, TM list and everything else into the second ROM.
+     * <p>
+     * Compared by identity, not equality: two ROMs loaded from the same file are still separate
+     * objects with separate edits, and treating them as interchangeable is the same bug again.
+     */
+    private static NintendoDsRom cachedRom;
+
+    /**
+     * Points the caches at the given ROM, discarding anything held for a different one.
+     * Called from every entry point that takes a ROM, so no route can skip it.
+     */
+    private static void useRom(NintendoDsRom rom)
+    {
+        if (cachedRom == rom)
+            return;
+
+        dataMap.clear();
+        codeBinaries.clear();
+        dirtyClasses.clear();
+        cachedRom = rom;
+    }
+
     @SuppressWarnings("unchecked")
     public static <E extends GenericFileData> List<E> getData(NintendoDsRom rom, Class<E> eClass)
     {
+        useRom(rom);
         if (dataMap.containsKey(eClass))
             return (List<E>) dataMap.get(eClass);
 
@@ -183,6 +212,7 @@ public class DataManager
      */
     public static <E extends GenericFileData> Map<GameFiles, Narc> prepareData(NintendoDsRom rom, Class<E> eClass)
     {
+        useRom(rom);
         if (!dataMap.containsKey(eClass))
             return null;
 
@@ -214,6 +244,7 @@ public class DataManager
     @SuppressWarnings("unchecked")
     public static <E extends GenericFileData> void resetData(NintendoDsRom rom, Class<E> eClass)
     {
+        useRom(rom);
         if (!dataMap.containsKey(eClass))
             return;
 
@@ -221,8 +252,11 @@ public class DataManager
         list.clear();
         dataMap.remove(eClass);
         List<E> newList = getData(rom, eClass);
-        dataMap.remove(newList);
-
+        // getData has now cached its own freshly parsed list under eClass. The caller still holds
+        // the original list object, so the contents are moved into it and it is put back as the
+        // cached one - otherwise every open sheet would keep rendering the discarded edits.
+        // (This used to call dataMap.remove(newList), which passes a List to a Class-keyed map
+        // and therefore removed nothing at all.)
         list.addAll(newList);
         dataMap.put(eClass, list);
         markClean(eClass);
@@ -230,6 +264,7 @@ public class DataManager
 
     public static void codeBinarySetup(NintendoDsRom rom)
     {
+        useRom(rom);
         MainCodeFile arm9 = rom.loadArm9();
         codeBinaries.put(GameCodeBinaries.ARM9, arm9);
 //        codeBinaries.put(GameCodeBinaries.ARM7, rom.loadArm7());

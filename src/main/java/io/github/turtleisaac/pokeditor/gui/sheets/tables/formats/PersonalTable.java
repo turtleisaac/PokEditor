@@ -1,6 +1,7 @@
 package io.github.turtleisaac.pokeditor.gui.sheets.tables.formats;
 
 import io.github.turtleisaac.pokeditor.formats.personal.PersonalData;
+import io.github.turtleisaac.pokeditor.gui.PokeditorManager;
 import io.github.turtleisaac.pokeditor.formats.text.TextBankData;
 import io.github.turtleisaac.pokeditor.gamedata.TextFiles;
 import io.github.turtleisaac.pokeditor.gui.sheets.tables.cells.CellTypes;
@@ -361,11 +362,14 @@ public class PersonalTable extends DefaultTable<PersonalData, PersonalTable.Pers
                 case HP_EV_YIELD, ATK_EV_YIELD, DEF_EV_YIELD, SPEED_EV_YIELD, SP_ATK_EV_YIELD, SP_DEF_EV_YIELD -> new int[] {0, 3};
                 // the dex color shares its byte with the flip flag (bit 7)
                 case COLOR -> new int[] {0, 127};
-                // 18 types, numbered 0 to 17 - PokeditorManager.typeColors has exactly that many
-                // entries, so 18 is one past the end and nothing could draw it. A ROM with
-                // expanded types needs this, typeColors and PersonalData.NUMBER_OF_TYPES raised
-                // together.
-                case TYPE_1, TYPE_2 -> new int[] {0, PersonalData.NUMBER_OF_TYPES - 1};
+                // A type is stored in a whole byte, so this bound is not about storage - it is
+                // the number of types this sheet can name and colour. PokeditorManager.typeColors
+                // has one entry per Generation 4 type, and a value past the end has no name to
+                // show and no colour to draw. Core deliberately does not enforce it: a ROM hack
+                // with more types is valid data, and refusing to store it there would make the
+                // file unopenable rather than merely awkward to edit here. Raising typeColors is
+                // what widens this.
+                case TYPE_1, TYPE_2 -> new int[] {0, PokeditorManager.typeColors.length - 1};
                 case UNCOMMON_HELD_ITEM, RARE_HELD_ITEM -> new int[] {0, 0xFFFF};
                 default -> new int[] {0, 255};
             };
