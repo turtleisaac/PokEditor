@@ -60,6 +60,22 @@ class CellTypesTest
                 }
             };
 
+    /**
+     * Whether the editor will hand back the given text as the cell's new value.
+     * <p>
+     * The bound is enforced when the value is read, not by the document filter - the filter
+     * only strips non-digits, so it accepts "128" quite happily. Asserting through
+     * getCellEditorValue is what actually exercises the range; it also avoids stopCellEditing,
+     * which raises a dialog and so cannot run without a display.
+     */
+    private static boolean accepts(NumberOnlyCellEditor editor, String text)
+    {
+        javax.swing.JTextField field = (javax.swing.JTextField) editor
+                .getTableCellEditorComponent(new javax.swing.JTable(), "0", false, 0, 0);
+        field.setText(text);
+        return text.equals(editor.getCellEditorValue());
+    }
+
     private static TableCellComponents.Pair dispatch(CellTypes type)
     {
         return TableCellComponents.forType(type, NAMES, new int[] {0, 255}, CUSTOM_SUPPLIER);
@@ -123,9 +139,22 @@ class CellTypesTest
     {
         // the range is the only thing distinguishing a priority column (-128..127) from a
         // stat column (0..255); dropping it on the way through would silently widen both
-        NumberOnlyCellEditor editor = (NumberOnlyCellEditor) TableCellComponents
+        // asserted behaviourally: a signed column must take -128 and refuse -129, and the only
+        // way to tell the range was carried through is to drive the editor with values that lie
+        // on either side of it. isNotNull() would pass against a hard-coded 0..255.
+        NumberOnlyCellEditor signed = (NumberOnlyCellEditor) TableCellComponents
                 .forType(CellTypes.INTEGER, null, new int[] {-128, 127}, CUSTOM_SUPPLIER).editor();
-        assertThat(editor).isNotNull();
+        assertThat(accepts(signed, "-128")).as("a signed column must accept its lower bound").isTrue();
+        assertThat(accepts(signed, "127")).as("a signed column must accept its upper bound").isTrue();
+        assertThat(accepts(signed, "128")).as("a signed column must refuse 128").isFalse();
+        assertThat(accepts(signed, "-129")).as("a signed column must refuse -129").isFalse();
+
+        // and an unsigned column must take the values the signed one refuses, or the range was
+        // ignored in the other direction
+        NumberOnlyCellEditor unsigned = (NumberOnlyCellEditor) TableCellComponents
+                .forType(CellTypes.INTEGER, null, new int[] {0, 255}, CUSTOM_SUPPLIER).editor();
+        assertThat(accepts(unsigned, "255")).as("an unsigned column must accept 255").isTrue();
+        assertThat(accepts(unsigned, "-1")).as("an unsigned column must refuse -1").isFalse();
     }
 
     @Test

@@ -361,12 +361,11 @@ public class PersonalTable extends DefaultTable<PersonalData, PersonalTable.Pers
                 case HP_EV_YIELD, ATK_EV_YIELD, DEF_EV_YIELD, SPEED_EV_YIELD, SP_ATK_EV_YIELD, SP_DEF_EV_YIELD -> new int[] {0, 3};
                 // the dex color shares its byte with the flip flag (bit 7)
                 case COLOR -> new int[] {0, 127};
-                // Core refuses a type above 18 (PersonalData.setType1), and typeColors holds
-                // 18 entries, so anything higher cannot be stored or drawn. Both numbers are a
-                // guess at how many types the ROM has - see the TODO on that check - so this
-                // mirrors the guess rather than fixing it; a ROM with expanded types needs both
-                // updated together.
-                case TYPE_1, TYPE_2 -> new int[] {0, 18};
+                // 18 types, numbered 0 to 17 - PokeditorManager.typeColors has exactly that many
+                // entries, so 18 is one past the end and nothing could draw it. A ROM with
+                // expanded types needs this, typeColors and PersonalData.NUMBER_OF_TYPES raised
+                // together.
+                case TYPE_1, TYPE_2 -> new int[] {0, PersonalData.NUMBER_OF_TYPES - 1};
                 case UNCOMMON_HELD_ITEM, RARE_HELD_ITEM -> new int[] {0, 0xFFFF};
                 default -> new int[] {0, 255};
             };

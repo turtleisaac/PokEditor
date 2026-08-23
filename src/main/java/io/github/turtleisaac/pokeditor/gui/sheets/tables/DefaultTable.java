@@ -349,11 +349,62 @@ public abstract class DefaultTable<G extends GenericFileData, E extends Enum<E>>
         /** how many rejected cells to name individually before falling back to a count */
         private static final int MAX_REPORTED_REJECTIONS = 8;
 
+        /**
+         * An empty cell in a pasted block means "there is nothing here", not "write nothing here".
+         * A spreadsheet produces them for genuinely blank cells and for the ragged right-hand end
+         * of a copied range, and no numeric, checkbox or combo box column has a value that spelling
+         * denotes - parsing it either throws or, for a checkbox, silently clears the flag.
+         * <p>
+         * Text columns are the exception: clearing a name is a real edit, so an empty string is a
+         * value there and is written through.
+         */
+        private static boolean isBlankCell(String value, CellTypes cellType)
+        {
+            return value != null && value.isEmpty() && cellType != CellTypes.STRING;
+        }
+
         private final DefaultTable<G, E> table;
 
         public PasteAction(DefaultTable<G, E> table)
         {
             this.table = table;
+        }
+
+        /**
+         * Reports a paste failure to the user, or to the console when there is no display.
+         * Calling JOptionPane headlessly throws HeadlessException from inside the error path,
+         * which replaces the problem being reported with a different one - and makes the paste
+         * path untestable, which is why this defect reached a release in the first place.
+         */
+        private static void report(Component parent, String message)
+        {
+            if (GraphicsEnvironment.isHeadless())
+            {
+                System.err.println(message);
+                return;
+            }
+            JOptionPane.showMessageDialog(parent, message, "Paste Error", JOptionPane.ERROR_MESSAGE);
+        }
+
+        /**
+         * The clipboard this action pastes from.
+         * <p>
+         * Reached through a method rather than called inline so that a test can supply its own.
+         * The system clipboard needs a display, so without this seam the paste path can only be
+         * exercised by reflectively replacing the AWT toolkit - which is how a regression that
+         * refused every spreadsheet paste came to ship untested.
+         *
+         * @return the clipboard to read, or null if there is none to read
+         */
+        protected Clipboard getClipboard()
+        {
+            try {
+                return Toolkit.getDefaultToolkit().getSystemClipboard();
+            }
+            catch (HeadlessException | SecurityException e) {
+                // no display, or a sandbox that will not hand one over. nothing to paste from.
+                return null;
+            }
         }
 
         @Override
@@ -363,17 +414,28 @@ public abstract class DefaultTable<G extends GenericFileData, E extends Enum<E>>
             System.out.println("rows: " + Arrays.toString(rows));
             int[] cols = table.getSelectedColumns();
 
-            Clipboard cb = Toolkit.getDefaultToolkit().getSystemClipboard();
+            Clipboard cb = getClipboard();
+            if (cb == null)
+                return;
+
             if (cb.isDataFlavorAvailable(DataFlavor.stringFlavor))
             {
                 try
                 {
                     String value = (String) cb.getData(DataFlavor.stringFlavor);
                     String[] lines = value.split("\r?\n", -1);
-                    String[][] pastedCells = new String[lines.length][];
-                    int idx = 0;
-                    for (String line : lines) {
-                        pastedCells[idx++] = line.split("\t", -1);
+
+                    // Every spreadsheet terminates the last row of a copied range with a newline,
+                    // so splitting with -1 leaves a trailing empty line. Counting it as a row of
+                    // data makes a 2x2 copy look like three rows: it inflates numVerticalCopies
+                    // below, and its single empty cell is not a value any numeric column can take.
+                    int lineCount = lines.length;
+                    if (lineCount > 1 && lines[lineCount - 1].isEmpty())
+                        lineCount--;
+
+                    String[][] pastedCells = new String[lineCount][];
+                    for (int idx = 0; idx < lineCount; idx++) {
+                        pastedCells[idx] = lines[idx].split("\t", -1);
                     }
 
                     if (rows.length == 0 || cols.length == 0 || pastedCells.length == 0)
@@ -404,6 +466,9 @@ public abstract class DefaultTable<G extends GenericFileData, E extends Enum<E>>
                                     int checkCol = cols[0] + horizontalCopyIdx * pastedCells[0].length + colIdx;
 
                                     if (checkRow >= table.getRowCount() || checkCol >= table.getColumnCount())
+                                        continue;
+
+                                    if (isBlankCell(pastedCells[rowIdx][colIdx], table.cellTypes[checkCol]))
                                         continue;
 
                                     try {
@@ -441,8 +506,7 @@ public abstract class DefaultTable<G extends GenericFileData, E extends Enum<E>>
                         if (rejections.size() > listed)
                             message.append("  \u2022 ").append(rejections.size() - listed).append(" more\n");
 
-                        JOptionPane.showMessageDialog(table, message.toString(), "Paste Error",
-                                JOptionPane.ERROR_MESSAGE);
+                        report(table, message.toString());
                         return;
                     }
 
@@ -465,6 +529,11 @@ public abstract class DefaultTable<G extends GenericFileData, E extends Enum<E>>
                                         if (destRow >= table.getRowCount() || destCol >= table.getColumnCount())
                                             continue;
 
+                                        // must skip exactly what the dry run skipped, or the two
+                                        // passes disagree and a value reaches setValueAt unchecked
+                                        if (isBlankCell(pastedCells[rowIdx][colIdx], table.cellTypes[destCol]))
+                                            continue;
+
                                         table.setValueAt(pastedCells[rowIdx][colIdx], destRow, destCol);
                                         table.getFormatModel().fireTableCellUpdated(destRow, destCol);
                                     }
@@ -478,11 +547,10 @@ public abstract class DefaultTable<G extends GenericFileData, E extends Enum<E>>
                         // something the validation did not know about. name the cell rather than
                         // leaving the user to guess which of the pasted values was the problem.
                         ex.printStackTrace();
-                        JOptionPane.showMessageDialog(table,
-                                String.format("The paste stopped at row %d, column \"%s\":%n%s%n%n"
-                                                + "Cells before this one have already been changed.",
-                                        destRow, table.getColumnName(destCol), ex.getMessage()),
-                                "Paste Error", JOptionPane.ERROR_MESSAGE);
+                        report(table, String.format(
+                                "The paste stopped at row %d, column \"%s\":%n%s%n%n"
+                                        + "Cells before this one have already been changed.",
+                                destRow, table.getColumnName(destCol), ex.getMessage()));
                     }
                     finally
                     {

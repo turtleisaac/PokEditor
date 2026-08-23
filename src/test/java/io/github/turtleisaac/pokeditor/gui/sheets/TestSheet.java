@@ -53,10 +53,36 @@ final class TestSheet
 
         @Override public int getColumnCount() { return COLUMNS; }
         @Override public Object getValueAt(int row, int column) { return cells[row][column]; }
-        @Override public void setValueAt(Object value, int row, int column) { cells[row][column] = value; }
+        @Override public void setValueAt(Object value, int row, int column)
+        {
+            // mirrors the real sheets, whose setValueAt reaches setValueFor and converts there.
+            // A double that stored the raw String would report a paste as landing while the
+            // conversion it is supposed to be exercising never ran.
+            cells[row][column] = prepareObjectForWriting(value, getCellType(column),
+                    cellTypes == null ? null : getCellValueRange(column));
+        }
         @Override public String getColumnNameKey(int columnIndex) { return "hp"; }
         @Override public FormatModel<GenericFileData, NoProperties> getFrozenColumnModel() { return null; }
-        @Override public CellTypes getCellType(int columnIndex) { return CellTypes.STRING; }
+        /**
+         * The cell type each column reports. STRING by default, because most of the geometry
+         * tests only care about which cell a value lands in - but a sheet made entirely of
+         * STRING columns cannot exercise validation at all, since prepareObjectForWriting does
+         * nothing for text. A paste regression shipped behind exactly that gap, so a fixture
+         * can now declare real types.
+         */
+        CellTypes[] cellTypes;
+
+        @Override public CellTypes getCellType(int columnIndex)
+        {
+            return cellTypes == null ? CellTypes.STRING : cellTypes[columnIndex];
+        }
+
+        @Override public int[] getCellValueRange(int columnIndex)
+        {
+            return valueRange == null ? super.getCellValueRange(columnIndex) : valueRange;
+        }
+
+        int[] valueRange;
         @Override public Object getValueFor(int entryIdx, NoProperties property) { return null; }
         @Override public void setValueFor(Object value, int entryIdx, NoProperties property) { }
     }
@@ -70,6 +96,19 @@ final class TestSheet
 
         @Override public Queue<String[]> obtainTextSources(List<TextBankData> textData) { return new LinkedList<>(); }
         @Override public Class<GenericFileData> getDataClass() { return GenericFileData.class; }
+    }
+
+    /**
+     * A grid whose columns are all numeric, bounded by the given inclusive range. Use this
+     * wherever a test needs the write path to actually convert and validate.
+     */
+    static Model numericGrid(int rows, int min, int max)
+    {
+        Model model = new Model(rows);
+        model.cellTypes = new CellTypes[COLUMNS];
+        Arrays.fill(model.cellTypes, CellTypes.INTEGER);
+        model.valueRange = new int[] {min, max};
+        return model;
     }
 
     /** A grid of the given size with every cell marked as never having been written. */
