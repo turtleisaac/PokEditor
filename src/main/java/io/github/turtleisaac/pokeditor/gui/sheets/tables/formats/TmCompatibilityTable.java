@@ -208,6 +208,18 @@ public class TmCompatibilityTable extends DefaultTable<PersonalData, TmCompatibi
                 }
 
                 @Override
+                public String getColumnName(int column)
+                {
+                    // this model presents only the frozen columns, so its column 0 is the sheet's
+                    // first frozen column. FormatModel.getColumnName adds getNumFrozenColumns()
+                    // back on, which for this wrapper is its whole width - without undoing that
+                    // here, asking it for the name of column 0 answers with the first UNfrozen
+                    // column instead. getCornerTableHeader used to compensate by passing a
+                    // negative index; two wrongs that happened to cancel.
+                    return super.getColumnName(column - super.getNumFrozenColumns());
+                }
+
+                @Override
                 public Object getValueAt(int rowIndex, int columnIndex)
                 {
                     return super.getValueAt(rowIndex, columnIndex - super.getNumFrozenColumns());

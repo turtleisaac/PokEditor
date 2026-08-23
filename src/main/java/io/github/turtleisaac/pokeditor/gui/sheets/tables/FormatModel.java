@@ -131,13 +131,83 @@ public abstract class FormatModel<G extends GenericFileData, E extends Enum<E>> 
 
     public Object prepareObjectForWriting(Object aValue, CellTypes cellType)
     {
-        if (aValue instanceof String)
+        return prepareObjectForWriting(aValue, cellType, null);
+    }
+
+    /**
+     * Converts an incoming cell value to the type the column stores, and refuses it if the
+     * column cannot hold it.
+     * <p>
+     * The range check has to live here rather than in the cell editor. {@link
+     * io.github.turtleisaac.pokeditor.gui.sheets.tables.cells.editors.NumberOnlyCellEditor}
+     * was the only thing consulting {@link #getCellValueRange(int)}, and it is reached only
+     * by typing into an {@link CellTypes#INTEGER} cell - a paste goes straight to
+     * {@code setValueAt}, and combo box columns never had an editor-side check at all. So a
+     * pasted value simply landed in the data and was narrowed to something else when the
+     * file was written.
+     *
+     * @param valueRange the inclusive {min, max} this column can store, or null to skip the
+     *                   check (for columns where no numeric range applies)
+     */
+    public Object prepareObjectForWriting(Object aValue, CellTypes cellType, int[] valueRange)
+    {
+        if (aValue instanceof String text)
         {
+            text = text.trim();
+
             if (cellType == CellTypes.CHECKBOX)
-                aValue = Boolean.parseBoolean(((String) aValue).trim());
+            {
+                // Boolean.parseBoolean answers false for everything it does not recognise, so
+                // pasting a spreadsheet column of 1s and 0s silently cleared every checkbox
+                aValue = parseCheckbox(text);
+            }
             else if (cellType != CellTypes.STRING)
-                aValue = Integer.parseInt(((String) aValue).trim());
+            {
+                try {
+                    aValue = Integer.parseInt(text);
+                }
+                catch (NumberFormatException e) {
+                    // the sheet exports rendered text - names, not indices - so pasting an
+                    // exported column back in lands here for every combo box cell. say what
+                    // the column actually wants rather than repeating parseInt's message
+                    throw new IllegalArgumentException(String.format(
+                            "\"%s\" is not a number. This column stores a number%s, so a name "
+                                    + "cannot be pasted into it - use the number that names it.",
+                            text, valueRange == null ? ""
+                                    : " between " + valueRange[0] + " and " + valueRange[1]), e);
+                }
+            }
         }
+
+        if (valueRange != null && aValue instanceof Integer value
+                && (value < valueRange[0] || value > valueRange[1]))
+        {
+            throw new IllegalArgumentException(String.format(
+                    "%d is outside the range %d to %d that this column can store. Saving it "
+                            + "would write a different value than the one entered.",
+                    value, valueRange[0], valueRange[1]));
+        }
+
         return aValue;
+    }
+
+    /**
+     * Accepts the spellings a checkbox column can actually receive - the true/false a cell
+     * editor produces and the 1/0 a spreadsheet paste produces - and refuses anything else
+     * rather than quietly reading it as false.
+     */
+    private static boolean parseCheckbox(String text)
+    {
+        switch (text.toLowerCase())
+        {
+            case "true": case "1": case "yes": case "y":
+                return true;
+            case "false": case "0": case "no": case "n": case "":
+                return false;
+            default:
+                throw new IllegalArgumentException(String.format(
+                        "\"%s\" is not a yes or no value. This column is a checkbox; it accepts "
+                                + "true/false or 1/0.", text));
+        }
     }
 }

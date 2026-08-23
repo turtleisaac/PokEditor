@@ -240,6 +240,39 @@ public class TextSourceSymmetryTest
     }
 
     @Test
+    @DisplayName("every custom column shares one editor and one renderer instance")
+    void customColumnsShareTheirComponents()
+    {
+        // Sharing is asserted by identity, not by counting queue draws. The two are different
+        // claims: a second custom column could be given its own components built from the same
+        // text, consuming nothing extra and passing every consumption test, while the user gets
+        // two independent widgets where the sheet means one. Column 8 shares column 4's pair.
+        int first = -1;
+        int second = -1;
+        for (int i = 0; i < AWKWARD.length; i++)
+        {
+            if (AWKWARD[i] != CellTypes.CUSTOM)
+                continue;
+            if (first < 0)
+                first = i;
+            else {
+                second = i;
+                break;
+            }
+        }
+        assertThat(first).as("the fixture must contain a custom column").isGreaterThanOrEqualTo(0);
+        assertThat(second).as("the fixture must contain a second custom column").isGreaterThan(first);
+
+        E_ProbeTable table = build(AWKWARD);
+        assertThat(table.getColumnModel().getColumn(second).getCellEditor())
+                .as("custom columns %d and %d must share one editor", first, second)
+                .isSameAs(table.getColumnModel().getColumn(first).getCellEditor());
+        assertThat(table.getColumnModel().getColumn(second).getCellRenderer())
+                .as("custom columns %d and %d must share one renderer", first, second)
+                .isSameAs(table.getColumnModel().getColumn(first).getCellRenderer());
+    }
+
+    @Test
     @DisplayName("the custom column is handed the triple starting at its reference position, in order")
     void customColumnReceivesItsTripleInOrder()
     {

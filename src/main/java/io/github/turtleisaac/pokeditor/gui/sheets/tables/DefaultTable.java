@@ -6,6 +6,7 @@ import io.github.turtleisaac.pokeditor.formats.GenericFileData;
 import io.github.turtleisaac.pokeditor.formats.text.TextBankData;
 import io.github.turtleisaac.pokeditor.gui.PokeditorManager;
 import io.github.turtleisaac.pokeditor.gui.sheets.tables.cells.CellTypes;
+import io.github.turtleisaac.pokeditor.gui.sheets.tables.cells.TableCellComponents;
 import io.github.turtleisaac.pokeditor.gui.sheets.tables.cells.editors.BitfieldComboBoxEditor;
 import io.github.turtleisaac.pokeditor.gui.sheets.tables.cells.editors.CheckBoxEditor;
 import io.github.turtleisaac.pokeditor.gui.sheets.tables.cells.editors.ComboBoxCellEditor;
@@ -92,7 +93,7 @@ public abstract class DefaultTable<G extends GenericFileData, E extends Enum<E>>
 
         InputMap inputMap = getInputMap(JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
 
-        PasteAction action = new PasteAction(this);
+        PasteAction<G, E> action = new PasteAction<>(this);
 
         KeyStroke stroke;
         if (!SystemInfo.isMacOS) {
@@ -179,8 +180,11 @@ public abstract class DefaultTable<G extends GenericFileData, E extends Enum<E>>
 
     public void loadCellRenderers(Map<Integer, String[][]> textSources)
     {
-        TableCellEditor customEditor = null;
-        TableCellRenderer customRenderer = null;
+        // the custom columns of a sheet all show the same kind of thing, so they share one
+        // editor and one renderer. the pair is built once, from the first custom column's
+        // text, because buildColumnTextSources only assigns the triple to that column -
+        // asking for it again on a later column would hand TableCellComponents a null.
+        TableCellComponents.Pair customPair = null;
 
         for (int i = 0; i < getColumnCount(); i++)
         {
@@ -189,53 +193,41 @@ public abstract class DefaultTable<G extends GenericFileData, E extends Enum<E>>
             col.setWidth(widths[i]);
             col.setPreferredWidth(widths[i]);
 
-            if (c == CellTypes.CHECKBOX)
+            TableCellComponents.Pair pair;
+            if (c == CellTypes.CUSTOM)
             {
-                col.setCellRenderer(new CheckBoxRenderer());
-                col.setCellEditor(new CheckBoxEditor());
-            }
-            else if (c == CellTypes.COMBO_BOX || c == CellTypes.COLORED_COMBO_BOX || c == CellTypes.BITFIELD_COMBO_BOX)
-            {
-                String[] text = textSources.get(i)[0];
-
-                if (c != CellTypes.BITFIELD_COMBO_BOX) //normal and colored
-                    col.setCellEditor(new ComboBoxCellEditor(text));
-                else // bitfield combo box
-                    col.setCellEditor(new BitfieldComboBoxEditor(text));
-
-                if (c == CellTypes.COMBO_BOX)
-                    col.setCellRenderer(new IndexedStringCellRenderer(text));
-                else if (c == CellTypes.COLORED_COMBO_BOX)
-                    col.setCellRenderer(new IndexedStringCellRenderer.ColoredIndexedStringCellRenderer(text, PokeditorManager.typeColors));
-                else
-                    col.setCellRenderer(new BitfieldStringCellRenderer(text));
-            }
-            else if (c == CellTypes.INTEGER)
-            {
-                int[] range = getFormatModel().getCellValueRange(i);
-                col.setCellEditor(new NumberOnlyCellEditor(range[0], range[1]));
-            }
-            else if (c == CellTypes.CUSTOM)
-            {
-                if (customEditor == null || customRenderer == null)
+                if (customPair == null)
                 {
-                    String[][] custom = textSources.get(i);
-
-                    customEditor = customCellSupplier.getEditor(custom[0], custom[1], custom[2]);
-                    customRenderer = customCellSupplier.getRenderer(custom[0], custom[1], custom[2]);
+                    customPair = TableCellComponents.forType(c, textSources.get(i),
+                            getFormatModel().getCellValueRange(i), customCellSupplier);
                 }
-
-                if (customEditor != null)
-                    col.setCellEditor(customEditor);
-
-                if (customRenderer != null)
-                    col.setCellRenderer(customRenderer);
+                pair = customPair;
             }
+            else {
+                pair = TableCellComponents.forType(c, textSources.get(i),
+                        getFormatModel().getCellValueRange(i), customCellSupplier);
+            }
+
+            if (pair.renderer() != null)
+                col.setCellRenderer(pair.renderer());
+
+            if (pair.editor() != null)
+                col.setCellEditor(pair.editor());
         }
     }
 
     private String[] getTextFromSource(Queue<String[]> textSources)
     {
+        if (textSources.isEmpty())
+        {
+            // remove() would throw NoSuchElementException with a null message, naming neither
+            // the sheet nor the column that went unserved
+            throw new IllegalStateException(String.format(
+                    "%s supplied fewer text sources than its columns need. Every combo box column "
+                            + "takes one list and a custom column takes three, so obtainTextSources "
+                            + "must return that many.", getClass().getSimpleName()));
+        }
+
         String[] text = textSources.remove();
         if (text == null)
             text = new String[] {""};
@@ -328,7 +320,9 @@ public abstract class DefaultTable<G extends GenericFileData, E extends Enum<E>>
     public String[][] exportEditable()
     {
         String[][] output = new String[getModel().getRowCount()][getColumnCount()];
-        for (int colIdx = 0; colIdx < output[0].length; colIdx++)
+        // bounded by the column count, not by the width of row 0 - an empty sheet has no row 0,
+        // and asking for its width threw rather than returning the empty export it should
+        for (int colIdx = 0; colIdx < getColumnCount(); colIdx++)
         {
             for (int rowIdx = 0; rowIdx < output.length; rowIdx++)
             {
@@ -350,11 +344,14 @@ public abstract class DefaultTable<G extends GenericFileData, E extends Enum<E>>
         return result;
     }
 
-    public static class PasteAction extends AbstractAction {
+    public static class PasteAction<G extends GenericFileData, E extends Enum<E>> extends AbstractAction {
 
-        private final DefaultTable<? extends GenericFileData, ? extends Enum<?>> table;
+        /** how many rejected cells to name individually before falling back to a count */
+        private static final int MAX_REPORTED_REJECTIONS = 8;
 
-        public PasteAction(DefaultTable<? extends GenericFileData, ? extends Enum<?>> table)
+        private final DefaultTable<G, E> table;
+
+        public PasteAction(DefaultTable<G, E> table)
         {
             this.table = table;
         }
@@ -388,6 +385,67 @@ public abstract class DefaultTable<G extends GenericFileData, E extends Enum<E>>
                     int numVerticalCopies = Math.max(1, rows.length / pastedCells.length);
                     int numHorizontalCopies = Math.max(1, cols.length / pastedCells[0].length);
 
+                    // Check the whole rectangle before writing any of it. The write loop below
+                    // cannot roll back - there is no undo - so a value rejected part way through
+                    // would leave the sheet holding some of the paste and not the rest, with no
+                    // way to tell which. prepareObjectForWriting only converts and validates, so
+                    // running it here costs nothing and changes nothing.
+                    List<String> rejections = new ArrayList<>();
+                    FormatModel<G, E> model = table.getFormatModel();
+                    for (int verticalCopyIdx = 0; verticalCopyIdx < numVerticalCopies; verticalCopyIdx++)
+                    {
+                        for (int horizontalCopyIdx = 0; horizontalCopyIdx < numHorizontalCopies; horizontalCopyIdx++)
+                        {
+                            for (int rowIdx = 0; rowIdx < pastedCells.length; rowIdx++)
+                            {
+                                for (int colIdx = 0; colIdx < pastedCells[rowIdx].length; colIdx++)
+                                {
+                                    int checkRow = rows[0] + verticalCopyIdx * pastedCells.length + rowIdx;
+                                    int checkCol = cols[0] + horizontalCopyIdx * pastedCells[0].length + colIdx;
+
+                                    if (checkRow >= table.getRowCount() || checkCol >= table.getColumnCount())
+                                        continue;
+
+                                    try {
+                                        model.prepareObjectForWriting(pastedCells[rowIdx][colIdx],
+                                                table.cellTypes[checkCol], model.getCellValueRange(checkCol));
+                                    }
+                                    catch (RuntimeException ex) {
+                                        if (rejections.size() < MAX_REPORTED_REJECTIONS)
+                                        {
+                                            rejections.add(String.format("row %d, \"%s\": %s",
+                                                    checkRow, table.getColumnName(checkCol), ex.getMessage()));
+                                        }
+                                        else {
+                                            rejections.add(null); // counted, not listed
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+
+                    if (!rejections.isEmpty())
+                    {
+                        StringBuilder message = new StringBuilder(rejections.size() == 1
+                                ? "This value can't be pasted, so nothing was changed:\n\n"
+                                : rejections.size() + " values can't be pasted, so nothing was changed:\n\n");
+                        int listed = 0;
+                        for (String rejection : rejections)
+                        {
+                            if (rejection == null)
+                                continue;
+                            message.append("  \u2022 ").append(rejection).append('\n');
+                            listed++;
+                        }
+                        if (rejections.size() > listed)
+                            message.append("  \u2022 ").append(rejections.size() - listed).append(" more\n");
+
+                        JOptionPane.showMessageDialog(table, message.toString(), "Paste Error",
+                                JOptionPane.ERROR_MESSAGE);
+                        return;
+                    }
+
                     int destRow = -1;
                     int destCol = -1;
                     table.pasteInProgress = true;
@@ -416,10 +474,14 @@ public abstract class DefaultTable<G extends GenericFileData, E extends Enum<E>>
                     }
                     catch (RuntimeException ex)
                     {
+                        // the dry run above passed, so reaching here means the write path rejected
+                        // something the validation did not know about. name the cell rather than
+                        // leaving the user to guess which of the pasted values was the problem.
                         ex.printStackTrace();
                         JOptionPane.showMessageDialog(table,
-                                String.format("The paste could not be completed - the value destined for row %d, column %d was rejected:%n%s",
-                                        destRow, destCol, ex.getMessage()),
+                                String.format("The paste stopped at row %d, column \"%s\":%n%s%n%n"
+                                                + "Cells before this one have already been changed.",
+                                        destRow, table.getColumnName(destCol), ex.getMessage()),
                                 "Paste Error", JOptionPane.ERROR_MESSAGE);
                     }
                     finally

@@ -225,6 +225,21 @@ public class E_LayoutModel extends FormatModel<E_Entry, E_LayoutModel.Column>
         }
 
         @Override
+        public String getColumnName(int column)
+        {
+            // mirrors the production frozen wrappers: this model presents only the frozen
+            // columns, so its column 0 is the sheet's first frozen column, and the offset
+            // FormatModel.getColumnName adds has to be undone. The double is only useful while
+            // it has the same shape as the thing it stands in for.
+            //
+            // width(), not super.getNumFrozenColumns(): this double extends FormatModel directly,
+            // whose base getNumFrozenColumns() answers 0. The production wrappers extend a real
+            // sheet model whose own answer is already the frozen count, so there super. is right
+            // and here it is not.
+            return super.getColumnName(column - width());
+        }
+
+        @Override
         public Object getValueAt(int rowIndex, int columnIndex)
         {
             return frozenValue(rowIndex, columnIndex);

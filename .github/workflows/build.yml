@@ -61,10 +61,48 @@ jobs:
             exit "$status"
           fi
 
-      - name: Build
-        # There is no test suite in this module; the logic it drives is tested in
-        # PokEditor-Core and Nds4j, which have their own workflows.
-        run: mvn -B -ntp verify -Djava.awt.headless=true
+      - name: Build and test
+        # Everything except the dead-code specifications below. This job must stay green: a
+        # failure here is a regression, and it is only readable as one because the known
+        # failures are not mixed in with it.
+        run: mvn -B -ntp verify -Djava.awt.headless=true -DexcludedGroups=dead-code
+
+      # Tests asserting properties that framework/ and gui_old/ classes do not hold. Those
+      # classes have no callers anywhere in src/main, so the failures are not defects anyone
+      # can hit - they are the specification for whoever revives or deletes the code.
+      #
+      # The count is asserted rather than reported. A bare "expected to fail" job is decorative:
+      # nothing notices when the number goes up, so a genuine regression could be silenced by
+      # tagging it, and nothing notices when it goes down either, so a fix never prompts anyone
+      # to remove the tag. Pinning the number makes both show up as a build failure.
+      - name: Known dead-code failures
+        run: |
+          set +e
+          output=$(mvn -B -ntp test -Djava.awt.headless=true -Dgroups=dead-code 2>&1)
+          set -e
+          summary=$(echo "$output" | grep -E '^\[(ERROR|INFO|WARNING)\] Tests run: [0-9]+, Failures' | tail -1)
+          echo "$summary"
+          run=$(echo "$summary" | sed -E 's/.*Tests run: ([0-9]+).*/\1/')
+          failures=$(echo "$summary" | sed -E 's/.*Failures: ([0-9]+).*/\1/')
+          errors=$(echo "$summary" | sed -E 's/.*Errors: ([0-9]+).*/\1/')
+          red=$(( failures + errors ))
+          if [ "$run" != "$EXPECTED_TAGGED" ]; then
+            echo "::error title=Tagged test count changed::$run tests carry the dead-code tag, expected $EXPECTED_TAGGED. If you added a tag, say why in the commit and update EXPECTED_TAGGED; a regression must not be tagged away."
+            exit 1
+          fi
+          if [ "$red" -lt "$EXPECTED_RED" ]; then
+            echo "::notice title=A known failure now passes::$red of $run tagged tests fail, down from $EXPECTED_RED. Something was fixed -- remove its @Tag(DEAD_CODE) and lower EXPECTED_RED."
+            exit 1
+          fi
+          if [ "$red" -gt "$EXPECTED_RED" ]; then
+            echo "::error title=More tagged tests failing::$red of $run tagged tests fail, up from $EXPECTED_RED."
+            exit 1
+          fi
+          echo "$red of $run tagged tests fail, as expected."
+        env:
+          # Keep in step with the @Tag(DEAD_CODE) annotations in src/test.
+          EXPECTED_TAGGED: '17'
+          EXPECTED_RED: '17'
 
       - name: Upload build output
         if: failure()

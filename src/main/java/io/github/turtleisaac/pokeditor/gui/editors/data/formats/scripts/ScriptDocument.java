@@ -144,7 +144,12 @@ public class ScriptDocument extends DefaultStyledDocument
         // could hand back a 13 character range over a 2 character document, and reading its
         // text threw straight onto the EDT. no ranges at all is the honest answer until the
         // visitor has run again; every caller of find() already handles null.
-        scriptElementList.clear();
+        //
+        // only when the text actually moved, though: an insert of nothing leaves every offset
+        // valid, and discarding the ranges anyway would blank the tooltips and ctrl-click
+        // targets for a quarter of a second in response to an edit that changed nothing.
+        if (str != null && !str.isEmpty())
+            scriptElementList.clear();
         scheduleSyntaxUpdate();
     }
 
@@ -152,8 +157,10 @@ public class ScriptDocument extends DefaultStyledDocument
     public void remove(int offs, int len) throws BadLocationException
     {
         super.remove(offs, len);
-        // see insertString: stale ranges outlive the text they describe for the debounce window
-        scriptElementList.clear();
+        // see insertString: stale ranges outlive the text they describe for the debounce window,
+        // but a removal of zero characters moves nothing and must leave them alone
+        if (len > 0)
+            scriptElementList.clear();
         scheduleSyntaxUpdate();
     }
 
@@ -295,6 +302,34 @@ public class ScriptDocument extends DefaultStyledDocument
             return !invalid;
         }
 
+        /** the arguments of one candidate range, so the guard below sees them before construction */
+        private record RangeSpec(int min, int maxExclusive, String toolTipText, ElementType elementType)
+        {
+            RangeSpec(int min, int maxExclusive, String toolTipText)
+            {
+                this(min, maxExclusive, toolTipText, null);
+            }
+        }
+
+        /**
+         * Records a range, unless it covers no characters.
+         * <p>
+         * ANTLR's error recovery can match a rule against zero tokens while the file is being
+         * typed - "script(script(" is enough - and the context it hands back then reports a stop
+         * index one before its start. ElementRange rightly refuses to be empty, but that refusal
+         * is an unchecked throw from inside the highlighter, so half-typed text used to take the
+         * whole visitor down. There is nothing to highlight in zero characters, so skip it.
+         */
+        private void addRange(RangeSpec spec)
+        {
+            if (spec.maxExclusive() <= spec.min())
+                return;
+
+            scriptElementList.add(spec.elementType() == null
+                    ? new ElementRange(spec.min(), spec.maxExclusive(), spec.toolTipText())
+                    : new ElementRange(spec.min(), spec.maxExclusive(), spec.toolTipText(), spec.elementType()));
+        }
+
         @Override
         public Void visitScript_file(ScriptFileParser.Script_fileContext ctx)
         {
@@ -323,12 +358,12 @@ public class ScriptDocument extends DefaultStyledDocument
 
             if (!(ctx.parent instanceof ScriptFileParser.Label_definitionContext))
             {
-                scriptElementList.add(new ElementRange(ctx.start.getStartIndex(), stopExclusive, null, ElementType.LABEL));
+                addRange(new RangeSpec(ctx.start.getStartIndex(), stopExclusive, null, ElementType.LABEL));
                 setCharacterAttributes(ctx.start.getStartIndex(), len, getStyle(LABEL), true);
             }
             else if (labelNames.contains(ctx.getText()))
             {
-                scriptElementList.add(new ElementRange(ctx.start.getStartIndex(), stopExclusive, "A label with this name already exists"));
+                addRange(new RangeSpec(ctx.start.getStartIndex(), stopExclusive, "A label with this name already exists"));
                 setCharacterAttributes(ctx.start.getStartIndex(), len, getStyle(INCORRECT), true);
                 this.invalid = true;
             }
@@ -389,12 +424,12 @@ public class ScriptDocument extends DefaultStyledDocument
 
             if (!(ctx.parent instanceof ScriptFileParser.Action_definitionContext))
             {
-                scriptElementList.add(new ElementRange(ctx.start.getStartIndex(), stopExclusive, null, ElementType.LABEL));
+                addRange(new RangeSpec(ctx.start.getStartIndex(), stopExclusive, null, ElementType.LABEL));
                 setCharacterAttributes(ctx.start.getStartIndex(), len, getStyle(ACTION_OR_TABLE_LABEL), true);
             }
             else if (actionNames.contains(ctx.getText()))
             {
-                scriptElementList.add(new ElementRange(ctx.start.getStartIndex(), stopExclusive, "An action with this name already exists"));
+                addRange(new RangeSpec(ctx.start.getStartIndex(), stopExclusive, "An action with this name already exists"));
                 setCharacterAttributes(ctx.start.getStartIndex(), len, getStyle(INCORRECT), true);
                 this.invalid = true;
             }
@@ -422,7 +457,7 @@ public class ScriptDocument extends DefaultStyledDocument
                     {
                         if (terminalNode.symbol.getStartIndex() == -1)
                         {
-                            scriptElementList.add(new ElementRange(ctx.start.getStartIndex(), stopExclusive, "You are missing a script number here"));
+                            addRange(new RangeSpec(ctx.start.getStartIndex(), stopExclusive, "You are missing a script number here"));
                             invalid = true;
                             this.invalid = true;
                         }
@@ -431,13 +466,13 @@ public class ScriptDocument extends DefaultStyledDocument
                             int scriptID = Integer.parseInt(terminalNode.getText());
                             if (scriptID == 0)
                             {
-                                scriptElementList.add(new ElementRange(ctx.start.getStartIndex(), stopExclusive, "You can't use index 0 for a script"));
+                                addRange(new RangeSpec(ctx.start.getStartIndex(), stopExclusive, "You can't use index 0 for a script"));
                                 invalid = true;
                                 this.invalid = true;
                             }
                             else if (scriptNumbers.contains(scriptID))
                             {
-                                scriptElementList.add(new ElementRange(ctx.start.getStartIndex(), stopExclusive, "This script ID number is already in use"));
+                                addRange(new RangeSpec(ctx.start.getStartIndex(), stopExclusive, "This script ID number is already in use"));
                                 invalid = true;
                                 this.invalid = true;
                             }
@@ -516,7 +551,7 @@ public class ScriptDocument extends DefaultStyledDocument
                 if (paramCount == actualCount)
                 {
                     setCharacterAttributes(ctx.start.getStartIndex(), len, getStyle(COMMAND), true);
-                    scriptElementList.add(new ElementRange(ctx.start.getStartIndex(), stopExclusive, commandMacro.toString(), ElementType.COMMAND));
+                    addRange(new RangeSpec(ctx.start.getStartIndex(), stopExclusive, commandMacro.toString(), ElementType.COMMAND));
                     return super.visitCommand(ctx);
                 }
                 else
@@ -536,7 +571,7 @@ public class ScriptDocument extends DefaultStyledDocument
                     toolTipText = text.toString();
 
                     setCharacterAttributes(ctx.start.getStartIndex(), len, getStyle(INCORRECT), true);
-                    scriptElementList.add(new ElementRange(ctx.start.getStartIndex(), stopExclusive, toolTipText, ElementType.COMMAND));
+                    addRange(new RangeSpec(ctx.start.getStartIndex(), stopExclusive, toolTipText, ElementType.COMMAND));
                     return null;
                 }
             }
@@ -547,7 +582,7 @@ public class ScriptDocument extends DefaultStyledDocument
                 this.invalid = true;
             }
 
-            scriptElementList.add(new ElementRange(ctx.start.getStartIndex(), stopExclusive, toolTipText));
+            addRange(new RangeSpec(ctx.start.getStartIndex(), stopExclusive, toolTipText));
 
             return null;
         }
@@ -574,7 +609,7 @@ public class ScriptDocument extends DefaultStyledDocument
                 {
                     if (variable.getVariableName().equalsIgnoreCase(ctx.getText().trim()))
                     {
-                        scriptElementList.add(new ElementRange(ctx.start.getStartIndex(), stopExclusive, "0x" + Integer.toHexString(variable.getVariableID()).toUpperCase()));
+                        addRange(new RangeSpec(ctx.start.getStartIndex(), stopExclusive, "0x" + Integer.toHexString(variable.getVariableID()).toUpperCase()));
                         break;
                     }
                 }

@@ -84,7 +84,7 @@ public class PersonalTable extends DefaultTable<PersonalData, PersonalTable.Pers
             PersonalData entry = getData().get(entryIdx);
             TextBankData speciesNames = getTextBankData().get(TextFiles.SPECIES_NAMES.getValue());
 
-            aValue = prepareObjectForWriting(aValue, property.cellType);
+            aValue = prepareObjectForWriting(aValue, property.cellType, property.getValueRange());
 
             switch (property) {
                 case ID -> {}
@@ -274,6 +274,18 @@ public class PersonalTable extends DefaultTable<PersonalData, PersonalTable.Pers
                 }
 
                 @Override
+                public String getColumnName(int column)
+                {
+                    // this model presents only the frozen columns, so its column 0 is the sheet's
+                    // first frozen column. FormatModel.getColumnName adds getNumFrozenColumns()
+                    // back on, which for this wrapper is its whole width - without undoing that
+                    // here, asking it for the name of column 0 answers with the first UNfrozen
+                    // column instead. getCornerTableHeader used to compensate by passing a
+                    // negative index; two wrongs that happened to cancel.
+                    return super.getColumnName(column - super.getNumFrozenColumns());
+                }
+
+                @Override
                 public Object getValueAt(int rowIndex, int columnIndex)
                 {
                     return super.getValueAt(rowIndex, columnIndex - super.getNumFrozenColumns());
@@ -349,6 +361,12 @@ public class PersonalTable extends DefaultTable<PersonalData, PersonalTable.Pers
                 case HP_EV_YIELD, ATK_EV_YIELD, DEF_EV_YIELD, SPEED_EV_YIELD, SP_ATK_EV_YIELD, SP_DEF_EV_YIELD -> new int[] {0, 3};
                 // the dex color shares its byte with the flip flag (bit 7)
                 case COLOR -> new int[] {0, 127};
+                // Core refuses a type above 18 (PersonalData.setType1), and typeColors holds
+                // 18 entries, so anything higher cannot be stored or drawn. Both numbers are a
+                // guess at how many types the ROM has - see the TODO on that check - so this
+                // mirrors the guess rather than fixing it; a ROM with expanded types needs both
+                // updated together.
+                case TYPE_1, TYPE_2 -> new int[] {0, 18};
                 case UNCOMMON_HELD_ITEM, RARE_HELD_ITEM -> new int[] {0, 0xFFFF};
                 default -> new int[] {0, 255};
             };

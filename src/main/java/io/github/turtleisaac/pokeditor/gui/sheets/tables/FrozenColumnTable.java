@@ -95,7 +95,12 @@ public class FrozenColumnTable<E extends GenericFileData> extends JTable
             @Override
             public Object getValueAt(int row, int column)
             {
-                return getModel().getColumnName(column - getColumnModel().getColumnCount());
+                // corner cell c names frozen column c, so c is the index to ask for. This used
+                // to subtract the column count, handing getColumnName an index in [-n, -1] -
+                // outside its domain for every column. It produced the right strings only
+                // because the frozen models added the same offset straight back on; a model
+                // without that quirk got a blank header instead.
+                return getModel().getColumnName(column);
             }
 
             @Override
