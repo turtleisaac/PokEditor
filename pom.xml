@@ -105,7 +105,7 @@
         <dependency>
             <groupId>io.github.turtleisaac</groupId>
             <artifactId>Nds4j</artifactId>
-            <version>0.1.0</version>
+            <version>1.0.0</version>
         </dependency>
         <dependency>
             <groupId>io.github.turtleisaac</groupId>
@@ -125,7 +125,7 @@
 
 
 
-        <!--todo ok look I know I'm not supposed to do this (see below) but it was a pain manually reimporting the jar into IntelliJ each time. I'll fix this once I have a stable build of Nds4j 0.1.0 on maven-->
+        <!--todo ok look I know I'm not supposed to do this (see below) but it was a pain manually reimporting the jar into IntelliJ each time. I'll fix this once I have a stable build of Nds4j 1.0.0 on maven-->
         <dependency>
             <groupId>io.github.turtleisaac</groupId>
             <artifactId>WinLaF</artifactId>
