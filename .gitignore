@@ -17,3 +17,6 @@
 /Found/
 /Gen 5 Editing Information/
 /GoogleSheetsAPI/out/
+
+# Maven build output
+/target/
