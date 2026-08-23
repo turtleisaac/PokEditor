@@ -1,0 +1,77 @@
+name: Build
+
+on:
+  push:
+    branches: ['**']
+  pull_request:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up JDK
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          # This module compiles at source/target 20.
+          java-version: '21'
+          cache: maven
+
+      # None of the three sibling libraries are on Maven Central at the versions this module
+      # depends on, so each is built from source. A branch of the same name wins when one
+      # exists, because a change spanning several of these repositories is developed on
+      # matching branches; otherwise main. Order matters -- Nds4j underpins the other two.
+      - name: Build upstream libraries
+        run: |
+          set -euo pipefail
+          ref="${{ github.head_ref || github.ref_name }}"
+          for repo in Nds4j Nds4j-ToolUI PokEditor-Core; do
+            target="$ref"
+            if ! git ls-remote --exit-code --heads "https://github.com/turtleisaac/$repo.git" "$ref" >/dev/null 2>&1; then
+              target=main
+            fi
+            echo "::group::$repo @ $target"
+            git clone --quiet --depth 1 --branch "$target" \
+              "https://github.com/turtleisaac/$repo.git" ".upstream/$repo"
+            mvn -B -ntp -q install -DskipTests -f ".upstream/$repo/pom.xml"
+            echo "::endgroup::"
+          done
+
+      # Attributed up front, so an unresolvable dependency is reported as itself rather than
+      # surfacing later as an unexplained compilation failure.
+      - name: Verify dependencies resolve
+        run: |
+          set +e
+          output=$(mvn -B -ntp dependency:resolve 2>&1)
+          status=$?
+          set -e
+          if [ "$status" -ne 0 ]; then
+            echo "$output" | tail -40
+            if echo "$output" | grep -q "VariableTracker"; then
+              echo "::error title=Unpublished dependency blocks this build::io.github.turtleisaac:VariableTracker:1.0-SNAPSHOT is not published to any repository this build can reach, and pom.xml declares no <repositories> entry for it. PokEditor therefore cannot be built from a clean checkout -- not by CI, and not by a new contributor. Fix by publishing VariableTracker, adding a <repositories> entry that serves it, or vendoring it into this repository."
+            fi
+            exit "$status"
+          fi
+
+      - name: Build
+        # There is no test suite in this module; the logic it drives is tested in
+        # PokEditor-Core and Nds4j, which have their own workflows.
+        run: mvn -B -ntp verify -Djava.awt.headless=true
+
+      - name: Upload build output
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: build-output
+          path: |
+            **/target/surefire-reports/**
+            **/target/*.log
+          if-no-files-found: ignore
