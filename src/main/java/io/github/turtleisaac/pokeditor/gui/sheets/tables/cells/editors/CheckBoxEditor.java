@@ -19,7 +19,9 @@ public class CheckBoxEditor extends AbstractCellEditor implements TableCellEdito
     @Override
     public Component getTableCellEditorComponent(JTable table, Object value, boolean isSelected, int row, int column)
     {
-        checkBox.setSelected((Boolean) value);
+        // see CheckBoxRenderer: a bare cast throws on null or on any non-Boolean, which would
+        // mean a cell the renderer can display but the user cannot open
+        checkBox.setSelected(value instanceof Boolean b && b);
         return panel;
     }
 

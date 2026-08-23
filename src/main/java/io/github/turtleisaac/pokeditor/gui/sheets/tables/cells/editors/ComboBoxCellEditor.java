@@ -30,7 +30,12 @@ public class ComboBoxCellEditor extends AbstractCellEditor implements TableCellE
     @Override
     public Component getTableCellEditorComponent(JTable table, Object value, boolean isSelected, int row, int column)
     {
-        comboBox.setSelectedIndex((Integer) value);
+        // the matching renderer ignores an out of range index and paints the cell harmlessly, so
+        // without the same tolerance here a cell can be displayed but not opened - and a value
+        // the sheet shows as wrong becomes one the user has no way to correct. clamp to "no
+        // selection" instead of throwing on the EDT.
+        int idx = (value instanceof Integer i) ? i : -1;
+        comboBox.setSelectedIndex(idx >= 0 && idx < comboBox.getItemCount() ? idx : -1);
         return comboBox;
     }
 }

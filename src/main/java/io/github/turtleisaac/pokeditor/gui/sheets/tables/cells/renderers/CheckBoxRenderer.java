@@ -27,7 +27,10 @@ public class CheckBoxRenderer extends DefaultSheetCellRenderer
     public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column)
     {
         super.getTableCellRendererComponent(table, "", isSelected, hasFocus, row, column);
-        checkBox.setSelected((Boolean) value);
+        // a bare (Boolean) cast here is a paint-path landmine: null throws NPE and anything
+        // else throws ClassCastException, either of which kills the whole sheet over one cell.
+        // anything that is not a true Boolean simply reads as unticked.
+        checkBox.setSelected(value instanceof Boolean b && b);
         return panel;
     }
 

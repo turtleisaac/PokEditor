@@ -33,10 +33,21 @@ public class IndexedStringCellRenderer extends DefaultSheetCellRenderer
             }
             else if (value instanceof String s)
             {
-                int val = Integer.parseInt(s);
-                if (val >= 0 && val < items.length)
+                // a cell can hold text which is not a number at all - an empty cell, a partial
+                // edit, a bad paste. this runs on the paint path, so an unguarded parse would
+                // take the whole sheet down over one cell rather than just showing that cell oddly
+                try
                 {
-                    this.setText(items[val]);
+                    int val = Integer.parseInt(s.trim());
+                    if (val >= 0 && val < items.length)
+                    {
+                        this.setText(items[val]);
+                    }
+                }
+                catch (NumberFormatException ignored)
+                {
+                    // leave the raw value the superclass already set - showing the user what is
+                    // actually stored is more use than showing them nothing
                 }
             }
         }

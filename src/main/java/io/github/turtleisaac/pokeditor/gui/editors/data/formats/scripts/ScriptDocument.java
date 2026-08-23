@@ -45,7 +45,6 @@ public class ScriptDocument extends DefaultStyledDocument
         context = (StyleContext) getAttributeContext();
         scriptElementList = new ScriptElementList();
         addStylesToDocument(this);
-        pane.insertComponent(new JButton("test"));
 
         syntaxTimer = new Timer(SYNTAX_UPDATE_DELAY_MS, e -> {
             try {
@@ -53,6 +52,15 @@ public class ScriptDocument extends DefaultStyledDocument
                 updateLineNumbers();
             }
             catch(BadLocationException ex) {
+                ex.printStackTrace();
+            }
+            catch(RuntimeException ex) {
+                // a syntax highlighter must never take the editor down over bad syntax, and
+                // half-finished text is bad syntax by definition - it is what typing looks like.
+                // ANTLR's error recovery can match a rule against zero tokens (the 14 characters
+                // "script(script(" are enough), which produces a zero width ElementRange and an
+                // unchecked throw. That escaped this handler and reached the EDT, where a user
+                // running a double-clicked jar would never even see the stack trace.
                 ex.printStackTrace();
             }
         });
@@ -130,6 +138,13 @@ public class ScriptDocument extends DefaultStyledDocument
     public void insertString(int offs, String str, AttributeSet a) throws BadLocationException
     {
         super.insertString(offs, str, a);
+        // the element ranges describe the text as it was before this edit, and the re-highlight
+        // is debounced by a quarter of a second. leaving them in place means the pane answers
+        // hovers and ctrl-clicks from offsets that no longer exist - after a delete, find(0)
+        // could hand back a 13 character range over a 2 character document, and reading its
+        // text threw straight onto the EDT. no ranges at all is the honest answer until the
+        // visitor has run again; every caller of find() already handles null.
+        scriptElementList.clear();
         scheduleSyntaxUpdate();
     }
 
@@ -137,6 +152,8 @@ public class ScriptDocument extends DefaultStyledDocument
     public void remove(int offs, int len) throws BadLocationException
     {
         super.remove(offs, len);
+        // see insertString: stale ranges outlive the text they describe for the debounce window
+        scriptElementList.clear();
         scheduleSyntaxUpdate();
     }
 
@@ -664,7 +681,11 @@ public class ScriptDocument extends DefaultStyledDocument
         public String toString()
         {
             try {
-                return getText(min, maxExclusive - min + 1);
+                // the range is half open, so its length is exactly maxExclusive - min. the
+                // extra +1 read one character too many: it never returned the range's own
+                // text, and at the end of the document it returned the implicit trailing
+                // newline instead of failing, which is why it went unnoticed.
+                return getText(min, maxExclusive - min);
             }
             catch(BadLocationException e) {
                 throw new RuntimeException(e);
@@ -678,20 +699,30 @@ public class ScriptDocument extends DefaultStyledDocument
 
         public void add(ElementRange newRange)
         {
-            boolean found = false;
-            for (int i = 0; i < elementRanges.size(); i++)
+            // a range nested inside a wider one goes to the front, so that find(offset) - which
+            // scans in order and returns the first match - answers with the innermost element
+            // rather than whichever enclosing one happens to come first.
+            //
+            // the insertion has to happen once, not once per enclosing range. it used to sit
+            // inside the loop, so a range nested two deep was stored twice and one nested three
+            // deep three times; the list grew with nesting depth and find() could return a
+            // duplicate. today the visitor only nests two levels, which is why this stayed
+            // invisible, but the list is public API.
+            boolean nested = false;
+            for (ElementRange existingRange : elementRanges)
             {
-                ElementRange existingRange = elementRanges.get(i);
                 if (existingRange.contains(newRange) && existingRange.getLength() != newRange.getLength())
                 {
-//                    elementRanges.remove(existingRange);
-                    elementRanges.add(0, newRange);
-                    i++;
-                    found = true;
+                    nested = true;
+                    break;
                 }
             }
 
-            if (!found)
+            if (nested)
+            {
+                elementRanges.add(0, newRange);
+            }
+            else
             {
                 elementRanges.add(newRange);
             }
