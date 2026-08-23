@@ -1,7 +1,6 @@
 package io.github.turtleisaac.pokeditor.framework;
 
 import java.io.File;
-import java.util.Objects;
 
 public class Directory extends File
 {
@@ -13,23 +12,27 @@ public class Directory extends File
     @Override
     public boolean delete()
     {
-        clearDirectory(this);
-        return true;
+        return clearDirectory(this);
     }
 
-    private void clearDirectory(File directory)
+    private boolean clearDirectory(File directory)
     {
-        for(File subfile : Objects.requireNonNull(directory.listFiles()))
+        File[] subfiles = directory.listFiles();
+        if (subfiles == null) // not a directory, or unreadable
+            return false;
+
+        boolean success = true;
+        for(File subfile : subfiles)
         {
             if(subfile.isDirectory())
             {
-                clearDirectory(subfile);
+                success &= clearDirectory(subfile);
             }
             else
             {
-                subfile.delete();
+                success &= subfile.delete();
             }
         }
-        directory.delete();
+        return directory.delete() && success;
     }
 }

@@ -103,7 +103,7 @@ public class EvolutionsTable extends DefaultTable<EvolutionData, EvolutionsTable
             if (property.idx >= 0)
             {
                 int entryIdx = property.repetition / EvolutionsColumn.NUMBER_OF_COLUMNS.idx;
-                while (entryIdx > species.size())
+                while (entryIdx >= species.size())
                 {
                     species.add(new EvolutionData.EvolutionEntry());
                 }
@@ -143,10 +143,13 @@ public class EvolutionsTable extends DefaultTable<EvolutionData, EvolutionsTable
             if (property.idx >= 0)
             {
                 int entryIdx = property.repetition / EvolutionsColumn.NUMBER_OF_COLUMNS.idx;
-                while (entryIdx > species.size())
-                {
-                    species.add(new EvolutionData.EvolutionEntry());
-                }
+
+                // read path called from getValueAt during painting - it must not grow the list.
+                // 0 is the neutral value here ("no evolution"), and the requirement/result
+                // renderers read the neighbouring method column, so it must not be null.
+                if (entryIdx >= species.size())
+                    return 0;
+
                 EvolutionData.EvolutionEntry entry = species.get(entryIdx);
 
                 switch (property) {
@@ -185,6 +188,19 @@ public class EvolutionsTable extends DefaultTable<EvolutionData, EvolutionsTable
             }
 
             return EvolutionsColumn.getColumn(columnIndex).cellType;
+        }
+
+        @Override
+        public int[] getCellValueRange(int columnIndex)
+        {
+            return new int[] {0, 0xFFFF}; // every evolution field is stored as a u16
+        }
+
+
+        @Override
+        public TextBankData getNameTextBank()
+        {
+            return getTextBankData().get(TextFiles.SPECIES_NAMES.getValue());
         }
 
         @Override
@@ -232,7 +248,7 @@ public class EvolutionsTable extends DefaultTable<EvolutionData, EvolutionsTable
             speciesRequirementEditor = new ComboBoxCellEditor(speciesNames);
             itemRequirementEditor = new ComboBoxCellEditor(itemNames);
             moveRequirementEditor = new ComboBoxCellEditor(moveNames);
-            intValueRequirementEditor = new NumberOnlyCellEditor();
+            intValueRequirementEditor = new NumberOnlyCellEditor(0, 0xFFFF);
 
             current = null;
         }

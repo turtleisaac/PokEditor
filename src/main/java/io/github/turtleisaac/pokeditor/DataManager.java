@@ -44,6 +44,7 @@ import io.github.turtleisaac.pokeditor.gui.sheets.tables.formats.*;
 
 import java.lang.reflect.ParameterizedType;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -149,21 +150,67 @@ public class DataManager
         return data;
     }
 
-    public static <E extends GenericFileData> Set<GameFiles> saveData(NintendoDsRom rom, Class<E> eClass)
+    private static final Set<Class<? extends GenericFileData>> dirtyClasses = new HashSet<>();
+
+    /**
+     * Records that the in-memory data for the provided class has been edited but not yet
+     * written out, so the tool can prompt before discarding it on exit.
+     */
+    public static void markDirty(Class<? extends GenericFileData> eClass)
+    {
+        if (eClass != null)
+            dirtyClasses.add(eClass);
+    }
+
+    public static void markClean(Class<? extends GenericFileData> eClass)
+    {
+        dirtyClasses.remove(eClass);
+    }
+
+    public static boolean hasUnsavedChanges()
+    {
+        return !dirtyClasses.isEmpty();
+    }
+
+    /**
+     * Serialises the in-memory data for the provided class WITHOUT touching the ROM.
+     * <p>
+     * This is deliberately side effect free so callers can show the user which files a save
+     * would write (and let them back out) before anything is actually modified - previously
+     * this method mutated the ROM up front, so declining the confirmation only skipped the
+     * write to disk while leaving the "cancelled" edits sitting in the in-memory ROM.
+     * @return the files which would be written, or null if the class has never been loaded
+     */
+    public static <E extends GenericFileData> Map<GameFiles, Narc> prepareData(NintendoDsRom rom, Class<E> eClass)
     {
         if (!dataMap.containsKey(eClass))
             return null;
 
         GenericParser<E> parser = DataManager.getParser(eClass);
-        Map<GameFiles, Narc> map = parser.processDataList(getData(rom, eClass), codeBinaries);
+        return parser.processDataList(getData(rom, eClass), codeBinaries);
+    }
+
+    /**
+     * Applies the result of {@link #prepareData(NintendoDsRom, Class)} to the in-memory ROM.
+     */
+    public static void commitData(NintendoDsRom rom, Map<GameFiles, Narc> map)
+    {
+        if (map == null)
+            return;
+
         for (GameFiles gameFile : map.keySet())
         {
             rom.setFileByName(gameFile.getPath(), map.get(gameFile).save());
         }
-
-        return map.keySet();
     }
 
+    /**
+     * Discards the in-memory edits for the provided class and re-parses it from the ROM.
+     * <p>
+     * Since {@link #prepareData(NintendoDsRom, Class)} no longer mutates the ROM, the ROM
+     * held here matches what is on disk in the unpacked project until the user actually
+     * confirms a save, so re-reading it genuinely discards unsaved edits.
+     */
     @SuppressWarnings("unchecked")
     public static <E extends GenericFileData> void resetData(NintendoDsRom rom, Class<E> eClass)
     {
@@ -178,6 +225,7 @@ public class DataManager
 
         list.addAll(newList);
         dataMap.put(eClass, list);
+        markClean(eClass);
     }
 
     public static void codeBinarySetup(NintendoDsRom rom)

@@ -6,7 +6,10 @@ import io.github.turtleisaac.nds4j.ui.Tool;
 import io.github.turtleisaac.pokeditor.gui.PokeditorManager;
 import io.github.turtleisaac.pokeditor.gui.ConsoleWindow;
 
+import javax.swing.JOptionPane;
+import javax.swing.SwingUtilities;
 import java.io.IOException;
+import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 
 /**
@@ -19,7 +22,13 @@ public class Main
 
     public static void main(String[] args) throws IOException
     {
-        String[] mainMenuJokes = new String(Main.class.getResourceAsStream(jokesPath).readAllBytes(), StandardCharsets.UTF_8).split("\n");
+        installUncaughtExceptionHandler();
+
+        String[] mainMenuJokes;
+        try (InputStream jokesStream = Main.class.getResourceAsStream(jokesPath))
+        {
+            mainMenuJokes = new String(jokesStream.readAllBytes(), StandardCharsets.UTF_8).split("\n");
+        }
 
 //        Locale.setDefault(Locale.CHINA);
         Tool tool = Tool.create();
@@ -38,5 +47,26 @@ public class Main
                 .addGame("Pokémon SoulSilver","IPG")
                 .addPanelManager(() -> new PokeditorManager(tool))
                 .init();
+    }
+
+    /**
+     * Without this, every exception which escapes onto the EDT (including the validation
+     * failures thrown by the data classes' setters) is only ever printed to a command line
+     * that a user running a double-clicked jar never sees.
+     */
+    private static void installUncaughtExceptionHandler()
+    {
+        Thread.setDefaultUncaughtExceptionHandler((thread, throwable) -> {
+            throwable.printStackTrace();
+
+            String message = throwable.getMessage();
+            if (message == null || message.isBlank())
+                message = throwable.getClass().getSimpleName();
+
+            final String finalMessage = message;
+            SwingUtilities.invokeLater(() -> JOptionPane.showMessageDialog(null,
+                    "An unexpected error occurred:\n" + finalMessage + "\n\nSee the command-line for details.",
+                    "PokEditor", JOptionPane.ERROR_MESSAGE));
+        });
     }
 }

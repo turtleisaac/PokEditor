@@ -18,6 +18,8 @@ public abstract class FormatModel<G extends GenericFileData, E extends Enum<E>> 
 
     private boolean copyPasteModeEnabled;
 
+    public static final int[] DEFAULT_VALUE_RANGE = new int[] {0, 255};
+
     public FormatModel(List<G> data, List<TextBankData> textBankData)
     {
         this.data = data;
@@ -99,6 +101,30 @@ public abstract class FormatModel<G extends GenericFileData, E extends Enum<E>> 
     protected CellTypes getCellType(int columnIndex)
     {
         return CellTypes.STRING;
+    }
+
+    /**
+     * The inclusive {min, max} range which the provided column's underlying storage can hold.
+     * Sheets which have columns wider (or narrower, or signed) than a single unsigned byte
+     * override this so the cell editors can reject out-of-range input instead of silently
+     * truncating it when the data is written back out to the ROM.
+     * @param columnIndex the column index, using the same numbering as {@link #getCellType(int)}
+     * @return an array of length 2, {minimum, maximum}
+     */
+    public int[] getCellValueRange(int columnIndex)
+    {
+        return DEFAULT_VALUE_RANGE;
+    }
+
+    /**
+     * The text bank which backs the frozen "Name" column of this sheet, if it has one.
+     * Rows added to or removed from a sheet have to be mirrored into it, otherwise every
+     * name below the affected row labels the wrong entry.
+     * @return the name bank, or null if this sheet has no parallel name bank
+     */
+    public TextBankData getNameTextBank()
+    {
+        return null;
     }
 
     public abstract FormatModel<G, E> getFrozenColumnModel();

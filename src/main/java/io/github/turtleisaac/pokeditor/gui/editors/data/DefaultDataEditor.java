@@ -13,10 +13,26 @@ public abstract class DefaultDataEditor<G extends GenericFileData, E extends Enu
     private EditorDataModel<E> model;
     private int selectedIndex;
 
+    private DefaultDataEditorPanel<G, E> panel;
+
     public DefaultDataEditor(EditorDataModel<E> model)
     {
         this.model = model;
         selectedIndex = -1;
+    }
+
+    void setPanel(DefaultDataEditorPanel<G, E> panel)
+    {
+        this.panel = panel;
+    }
+
+    /**
+     * @return the panel hosting this editor (which owns the entry selector), or null if this
+     * editor has not been added to one
+     */
+    protected DefaultDataEditorPanel<G, E> getPanel()
+    {
+        return panel;
     }
 
     public EditorDataModel<E> getModel()

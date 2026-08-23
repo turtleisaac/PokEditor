@@ -30,6 +30,15 @@ public class ScriptDocument extends DefaultStyledDocument
 
     private List<ScriptVariable> variableList;
 
+    /**
+     * Re-lexing and re-parsing the whole file with ANTLR (and issuing one setCharacterAttributes
+     * per token) is far too expensive to do synchronously on every keystroke, so the work is
+     * coalesced behind this timer.
+     */
+    private final Timer syntaxTimer;
+
+    private static final int SYNTAX_UPDATE_DELAY_MS = 250;
+
     public ScriptDocument(ScriptPane pane)
     {
         super(StyleContext.getDefaultStyleContext());
@@ -37,7 +46,25 @@ public class ScriptDocument extends DefaultStyledDocument
         scriptElementList = new ScriptElementList();
         addStylesToDocument(this);
         pane.insertComponent(new JButton("test"));
+
+        syntaxTimer = new Timer(SYNTAX_UPDATE_DELAY_MS, e -> {
+            try {
+                setSyntaxAttributes();
+                updateLineNumbers();
+            }
+            catch(BadLocationException ex) {
+                ex.printStackTrace();
+            }
+        });
+        syntaxTimer.setRepeats(false);
+
         setLineNumberPane(pane.getLineNumberPane());
+    }
+
+    private void scheduleSyntaxUpdate()
+    {
+        if (syntaxTimer != null)
+            syntaxTimer.restart();
     }
 
     public void setVariableList(List<ScriptVariable> variableList)
@@ -49,21 +76,68 @@ public class ScriptDocument extends DefaultStyledDocument
     {
         ScriptDataProducer visitor = new ScriptDataProducer();
 
-        return visitor.produceScriptData(getText(0, getLength()));
+        return visitor.produceScriptData(replaceVariableNamesWithNumbers(getText(0, getLength())));
+    }
+
+    /**
+     * Variable names are a display-only convenience - the compiler's parameter resolver only
+     * understands the raw values, so they have to be turned back into their hex IDs before the
+     * text is compiled.
+     */
+    public String replaceVariableNamesWithNumbers(String text)
+    {
+        if (variableList == null || variableList.isEmpty())
+            return text;
+
+        String result = text;
+        for (ScriptVariable variable : variableList)
+        {
+            String name = variable.getVariableName();
+            if (name == null || name.isBlank())
+                continue;
+
+            result = result.replaceAll("\\b" + Pattern.quote(name) + "\\b",
+                    Matcher.quoteReplacement("0x" + Integer.toHexString(variable.getVariableID())));
+        }
+
+        return result;
+    }
+
+    /**
+     * The inverse of {@link #replaceVariableNamesWithNumbers(String)} - applied when building
+     * the text shown to the user, so the shared model keeps holding Integers.
+     */
+    public String replaceVariableNumbersWithNames(String text)
+    {
+        if (variableList == null || variableList.isEmpty())
+            return text;
+
+        String result = text;
+        for (ScriptVariable variable : variableList)
+        {
+            String name = variable.getVariableName();
+            if (name == null || name.isBlank())
+                continue;
+
+            String hex = Integer.toHexString(variable.getVariableID());
+            result = result.replaceAll("\\b0[xX]0*" + hex + "\\b", Matcher.quoteReplacement(name));
+        }
+
+        return result;
     }
 
     @Override
     public void insertString(int offs, String str, AttributeSet a) throws BadLocationException
     {
         super.insertString(offs, str, a);
-        setSyntaxAttributes();
+        scheduleSyntaxUpdate();
     }
 
     @Override
     public void remove(int offs, int len) throws BadLocationException
     {
         super.remove(offs, len);
-        setSyntaxAttributes();
+        scheduleSyntaxUpdate();
     }
 
     protected void setSyntaxAttributes() throws BadLocationException
@@ -141,52 +215,34 @@ public class ScriptDocument extends DefaultStyledDocument
             StyleConstants.setFontSize(def, FONT_SIZE);
             StyleConstants.setFontFamily(def, "Monospaced");
 
-            Document numberDoc = lineNumberPane.getDocument();
-
-            try{
-                for (int i = 0; i < 2000; i++)
-                {
-                    numberDoc.insertString(numberDoc.getLength(), i  + "\n", null);
-                }
-            }
-            catch (BadLocationException e) {
-                throw new RuntimeException(e);
-            }
-
+            updateLineNumbers();
         }
     }
 
-    public void refactorString(String oldName, String newName)
+    /**
+     * Rebuilds the line number gutter so it matches this document's actual line count.
+     * Script lines are numbered from 1 (they used to start at 0, and the gutter was hardcoded
+     * to 2000 entries regardless of the file).
+     */
+    private void updateLineNumbers()
     {
+        if (lineNumberPane == null)
+            return;
+
+        int lineCount = Math.max(1, getDefaultRootElement().getElementCount());
+
+        StringBuilder builder = new StringBuilder();
+        for (int i = 1; i <= lineCount; i++)
+        {
+            builder.append(i).append("\n");
+        }
+
+        Document numberDoc = lineNumberPane.getDocument();
         try {
-            String text = getText(0, getLength());
-//            int idx;
-//            while ((idx = text.indexOf(oldName)) != -1)
-//            {
-//                char after = text.charAt(idx + 1);
-//                if (after == '\n' || after == '\r' || after == '\t' || after == ' ')
-//                {
-//                    if (idx != 0)
-//                    {
-//                        char before = text.charAt(idx-1);
-//                        if (before != '\n' && after != '\r' && before != '\t' && before != ' ')
-//                            continue;
-//                    }
-//                    text = text.replaceFirst(oldName, newName);
-//                }
-//            }
-
-        Pattern pattern = Pattern.compile(String.format("\\\\b%s\\\\b", oldName));
-        Matcher matcher = pattern.matcher(text);
-        if (matcher.find()) {
-            System.currentTimeMillis();
-//            parameterToValueMap.put(matcher.group().substring(1), ret);
+            numberDoc.remove(0, numberDoc.getLength());
+            numberDoc.insertString(0, builder.toString(), null);
         }
-
-//            replace();
-//            text.replaceAll("","");
-        }
-        catch(BadLocationException e) {
+        catch (BadLocationException e) {
             throw new RuntimeException(e);
         }
     }
@@ -576,7 +632,7 @@ public class ScriptDocument extends DefaultStyledDocument
 
         public boolean contains(int value)
         {
-            return value >= min && value < maxExclusive - 1;
+            return value >= min && value < maxExclusive;
         }
 
         public boolean contains(ElementRange range)

@@ -22,7 +22,7 @@ public class TrainerPersonalityCalculator
 
     public static int bruteForcePid(int targetPid, int trainerIdx, int trainerClassIdx, boolean trainerClassMale, int speciesIdx, int level)
     {
-        for(int i= 0; i < 65535; i++)
+        for(int i= 0; i <= 65535; i++)
         {
             if(generatePid(trainerIdx,trainerClassIdx,trainerClassMale,speciesIdx,level,i, 0, false) == targetPid)
             {
@@ -61,8 +61,11 @@ public class TrainerPersonalityCalculator
 
     public static long rndFlagCall()
     {
-        return (random() | (random() << 16));
-//        return ((random() << 16) | random());
+        // each draw contributes its own high half - shifting the raw (unmasked) 64-bit product
+        // used to splice bits 16-31 of one draw onto bits 0-15 of the next, producing garbage
+        long high= (random() >>> 16) & 0xffff;
+        long low= (random() >>> 16) & 0xffff;
+        return (high << 16) | low;
     }
 
     public static long idSetCall(long id, int pid)
@@ -173,8 +176,8 @@ public class TrainerPersonalityCalculator
 
     public static long random()
     {
-        long result= 0x41c64e6d * seed + 0x6073;
-        seed= result & 0xffffffffL;
+        long result= (0x41c64e6d * seed + 0x6073) & 0xffffffffL;
+        seed= result;
         return result;
     }
 }

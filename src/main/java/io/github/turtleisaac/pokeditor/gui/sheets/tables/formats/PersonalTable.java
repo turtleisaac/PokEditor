@@ -251,6 +251,19 @@ public class PersonalTable extends DefaultTable<PersonalData, PersonalTable.Pers
         }
 
         @Override
+        public int[] getCellValueRange(int columnIndex)
+        {
+            return PersonalColumns.getColumn(columnIndex).getValueRange();
+        }
+
+
+        @Override
+        public TextBankData getNameTextBank()
+        {
+            return getTextBankData().get(TextFiles.SPECIES_NAMES.getValue());
+        }
+
+        @Override
         public FormatModel<PersonalData, PersonalColumns> getFrozenColumnModel()
         {
             return new PersonalModel(getData(), getTextBankData()) {
@@ -324,6 +337,21 @@ public class PersonalTable extends DefaultTable<PersonalData, PersonalTable.Pers
             this.idx = idx;
             this.key = key;
             this.cellType = cellType;
+        }
+
+        /**
+         * @return the inclusive {min, max} range this column's underlying storage can hold
+         */
+        int[] getValueRange()
+        {
+            return switch (this) {
+                // the EV yields are packed two bits apiece into a single short
+                case HP_EV_YIELD, ATK_EV_YIELD, DEF_EV_YIELD, SPEED_EV_YIELD, SP_ATK_EV_YIELD, SP_DEF_EV_YIELD -> new int[] {0, 3};
+                // the dex color shares its byte with the flip flag (bit 7)
+                case COLOR -> new int[] {0, 127};
+                case UNCOMMON_HELD_ITEM, RARE_HELD_ITEM -> new int[] {0, 0xFFFF};
+                default -> new int[] {0, 255};
+            };
         }
 
         static PersonalColumns getColumn(int idx)

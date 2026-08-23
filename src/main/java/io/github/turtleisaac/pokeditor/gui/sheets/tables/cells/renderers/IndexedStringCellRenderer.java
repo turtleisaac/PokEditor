@@ -26,7 +26,7 @@ public class IndexedStringCellRenderer extends DefaultSheetCellRenderer
         {
             if (value instanceof Integer val)
             {
-                if (val < items.length)
+                if (val >= 0 && val < items.length)
                 {
                     this.setText(items[val]);
                 }
@@ -34,7 +34,7 @@ public class IndexedStringCellRenderer extends DefaultSheetCellRenderer
             else if (value instanceof String s)
             {
                 int val = Integer.parseInt(s);
-                if (val < items.length)
+                if (val >= 0 && val < items.length)
                 {
                     this.setText(items[val]);
                 }
@@ -61,9 +61,15 @@ public class IndexedStringCellRenderer extends DefaultSheetCellRenderer
 //            Border border = getBorder();
             if (!isSelected && value != null)
             {
-                if (value instanceof Integer)
+                if (value instanceof Integer val)
                 {
-                    this.setBackground(colors[(int) value]); // always in bounds because of earlier check
+                    // NOTE: the superclass checks against items.length, but this array is a
+                    // separate (and shorter) list of type colors, so it needs its own check -
+                    // an out of range type value used to make the sheet permanently unpaintable
+                    if (val < 0 || val >= colors.length)
+                        return this;
+
+                    this.setBackground(colors[val]);
 //                    this.setForeground(Color.black);
 //                    setBorder(border);
                 }

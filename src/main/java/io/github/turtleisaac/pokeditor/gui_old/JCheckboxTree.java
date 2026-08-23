@@ -101,6 +101,9 @@ public class JCheckboxTree extends JTree {
     // Override
     public void setModel(TreeModel newModel) {
         super.setModel(newModel);
+        // the cached root has to follow the model, otherwise checkRoot() NPEs after a model swap
+        Object newRoot = newModel == null ? null : newModel.getRoot();
+        root = newRoot instanceof DefaultMutableTreeNode node ? node : null;
         resetCheckingState();
     }
 
@@ -318,6 +321,9 @@ public class JCheckboxTree extends JTree {
 
     public void checkRoot()
     {
+        if (root == null) // no model has been set (or its root is not a DefaultMutableTreeNode)
+            return;
+
         checkSubTree(new TreePath(root.getPath()), true);
     }
 

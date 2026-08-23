@@ -22,6 +22,16 @@ import java.util.List;
 
 public class TmCompatibilityTable extends DefaultTable<PersonalData, TmCompatibilityTable.TmCompatibilityColumns>
 {
+    /**
+     * The TM/HM tables live on the parser instance rather than in statics, so that opening a
+     * second ROM cannot write the first ROM's TM list into it. Guice binds this as a singleton,
+     * so this is the same instance that populated the tables while parsing.
+     */
+    private static PersonalParser personalParser()
+    {
+        return (PersonalParser) DataManager.getParser(PersonalData.class);
+    }
+
     //todo 0xF0BFC is address of TMs table
     static final int[] columnWidths = new int[102];
     static {
@@ -108,7 +118,7 @@ public class TmCompatibilityTable extends DefaultTable<PersonalData, TmCompatibi
         {
             if (column < 0)
                 return super.getColumnName(column);
-            return "" + PersonalParser.tmMoveIdNumbers[column];
+            return "" + personalParser().getTmMoveIdNumber(column);
         }
 
         @Override
@@ -178,6 +188,13 @@ public class TmCompatibilityTable extends DefaultTable<PersonalData, TmCompatibi
         protected CellTypes getCellType(int columnIndex)
         {
             return CellTypes.CHECKBOX;
+        }
+
+
+        @Override
+        public TextBankData getNameTextBank()
+        {
+            return getTextBankData().get(TextFiles.SPECIES_NAMES.getValue());
         }
 
         @Override
@@ -267,10 +284,10 @@ public class TmCompatibilityTable extends DefaultTable<PersonalData, TmCompatibi
                             items.addElement(new EditorComboBox.ComboBoxItem(moveName));
                         }
                         JList<EditorComboBox.ComboBoxItem> list = new JList<>(items);
-                        list.setSelectedIndex(PersonalParser.tmMoveIdNumbers[columnIndex]);
+                        list.setSelectedIndex(personalParser().getTmMoveIdNumber(columnIndex));
 
                         list.addListSelectionListener(e -> {
-                            PersonalParser.updateTmType(columnIndex, list.getSelectedIndex(), DataManager.getData(null, MoveData.class));
+                            personalParser().updateTmType(columnIndex, list.getSelectedIndex(), DataManager.getData(null, MoveData.class));
                             column.setHeaderValue(list.getSelectedIndex());
                         });
 

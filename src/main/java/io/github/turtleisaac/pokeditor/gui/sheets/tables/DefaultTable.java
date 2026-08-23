@@ -37,6 +37,13 @@ public abstract class DefaultTable<G extends GenericFileData, E extends Enum<E>>
 
     private final CellTypes.CustomCellFunctionSupplier customCellSupplier;
 
+    /**
+     * while a paste is in progress the paste action reports failures itself (once, naming the
+     * offending cell) rather than having {@link #setValueAt(Object, int, int)} raise a dialog
+     * for every single rejected cell
+     */
+    private boolean pasteInProgress;
+
     public DefaultTable(FormatModel<G, E> model, List<TextBankData> textData, int[] widths, CellTypes.CustomCellFunctionSupplier customCellSupplier)
     {
         super(model);
@@ -66,7 +73,7 @@ public abstract class DefaultTable<G extends GenericFileData, E extends Enum<E>>
 //        setBackground(Color.WHITE);
 //        setForeground(Color.black);
 
-        loadCellRenderers(obtainTextSources(textData));
+        loadCellRenderers(buildColumnTextSources());
 
         MultiLineTableHeaderRenderer renderer = new MultiLineTableHeaderRenderer();
         Enumeration<TableColumn> columns = getColumnModel().getColumns();
@@ -132,7 +139,45 @@ public abstract class DefaultTable<G extends GenericFileData, E extends Enum<E>>
 
 //    public abstract int getNumFrozenColumns();
 
-    public void loadCellRenderers(Queue<String[]> textSources)
+    /**
+     * Walks the columns of this table once and maps each column which needs externally
+     * supplied text to the {@code String[]}s it needs, consuming the positional queue
+     * returned by {@link #obtainTextSources(List)} exactly once.
+     * <p>
+     * Keying by column index (rather than having every consumer re-walk the queue in the
+     * same order) is what stops {@link #loadCellRenderers(Map)} and
+     * {@link #resetIndexedCellRendererText()} from drifting apart and handing a column the
+     * wrong list of names.
+     * @return a map of column index to the text sources that column's editor/renderer needs
+     */
+    private Map<Integer, String[][]> buildColumnTextSources()
+    {
+        Queue<String[]> textSources = obtainTextSources(textData);
+        Map<Integer, String[][]> result = new HashMap<>();
+
+        boolean customConsumed = false;
+        for (int i = 0; i < getColumnCount(); i++)
+        {
+            CellTypes c = cellTypes[i];
+
+            if (c == CellTypes.COMBO_BOX || c == CellTypes.COLORED_COMBO_BOX || c == CellTypes.BITFIELD_COMBO_BOX)
+            {
+                result.put(i, new String[][] {getTextFromSource(textSources)});
+            }
+            else if (c == CellTypes.CUSTOM && !customConsumed)
+            {
+                customConsumed = true;
+                String[] speciesNames = getTextFromSource(textSources);
+                String[] itemNames = getTextFromSource(textSources);
+                String[] moveNames = getTextFromSource(textSources);
+                result.put(i, new String[][] {speciesNames, itemNames, moveNames});
+            }
+        }
+
+        return result;
+    }
+
+    public void loadCellRenderers(Map<Integer, String[][]> textSources)
     {
         TableCellEditor customEditor = null;
         TableCellRenderer customRenderer = null;
@@ -151,7 +196,7 @@ public abstract class DefaultTable<G extends GenericFileData, E extends Enum<E>>
             }
             else if (c == CellTypes.COMBO_BOX || c == CellTypes.COLORED_COMBO_BOX || c == CellTypes.BITFIELD_COMBO_BOX)
             {
-                String[] text = getTextFromSource(textSources);
+                String[] text = textSources.get(i)[0];
 
                 if (c != CellTypes.BITFIELD_COMBO_BOX) //normal and colored
                     col.setCellEditor(new ComboBoxCellEditor(text));
@@ -167,18 +212,17 @@ public abstract class DefaultTable<G extends GenericFileData, E extends Enum<E>>
             }
             else if (c == CellTypes.INTEGER)
             {
-                col.setCellEditor(new NumberOnlyCellEditor());
+                int[] range = getFormatModel().getCellValueRange(i);
+                col.setCellEditor(new NumberOnlyCellEditor(range[0], range[1]));
             }
             else if (c == CellTypes.CUSTOM)
             {
                 if (customEditor == null || customRenderer == null)
                 {
-                    String[] speciesNames = getTextFromSource(textSources);
-                    String[] itemNames = getTextFromSource(textSources);
-                    String[] moveNames = getTextFromSource(textSources);
+                    String[][] custom = textSources.get(i);
 
-                    customEditor = customCellSupplier.getEditor(speciesNames, itemNames, moveNames);
-                    customRenderer = customCellSupplier.getRenderer(speciesNames, itemNames, moveNames);
+                    customEditor = customCellSupplier.getEditor(custom[0], custom[1], custom[2]);
+                    customRenderer = customCellSupplier.getRenderer(custom[0], custom[1], custom[2]);
                 }
 
                 if (customEditor != null)
@@ -201,7 +245,7 @@ public abstract class DefaultTable<G extends GenericFileData, E extends Enum<E>>
 
     public void resetIndexedCellRendererText()
     {
-        Queue<String[]> textSources = obtainTextSources(textData);
+        Map<Integer, String[][]> textSources = buildColumnTextSources();
         for (int i = 0; i < getColumnCount(); i++)
         {
             CellTypes c = cellTypes[i];
@@ -209,19 +253,55 @@ public abstract class DefaultTable<G extends GenericFileData, E extends Enum<E>>
 
             if (c == CellTypes.COMBO_BOX || c == CellTypes.COLORED_COMBO_BOX || c == CellTypes.BITFIELD_COMBO_BOX)
             {
-                String[] text = textSources.remove();
-                if (text == null)
-                    text = new String[] {""};
+                String[][] entry = textSources.get(i);
+                String[] text = (entry == null || entry.length == 0 || entry[0] == null) ? new String[] {""} : entry[0];
                 ((ComboBoxCellEditor) col.getCellEditor()).setItems(text);
                 ((IndexedStringCellRenderer) col.getCellRenderer()).setItems(text);
             }
         }
     }
 
+    /**
+     * Marks the data backing this sheet as dirty and reports validation failures thrown by
+     * the underlying data classes to the user instead of letting them escape onto the EDT
+     * where a user running a double-clicked jar would never see them.
+     */
+    @Override
+    public void setValueAt(Object aValue, int row, int column)
+    {
+        try {
+            super.setValueAt(aValue, row, column);
+            DataManager.markDirty(getDataClass());
+        }
+        catch (RuntimeException e) {
+            if (pasteInProgress)
+                throw e;
+            e.printStackTrace();
+            JOptionPane.showMessageDialog(this,
+                    String.format("The value \"%s\" could not be applied to row %d, column \"%s\":\n%s",
+                            aValue, row, getColumnName(column), e.getMessage()),
+                    "Invalid Value", JOptionPane.ERROR_MESSAGE);
+        }
+    }
+
     public String[][] exportClean()
     {
-        String[][] output = new String[getModel().getRowCount()][getColumnCount()];
-        for (int colIdx = 0; colIdx < output[0].length; colIdx++)
+        FormatModel<G, E> frozenModel = getFormatModel().getFrozenColumnModel();
+        int frozenColumnCount = frozenModel == null ? 0 : frozenModel.getColumnCount();
+
+        String[][] output = new String[getModel().getRowCount()][frozenColumnCount + getColumnCount()];
+
+        // the frozen ID/Name columns live in their own model, so they have to be pulled in
+        // explicitly - iterating getColumnModel() alone leaves them out of the export entirely
+        for (int colIdx = 0; colIdx < frozenColumnCount; colIdx++)
+        {
+            for (int rowIdx = 0; rowIdx < output.length; rowIdx++)
+            {
+                output[rowIdx][colIdx] = String.valueOf(frozenModel.getValueAt(rowIdx, colIdx));
+            }
+        }
+
+        for (int colIdx = 0; colIdx < getColumnCount(); colIdx++)
         {
             TableColumn column = getColumnModel().getColumn(colIdx);
             TableCellRenderer renderer = column.getCellRenderer();
@@ -229,14 +309,14 @@ public abstract class DefaultTable<G extends GenericFileData, E extends Enum<E>>
             {
                 for (int rowIdx = 0; rowIdx < output.length; rowIdx++)
                 {
-                    output[rowIdx][colIdx] = ((DefaultTableCellRenderer) prepareRenderer(renderer, rowIdx, colIdx)).getText();
+                    output[rowIdx][frozenColumnCount + colIdx] = ((DefaultTableCellRenderer) prepareRenderer(renderer, rowIdx, colIdx)).getText();
                 }
             }
             else
             {
                 for (int rowIdx = 0; rowIdx < output.length; rowIdx++)
                 {
-                    output[rowIdx][colIdx] = String.valueOf(getValueAt(rowIdx, colIdx));
+                    output[rowIdx][frozenColumnCount + colIdx] = String.valueOf(getValueAt(rowIdx, colIdx));
                 }
             }
 
@@ -292,46 +372,60 @@ public abstract class DefaultTable<G extends GenericFileData, E extends Enum<E>>
                 try
                 {
                     String value = (String) cb.getData(DataFlavor.stringFlavor);
-                    String[] lines = value.split("\n");
+                    String[] lines = value.split("\r?\n", -1);
                     String[][] pastedCells = new String[lines.length][];
                     int idx = 0;
                     for (String line : lines) {
-                        pastedCells[idx++] = line.split("\t");
+                        pastedCells[idx++] = line.split("\t", -1);
                     }
 
-                    int numVerticalCopies = (int) Math.round(((double) rows.length) / pastedCells.length);
-                    int numHorizontalCopies = (int) Math.round(((double) cols.length) / pastedCells[0].length);
+                    if (rows.length == 0 || cols.length == 0 || pastedCells.length == 0)
+                        return;
 
-                    for (int verticalCopyIdx = 0; verticalCopyIdx < numVerticalCopies; verticalCopyIdx++)
+                    // integer floor, never zero - selecting a single cell and pasting several
+                    // rows has to paste all of them, and selecting more rows than were copied
+                    // must never write past the bottom of the selection
+                    int numVerticalCopies = Math.max(1, rows.length / pastedCells.length);
+                    int numHorizontalCopies = Math.max(1, cols.length / pastedCells[0].length);
+
+                    int destRow = -1;
+                    int destCol = -1;
+                    table.pasteInProgress = true;
+                    try
                     {
-                        for (int horizontalCopyIdx = 0; horizontalCopyIdx < numHorizontalCopies; horizontalCopyIdx++)
+                        for (int verticalCopyIdx = 0; verticalCopyIdx < numVerticalCopies; verticalCopyIdx++)
                         {
-                            for (int rowIdx = 0; rowIdx < pastedCells.length; rowIdx++)
+                            for (int horizontalCopyIdx = 0; horizontalCopyIdx < numHorizontalCopies; horizontalCopyIdx++)
                             {
-                                for (int colIdx = 0; colIdx < pastedCells[0].length; colIdx++)
+                                for (int rowIdx = 0; rowIdx < pastedCells.length; rowIdx++)
                                 {
-                                    int destRow = rows[0] + verticalCopyIdx * pastedCells.length + rowIdx;
-                                    int destCol = cols[0] + horizontalCopyIdx * pastedCells[0].length + colIdx;
+                                    for (int colIdx = 0; colIdx < pastedCells[rowIdx].length; colIdx++)
+                                    {
+                                        destRow = rows[0] + verticalCopyIdx * pastedCells.length + rowIdx;
+                                        destCol = cols[0] + horizontalCopyIdx * pastedCells[0].length + colIdx;
 
-//                                    System.out.println("Setting value at (" + destRow + "," + destCol + ") to: " + pastedCells[rowIdx][colIdx]);
-                                    table.setValueAt(pastedCells[rowIdx][colIdx], destRow, destCol);
-                                    table.getFormatModel().fireTableCellUpdated(destRow, destCol);
+                                        if (destRow >= table.getRowCount() || destCol >= table.getColumnCount())
+                                            continue;
+
+                                        table.setValueAt(pastedCells[rowIdx][colIdx], destRow, destCol);
+                                        table.getFormatModel().fireTableCellUpdated(destRow, destCol);
+                                    }
                                 }
                             }
                         }
                     }
-
-//                    for (int userSelectedRow : rows)
-//                    {
-//                        for (int rowIdx = 0; rowIdx < pastedCells.length; rowIdx++)
-//                        {
-//                            for (int colIdx = 0; colIdx < pastedCells[0].length; colIdx++)
-//                            {
-//                                table.setValueAt(pastedCells[rowIdx][colIdx], userSelectedRow + rowIdx, cols[0] + colIdx);
-//                                table.getFormatModel().fireTableCellUpdated(userSelectedRow + rowIdx, cols[0] + colIdx);
-//                            }
-//                        }
-//                    }
+                    catch (RuntimeException ex)
+                    {
+                        ex.printStackTrace();
+                        JOptionPane.showMessageDialog(table,
+                                String.format("The paste could not be completed - the value destined for row %d, column %d was rejected:%n%s",
+                                        destRow, destCol, ex.getMessage()),
+                                "Paste Error", JOptionPane.ERROR_MESSAGE);
+                    }
+                    finally
+                    {
+                        table.pasteInProgress = false;
+                    }
 
 //                    table.setValueAt(value, row, col);
                 }

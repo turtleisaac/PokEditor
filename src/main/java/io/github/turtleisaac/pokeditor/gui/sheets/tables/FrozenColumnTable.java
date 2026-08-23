@@ -1,6 +1,8 @@
 package io.github.turtleisaac.pokeditor.gui.sheets.tables;
 
+import io.github.turtleisaac.pokeditor.DataManager;
 import io.github.turtleisaac.pokeditor.formats.GenericFileData;
+import io.github.turtleisaac.pokeditor.formats.text.TextBankData;
 import io.github.turtleisaac.pokeditor.gui.sheets.tables.cells.renderers.DefaultSheetCellRenderer;
 import io.github.turtleisaac.pokeditor.gui.sheets.tables.cells.renderers.MultiLineTableHeaderRenderer;
 
@@ -53,6 +55,26 @@ public class FrozenColumnTable<E extends GenericFileData> extends JTable
         setColumnSelectionAllowed(true);
         setSelectionMode(ListSelectionModel.SINGLE_INTERVAL_SELECTION);
         setDefaultRenderer(Object.class, new DefaultSheetCellRenderer());
+    }
+
+    /**
+     * The frozen columns edit the parallel name bank, so writes have to mark it dirty, and
+     * validation failures thrown by the underlying data have to reach the user rather than
+     * escaping onto the EDT.
+     */
+    @Override
+    public void setValueAt(Object aValue, int row, int column)
+    {
+        try {
+            super.setValueAt(aValue, row, column);
+            DataManager.markDirty(TextBankData.class);
+        }
+        catch (RuntimeException e) {
+            e.printStackTrace();
+            JOptionPane.showMessageDialog(this,
+                    String.format("The value \"%s\" could not be applied to row %d:%n%s", aValue, row, e.getMessage()),
+                    "Invalid Value", JOptionPane.ERROR_MESSAGE);
+        }
     }
 
     public JTable getCornerTableHeader()

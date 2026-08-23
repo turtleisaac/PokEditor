@@ -29,8 +29,11 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileWriter;
 import java.io.IOException;
+import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.*;
 import java.util.List;
 
@@ -90,13 +93,13 @@ public class PokeditorManager extends PanelManager
 
     static {
         try {
-            sheetExportIcon = new FlatSVGIcon(PokeditorManager.class.getResourceAsStream("/pokeditor/icons/svg/table-export.svg"));
-            sheetImportIcon = new FlatSVGIcon(PokeditorManager.class.getResourceAsStream("/pokeditor/icons/svg/table-import.svg"));
-            rowRemoveIcon = new FlatSVGIcon(PokeditorManager.class.getResourceAsStream("/pokeditor/icons/svg/row-remove.svg"));
-            rowInsertIcon = new FlatSVGIcon(PokeditorManager.class.getResourceAsStream("/pokeditor/icons/svg/row-insert-bottom.svg"));
-            searchIcon = new FlatSVGIcon(PokeditorManager.class.getResourceAsStream("/pokeditor/icons/svg/list-search.svg"));
-            clipboardIcon = new FlatSVGIcon(PokeditorManager.class.getResourceAsStream("/pokeditor/icons/svg/clipboard-copy.svg"));
-            copyIcon = new FlatSVGIcon(PokeditorManager.class.getResourceAsStream("/pokeditor/icons/svg/copy.svg"));
+            sheetExportIcon = loadIcon("/pokeditor/icons/svg/table-export.svg");
+            sheetImportIcon = loadIcon("/pokeditor/icons/svg/table-import.svg");
+            rowRemoveIcon = loadIcon("/pokeditor/icons/svg/row-remove.svg");
+            rowInsertIcon = loadIcon("/pokeditor/icons/svg/row-insert-bottom.svg");
+            searchIcon = loadIcon("/pokeditor/icons/svg/list-search.svg");
+            clipboardIcon = loadIcon("/pokeditor/icons/svg/clipboard-copy.svg");
+            copyIcon = loadIcon("/pokeditor/icons/svg/copy.svg");
 
             sheetExportIcon.setColorFilter(ThemeUtils.iconColorFilter);
             sheetImportIcon.setColorFilter(ThemeUtils.iconColorFilter);
@@ -123,6 +126,14 @@ public class PokeditorManager extends PanelManager
         }
     }
 
+    private static FlatSVGIcon loadIcon(String path) throws IOException
+    {
+        try (InputStream stream = PokeditorManager.class.getResourceAsStream(path))
+        {
+            return new FlatSVGIcon(stream);
+        }
+    }
+
     private List<JPanel> panels;
 
     private NintendoDsRom rom;
@@ -134,12 +145,15 @@ public class PokeditorManager extends PanelManager
         super(tool, "PokEditor");
 
         rom = tool.getRom();
-        baseRom = Game.parseBaseRom(rom.getGameCode());
+        Game.BaseRomInfo baseRomInfo = Game.parseBaseRom(rom.getGameCode());
+        baseRom = baseRomInfo.game();
         gitEnabled = tool.isGitEnabled();
         GameFiles.initialize(baseRom);
         TextFiles.initialize(baseRom);
         GameCodeBinaries.initialize(baseRom);
-        Tables.initialize(baseRom);
+        // The region is passed explicitly rather than read back off the Game enum, which used to
+        // carry it as mutable per-constant state shared across every ROM opened in the process.
+        Tables.initialize(baseRom, baseRomInfo.region());
 
         DataManager.codeBinarySetup(rom);
 
@@ -195,16 +209,20 @@ public class PokeditorManager extends PanelManager
 
     public <E extends GenericFileData> void saveData(Class<E> dataClass)
     {
-        Set<GameFiles> gameFileSet = DataManager.saveData(rom, dataClass);
-        if (gameFileSet == null)
+        // NOTE: prepare only serialises - nothing is applied to the ROM until the user confirms,
+        // so backing out of the confirmation genuinely discards the pending write
+        Map<GameFiles, Narc> preparedData = DataManager.prepareData(rom, dataClass);
+        if (preparedData == null)
         {
             JOptionPane.showMessageDialog(null, "A fatal error occurred while attempting to save.", "Abort", JOptionPane.ERROR_MESSAGE);
             return;
         }
 
-        List<GameFiles> gameFiles = new ArrayList<>(gameFileSet);
-        gameFiles.addAll(DataManager.saveData(rom, TextBankData.class));
-//        DataManager.saveCodeBinaries(rom, List.of(GameCodeBinaries.ARM9));
+        Map<GameFiles, Narc> preparedTextData = DataManager.prepareData(rom, TextBankData.class);
+
+        List<GameFiles> gameFiles = new ArrayList<>(preparedData.keySet());
+        if (preparedTextData != null)
+            gameFiles.addAll(preparedTextData.keySet());
 
         StringBuilder stringBuilder = new StringBuilder("This operation will write the following files:\n");
         for (GameFiles gameFile : gameFiles)
@@ -235,17 +253,36 @@ public class PokeditorManager extends PanelManager
             }
         }
 
+        // only now is anything actually modified
+        DataManager.commitData(rom, preparedData);
+        DataManager.commitData(rom, preparedTextData);
+        DataManager.saveCodeBinaries(rom, List.of(GameCodeBinaries.ARM9));
+
         for (GameFiles gameFile : gameFiles)
         {
             writeModifiedFile(gameFile.getPath());
         }
+
+        // TM/HM move reassignments are applied to the in-memory arm9 above, so it has to be
+        // written out too -- otherwise reopening the project rebuilds arm9 from the unchanged
+        // file on disk and the edit silently disappears.
+        writeModifiedArm9();
 
         if (gitEnabled)
         {
             commit(message);
         }
 
+        DataManager.markClean(dataClass);
+        DataManager.markClean(TextBankData.class);
+
         JOptionPane.showMessageDialog(null, "Success! (If any error popups came before this message, then disregard).", "PokEditor", JOptionPane.INFORMATION_MESSAGE);
+    }
+
+    public void markSheetDirty(Class<? extends GenericFileData> dataClass)
+    {
+        DataManager.markDirty(dataClass);
+        DataManager.markDirty(TextBankData.class);
     }
 
     public <E extends GenericFileData> void resetData(Class<E> dataClass)
@@ -303,22 +340,37 @@ public class PokeditorManager extends PanelManager
             String path = selected.getAbsolutePath();
             if (!path.endsWith(".csv"))
                 path = path + ".csv";
-            try
+            try (BufferedWriter writer = Files.newBufferedWriter(Path.of(path), StandardCharsets.UTF_8))
             {
-                BufferedWriter writer = new BufferedWriter(new FileWriter(path));
                 for (String[] row : data) {
-                    for (String s : row)
-                        writer.write(s + ",");
+                    String[] quoted = new String[row.length];
+                    for (int i = 0; i < row.length; i++)
+                        quoted[i] = quoteCsvField(row[i]);
+                    writer.write(String.join(",", quoted));
                     writer.write("\n");
                 }
-
-                writer.close();
             }
             catch(IOException e) {
+                JOptionPane.showMessageDialog(null, "A fatal error occurred while writing the sheet to disk. See command-line for details.", "Error", JOptionPane.ERROR_MESSAGE);
                 throw new RuntimeException(e);
             }
 
         }
+    }
+
+    /**
+     * Quotes a single CSV field as per RFC 4180 - fields containing a comma, a double quote,
+     * or a line break are wrapped in double quotes with any embedded quotes doubled.
+     */
+    private static String quoteCsvField(String field)
+    {
+        if (field == null)
+            return "";
+
+        if (field.indexOf(',') >= 0 || field.indexOf('"') >= 0 || field.indexOf('\r') >= 0 || field.indexOf('\n') >= 0)
+            return '"' + field.replace("\"", "\"\"") + '"';
+
+        return field;
     }
 
     private static JFileChooser prepareImageChooser(String title, boolean allowPalette)
@@ -419,8 +471,7 @@ public class PokeditorManager extends PanelManager
     @Override
     public boolean hasUnsavedChanges()
     {
-        //todo
-        return false;
+        return DataManager.hasUnsavedChanges();
     }
 
     @Override

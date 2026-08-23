@@ -181,6 +181,19 @@ public class MovesTable extends DefaultTable<MoveData, MovesTable.MovesColumn>
         }
 
         @Override
+        public int[] getCellValueRange(int columnIndex)
+        {
+            return MovesColumn.getColumn(columnIndex).getValueRange();
+        }
+
+
+        @Override
+        public TextBankData getNameTextBank()
+        {
+            return getTextBankData().get(TextFiles.MOVE_NAMES.getValue());
+        }
+
+        @Override
         public FormatModel<MoveData, MovesColumn> getFrozenColumnModel()
         {
             return new MovesModel(getData(), getTextBankData()) {
@@ -251,6 +264,18 @@ public class MovesTable extends DefaultTable<MoveData, MovesTable.MovesColumn>
             this.idx = idx;
             this.key = key;
             this.cellType = cellType;
+        }
+
+        /**
+         * @return the inclusive {min, max} range this column's underlying storage can hold
+         */
+        int[] getValueRange()
+        {
+            return switch (this) {
+                case EFFECT, TARGET -> new int[] {0, 0xFFFF}; // written as a short
+                case PRIORITY -> new int[] {-128, 127}; // written as a signed byte
+                default -> new int[] {0, 255};
+            };
         }
 
         static MovesColumn getColumn(int idx)

@@ -25,7 +25,7 @@ public class ArrayModifier
         for(int i= 0; i < arr.length; i++)
         {
             if (col >= arr[i].length)
-                break;
+                continue; // a short row leaves its own cell blank, it does not end the column
 
             ret[i]= arr[i][col];
         }
