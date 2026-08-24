@@ -292,9 +292,13 @@ public class DataManager
     /**
      * Discards the in-memory edits for the provided class and re-parses it from the ROM.
      * <p>
-     * Since {@link #prepareData(NintendoDsRom, Class)} no longer mutates the ROM, the ROM
-     * held here matches what is on disk in the unpacked project until the user actually
-     * confirms a save, so re-reading it genuinely discards unsaved edits.
+     * Nothing is prepared until the user has confirmed a save, so a cancelled save leaves the
+     * ROM untouched and re-reading it here genuinely discards the unsaved edits.
+     * <p>
+     * Preparation itself is not free of side effects - PersonalParser writes the TM table into
+     * the shared arm9 buffer - so a save that gets past the confirmation and then fails on a
+     * value the data refuses can still leave arm9 partly written. That is a failure rather
+     * than a cancellation, and re-reading does not undo it.
      */
     @SuppressWarnings("unchecked")
     public static <E extends GenericFileData> void resetData(NintendoDsRom rom, Class<E> eClass)
@@ -326,11 +330,22 @@ public class DataManager
         codeBinaries.put(GameCodeBinaries.ARM9, arm9);
 //        codeBinaries.put(GameCodeBinaries.ARM7, rom.loadArm7());
 
-        MemBuf.MemBufWriter writer = arm9.getPhysicalAddressBuffer().writer();
-        int pos = writer.getPosition();
-        writer.setPosition(0xBB4); //todo account for DP if I ever add back support
-        writer.writeInt(0);
-        writer.setPosition(pos);
+        // Through the lock, like every other arm9 write in the codebase. Not for mutual
+        // exclusion - nothing is concurrent at startup - but because lock() and unlock() are
+        // what maintain the buffer's cursors: unlock() extends the recorded size to whatever
+        // was written and puts the write cursor back at the end. getData() returns the bytes
+        // between the read and write cursors, so a hand-rolled restore that leaves the writer
+        // short truncates arm9 on save. This used to save and restore the position itself,
+        // which is a weaker copy of the same protocol.
+        arm9.lock();
+        try {
+            MemBuf.MemBufWriter writer = arm9.getPhysicalAddressBuffer().writer();
+            writer.setPosition(0xBB4); //todo account for DP if I ever add back support
+            writer.writeInt(0);
+        }
+        finally {
+            arm9.unlock();
+        }
     }
 
     public static void saveCodeBinaries(NintendoDsRom rom, List<GameCodeBinaries> codeBinaries)

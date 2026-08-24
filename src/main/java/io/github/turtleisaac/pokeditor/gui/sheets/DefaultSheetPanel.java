@@ -245,6 +245,8 @@ public class DefaultSheetPanel<G extends GenericFileData, E extends Enum<E>> ext
         if (frozenColumns.getModel() instanceof AbstractTableModel frozenModel)
             frozenModel.fireTableRowsInserted(newRow, newRow);
 
+        // other open sheets read the same name bank and have just had it grow underneath them
+        manager.nameBankRowsChanged(nameBank, this);
         manager.markSheetDirty(table.getDataClass());
     }
 
@@ -275,6 +277,10 @@ public class DefaultSheetPanel<G extends GenericFileData, E extends Enum<E>> ext
         if (frozenColumns.getModel() instanceof AbstractTableModel frozenModel)
             frozenModel.fireTableRowsDeleted(row, row);
 
+        // Personal, TM compatibility, Evolutions and Learnsets all read the same species name
+        // bank across three different data classes, so the sheets that are not being edited
+        // have just had every name below this row shifted under them.
+        manager.nameBankRowsChanged(nameBank, this);
         manager.markSheetDirty(table.getDataClass());
     }
 

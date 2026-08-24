@@ -188,10 +188,9 @@ public class PokeditorManager extends PanelManager
         movesPanel.setName("Moves Sheet");
 
         // The field script editor is not in a working state and is not built. It is left out
-        // rather than shown and broken: it is the one editor that can compile a script back into
-        // the ROM, so a half-working version of it damages a project rather than merely
-        // disappointing. Constructing it is also what pulls in VariableTracker, which is not
-        // published anywhere, so a clean checkout cannot resolve it.
+        // rather than shown and broken: it is the one editor that can compile a script back
+        // into the ROM, so a half-working version of it damages a project rather than merely
+        // disappointing.
         //
         // To bring it back: restore the construction below and the panels.add further down.
 
@@ -315,6 +314,68 @@ public class PokeditorManager extends PanelManager
     public <E extends GenericFileData> void resetData(Class<E> dataClass)
     {
         DataManager.resetData(rom, dataClass);
+    }
+
+    /**
+     * Tells every other sheet backed by the same name bank that a row was added or removed.
+     * <p>
+     * Several sheets index the same text bank: Personal, TM compatibility, Evolutions and
+     * Learnsets all show the species names, across three different data classes. Adding or
+     * removing a row shifts that shared bank, so a sheet the user is not even looking at ends
+     * up displaying every name below the change against the wrong entry - and because the bank
+     * is marked dirty, the next save of any sheet writes it to the ROM. There is no error and
+     * nothing to see on the sheet being edited.
+     * <p>
+     * Only the display is corrected here, and deliberately so: the underlying operation is
+     * still questionable, because these tables are positional and deleting a row renumbers
+     * every entry after it. Correcting the view is what stops a silent wrong-row edit; whether
+     * the row buttons should exist on species-indexed sheets at all is a separate decision.
+     *
+     * @param bank the name bank that changed
+     * @param source the sheet that changed it, which has already fired its own events
+     */
+    public void nameBankRowsChanged(TextBankData bank, DefaultSheetPanel<?, ?> source)
+    {
+        if (bank == null)
+            return;
+
+        for (DefaultSheetPanel<?, ?> sheetPanel : sheetPanels())
+        {
+            if (sheetPanel == source)
+                continue;
+
+            // identity, not equality: the point is that these sheets hold the very same object
+            if (sheetPanel.getTable().getFormatModel().getNameTextBank() != bank)
+                continue;
+
+            // the names are read through the frozen column model, and a full structure change
+            // would discard the column widths and renderers the table configured at build time
+            sheetPanel.getTable().getFormatModel().fireTableDataChanged();
+            if (sheetPanel.getFrozenColumns().getModel() instanceof javax.swing.table.AbstractTableModel frozen)
+                frozen.fireTableDataChanged();
+        }
+    }
+
+    /** Every sheet panel currently open, flattened out of the groups they are arranged in. */
+    private List<DefaultSheetPanel<?, ?>> sheetPanels()
+    {
+        List<DefaultSheetPanel<?, ?>> found = new ArrayList<>();
+        for (JPanel panel : panels)
+        {
+            if (panel instanceof DefaultSheetPanel<?,?> sheetPanel)
+            {
+                found.add(sheetPanel);
+            }
+            else if (panel instanceof PanelGroup panelGroup)
+            {
+                for (JPanel groupPanel : panelGroup.getPanels())
+                {
+                    if (groupPanel instanceof DefaultSheetPanel<?,?> sheetPanel)
+                        found.add(sheetPanel);
+                }
+            }
+        }
+        return found;
     }
 
     public void resetAllIndexedCellRendererText()
