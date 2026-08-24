@@ -38,9 +38,19 @@ public class TmCompatibilityTable extends DefaultTable<PersonalData, TmCompatibi
         Arrays.fill(columnWidths, 120);
     }
 
-    public TmCompatibilityTable(List<PersonalData> data, List<TextBankData> textData)
+    private final List<MoveData> moves;
+
+    /**
+     * @param moves the move list the TM header editor reassigns from. Held rather than fetched
+     *              on demand: this table has no ROM to fetch with, and the header listener used
+     *              to ask DataManager with a null one - which since the caches became ROM-scoped
+     *              discards every loaded sheet and then throws. resetData refills the same list
+     *              object, so holding the reference stays correct across a reload.
+     */
+    public TmCompatibilityTable(List<PersonalData> data, List<TextBankData> textData, List<MoveData> moves)
     {
         super(new TmCompatibilityModel(data, textData), textData, columnWidths, null);
+        this.moves = moves;
         String[] moveNames = textData.get(TextFiles.MOVE_NAMES.getValue()).getStringList().toArray(String[]::new);
 
         TableCellRenderer renderer = new DefaultTableCellRenderer() {
@@ -299,8 +309,12 @@ public class TmCompatibilityTable extends DefaultTable<PersonalData, TmCompatibi
                         list.setSelectedIndex(personalParser().getTmMoveIdNumber(columnIndex));
 
                         list.addListSelectionListener(e -> {
-                            personalParser().updateTmType(columnIndex, list.getSelectedIndex(), DataManager.getData(null, MoveData.class));
+                            personalParser().updateTmType(columnIndex, list.getSelectedIndex(), moves);
                             column.setHeaderValue(list.getSelectedIndex());
+                            // the reassignment lives on the parser, not in any sheet's data, so
+                            // nothing else marks it. Without this the edit is real, is written by
+                            // the next save, and yet the exit prompt reports no unsaved changes.
+                            DataManager.markDirty(PersonalData.class);
                         });
 
                         popupMenu.setPreferredSize(

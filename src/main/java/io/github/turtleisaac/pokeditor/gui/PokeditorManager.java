@@ -187,9 +187,13 @@ public class PokeditorManager extends PanelManager
         DefaultSheetPanel<MoveData, ?> movesPanel = DataManager.createMoveSheet(this, rom);
         movesPanel.setName("Moves Sheet");
 
-        DefaultDataEditorPanel<GenericScriptData, ?> fieldScriptEditor = DataManager.createFieldScriptEditor(this, rom);
-        fieldScriptEditor.setName("Field Scripts");
-        fieldScriptEditor.setPreferredSize(fieldScriptEditor.getPreferredSize());
+        // The field script editor is not in a working state and is not built. It is left out
+        // rather than shown and broken: it is the one editor that can compile a script back into
+        // the ROM, so a half-working version of it damages a project rather than merely
+        // disappointing. Constructing it is also what pulls in VariableTracker, which is not
+        // published anywhere, so a clean checkout cannot resolve it.
+        //
+        // To bring it back: restore the construction below and the panels.add further down.
 
 
 //        JPanel fieldPanel = new JPanel();
@@ -203,26 +207,37 @@ public class PokeditorManager extends PanelManager
 //        panels.add(battleSpriteEditor);
         panels.add(movesPanel);
 //        panels.add(encounters);
-        panels.add(fieldScriptEditor);
+//        panels.add(fieldScriptEditor); // disabled - see above
 //        panels.add(placeholder);
     }
 
     public <E extends GenericFileData> void saveData(Class<E> dataClass)
     {
-        // NOTE: prepare only serialises - nothing is applied to the ROM until the user confirms,
-        // so backing out of the confirmation genuinely discards the pending write
-        Map<GameFiles, Narc> preparedData = DataManager.prepareData(rom, dataClass);
-        if (preparedData == null)
+        // Both confirmations happen before anything is prepared.
+        //
+        // processDataList is not side effect free: PersonalParser writes the TM/HM table straight
+        // into the shared arm9 buffer, and PokemonSpriteParser does the same. Preparing first and
+        // asking afterwards therefore left arm9 already modified when the user said no - and the
+        // next confirmed save of any sheet wrote that cancelled edit to disk. Reloading could not
+        // undo it either, because the reload re-reads the TM table out of the arm9 it just
+        // mutated. Asking first removes the window entirely.
+        if (!DataManager.isLoaded(dataClass))
         {
             JOptionPane.showMessageDialog(null, "A fatal error occurred while attempting to save.", "Abort", JOptionPane.ERROR_MESSAGE);
             return;
         }
 
-        Map<GameFiles, Narc> preparedTextData = DataManager.prepareData(rom, TextBankData.class);
-
-        List<GameFiles> gameFiles = new ArrayList<>(preparedData.keySet());
-        if (preparedTextData != null)
-            gameFiles.addAll(preparedTextData.keySet());
+        // the files a save will write, taken from the parser's own requirements rather than from
+        // prepared output - the two are the same set for every parser in Core
+        List<GameFiles> gameFiles = new ArrayList<>(DataManager.filesWrittenBy(dataClass));
+        if (DataManager.isLoaded(TextBankData.class))
+        {
+            for (GameFiles gameFile : DataManager.filesWrittenBy(TextBankData.class))
+            {
+                if (!gameFiles.contains(gameFile))
+                    gameFiles.add(gameFile);
+            }
+        }
 
         StringBuilder stringBuilder = new StringBuilder("This operation will write the following files:\n");
         for (GameFiles gameFile : gameFiles)
@@ -252,6 +267,18 @@ public class PokeditorManager extends PanelManager
                 message = null;
             }
         }
+
+        // Past this point the user has committed to the save. Serialising can still fail on a
+        // value the data refuses, which leaves arm9 partly written - that is a failure rather
+        // than a cancellation, and it behaved the same way before.
+        Map<GameFiles, Narc> preparedData = DataManager.prepareData(rom, dataClass);
+        if (preparedData == null)
+        {
+            JOptionPane.showMessageDialog(null, "A fatal error occurred while attempting to save.", "Abort", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        Map<GameFiles, Narc> preparedTextData = DataManager.prepareData(rom, TextBankData.class);
 
         // only now is anything actually modified
         DataManager.commitData(rom, preparedData);

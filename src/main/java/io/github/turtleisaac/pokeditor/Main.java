@@ -24,10 +24,16 @@ public class Main
     {
         installUncaughtExceptionHandler();
 
+        // The jokes file is decoration for the start screen, and it is not in the repository -
+        // Main has referenced it since before this branch, so a clean checkout dereferences null
+        // here and the application cannot start at all. Nothing cosmetic should be able to do
+        // that, whether the file is restored later or not.
         String[] mainMenuJokes;
         try (InputStream jokesStream = Main.class.getResourceAsStream(jokesPath))
         {
-            mainMenuJokes = new String(jokesStream.readAllBytes(), StandardCharsets.UTF_8).split("\n");
+            mainMenuJokes = jokesStream == null
+                    ? new String[] {""}
+                    : new String(jokesStream.readAllBytes(), StandardCharsets.UTF_8).split("\n");
         }
 
 //        Locale.setDefault(Locale.CHINA);
