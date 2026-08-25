@@ -16,10 +16,13 @@ public class BitfieldComboBoxEditor extends ComboBoxCellEditor
     public Object getCellEditorValue()
     {
         int val = comboBox.getSelectedIndex();
-        // -1 is "nothing selected", which happens when the cell holds a bit this column has no
-        // name for. shifting by -2 would return a nonsense flag and write it into the file, so
-        // report no flags set instead.
-        if (val <= 0)
+        // -1 is "nothing selected": either the cell holds a bit this column has no name for, or
+        // the user typed something that matched no entry. Either way the edit selected nothing,
+        // so the cell keeps what it had rather than being cleared - see ComboBoxCellEditor.
+        if (val < 0)
+            return getLastValue();
+
+        if (val == 0)
             return 0;
 
         return (1 << val - 1);

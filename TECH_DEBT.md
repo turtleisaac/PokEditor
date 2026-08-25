@@ -1,0 +1,243 @@
+# Known defects and technical debt
+
+Everything here was found during a bug-hunting pass across PokEditor and its three
+supporting libraries, and everything here was **reproduced before being written down** —
+either by running it or by reading the code path end to end. Where an item is a judgement
+call rather than a defect, that is said.
+
+Items are grouped by where they live and ordered by how much damage they do. Each says
+what breaks, what it costs, and — where the answer is not obvious — what makes it awkward
+to fix.
+
+A `@Tag("dead-code")` test exists for several of these. Those run in a separate CI job that
+is expected to fail, with the count asserted, so that a fix or a regression both show up.
+
+---
+
+## PokEditor
+
+### Row add/delete is unsound on species-indexed sheets
+**Severity: high. Reachable in one click.**
+
+Personal, TM compatibility, Evolutions and Learnsets are parallel tables indexed by species
+ID. Deleting a row renumbers every entry after it, so anything referring to those entries
+by index — evolutions, learnsets, encounters, trainers — now points at the wrong species.
+
+The cross-sheet half of this is fixed: the sheets share one species-name bank, and a
+deletion on one used to shift the names on the others silently, which the next save wrote
+to the ROM. The other sheets are now told, so the display no longer lies.
+
+What remains is the operation itself. Either the row buttons should be removed from these
+sheets, or "delete row" should mean "delete this species everywhere", which is a
+coordinated change across four sheets and the name bank. Until then a deletion is a
+renumbering the user is unlikely to be expecting.
+
+### `VariableTracker` is not published, so the project cannot be built from a clean checkout
+**Severity: high for contributors, none for users.**
+
+`pom.xml` declares `io.github.turtleisaac:VariableTracker:1.0-SNAPSHOT`, which exists in no
+repository the build can reach and has no `<repositories>` entry. CI cannot build this
+module, and neither can a new contributor. The field script editor is disabled, but
+`ScriptDocument` still imports the library, so the dependency is still required to compile.
+
+Fix by publishing VariableTracker, adding a repository that serves it, or vendoring it.
+
+### The field script editor is disabled
+**Deliberate, not a defect.** It is the one editor that compiles scripts back into the ROM,
+so a half-working version damages a project rather than merely disappointing. Its
+construction is commented out in `PokeditorManager`; the subsystem and its 202 tests are
+intact.
+
+### `jokes.txt` has never been committed
+`Main` reads `/pokeditor/jokes.txt`, which is in no commit on any branch. Startup no longer
+dies without it, but the start screen shows nothing. The file is the project owner's
+content and has not been invented.
+
+### Two sheets share one data list with independent models
+Personal and TM compatibility are handed the same `List<PersonalData>`. Row changes on one
+leave the other's *selection model* holding an index the data no longer has, so a
+subsequent `getValueAt` on that row throws. The row count itself is fine — `getRowCount`
+delegates live to the model.
+
+Narrower than the name-bank problem above and largely self-healing on a repaint, but it is
+the same shape: shared state, independent views.
+
+### The save confirmation does not name every file it writes
+The dialog lists the files from the parser's declared requirements, which for Personal is
+the personal NARC only. The same save also writes arm9, because preparing the data mutates
+it. The dialog promises a complete list and omits the one file whose corruption is hardest
+to recover from.
+
+### Reloading a sheet does not restore the name bank
+`resetData` re-reads one data class. A row added or deleted beforehand has already changed
+the shared `TextBankData`, which is not reloaded — so reload does not undo the edit.
+
+Fixing it needs care: `TextBankData` is one dirty flag for the whole application, so
+reloading it wholesale would discard unsaved move, item and ability name edits made from
+other sheets, silently, and then mark everything clean.
+
+### Dead code with no callers
+`CsvReader`, `ArrayProcessor`, `XmlReader`, `BitStream`, `JarClassLoader`, `BitVector`,
+`Directory`, `SheetExceptionFactory`, `JCheckboxTree`, `CircleButton` have no references in
+`src/main`. They carry real defects — `XmlReader` tests for a close tag spelled with a
+backslash and so cannot read well-formed XML at all; `ArrayProcessor` drops trailing empty
+fields; `BitStream(0)` cannot grow — but nothing can reach them. Their tests are tagged
+`dead-code`.
+
+The decision to leave them as-is is deliberate. The open question is whether to delete them
+or revive them, not whether to fix them in place.
+
+### `DataManager` caches are process-wide with no reset
+Static maps with no clear hook, which is why testing them needs reflection. They are scoped
+to the ROM they were filled from, but nothing in the application can open a second ROM in
+one session — the three menu entries that would are unimplemented and closing the tool
+frame exits the process. The scoping is a guard against a future capability.
+
+---
+
+## Nds4j — **this library is published to Maven Central, where a released version is permanent**
+
+### A scanned sprite is destroyed on save if its top-left pixel is not index 0
+**Severity: high. Live in the product.**
+
+The scanned NCGR decoder derives its decryption key from the first word of the *ciphertext*,
+so a save/load round trip is only self-consistent when the first word of the *plaintext* is
+zero. Edit the top-left pixel of a battle sprite, save, reload, and every row differs.
+
+Reachable through the sprite editor's import and its left/right swap. No format
+compatibility cost to fixing it, so it can be fixed in a patch release — but it destroys
+user work today.
+
+### The scanned NCGR path has no coverage that runs in CI
+Every test touching a scanned image needs a retail ROM and skips without one. That is how an
+8bpp under-allocation survived indefinitely and a 4bpp regression was introduced on top of
+it with nothing going red.
+
+Worse, the one scanned test that exists is a re-parse comparison, and a re-parse **cannot**
+detect a wrong decryption key: `save()` re-encrypts from whatever key the decode returned,
+so seed and direction errors cancel exactly and produce garbage pixels with a byte-identical
+round trip. Verified by experiment.
+
+The fix is a committed synthetic fixture with expected pixel values derived from an
+independent implementation — DSPRE's decoder is separately written and agrees — asserting
+decoded pixels rather than the round trip.
+
+### Cell banks of type 0 render at 8x8 and paste out of bounds
+Type 0 NCER banks carry no bounding rectangle, so the cell image is sized from zeroes and
+OAMs are pasted at raw, often negative, coordinates.
+
+The fix is to derive the bounds from the OAMs themselves. Two constraints make it less
+obvious than it looks: the derived bounds have to reach `CellImage.save()`, which reads the
+`Cell` fields directly, so keeping them local just moves the crash to the save path; and
+writing them back is byte-neutral **only** for type 0, because the writer omits those fields
+for that type. Triggering on a degenerate rectangle instead of on the bank type would
+silently rewrite a stored field on a type 1 bank.
+
+A cell with no OAMs at all also needs a fallback — min and max over an empty set are
+undefined.
+
+### Scanned 8bpp images can be read but never written
+`save()` throws for scanned 8bpp. Anything round-tripping a NARC containing one loses it.
+Shipping a read-only depth is a permanent asymmetry in the public API, and it cannot be
+removed later without a behaviour change.
+
+The commented-out encoder appears correct — transcribed and run against the live decoder, it
+reproduces the original ciphertext byte for byte in both scan directions. It needs its
+buffer sized from the tile count rather than the pixel dimensions, as the 4bpp path now is.
+
+### `getNcerImage` uses a different placement convention from the rest of the class
+A hardcoded 80x80 canvas with a centre origin, carrying a `//todo undo this being 80`. It
+matches Tinke's renderer, so it is inconsistent rather than wrong, but two conventions now
+coexist in one class.
+
+### `MemBuf` changed several published contracts in one release
+`readByte()` returns unsigned where it returned signed; `readString` decodes ISO-8859-1
+where it decoded UTF-8; `writeString(s, len)` truncates where it threw; `skip` rejects a
+negative count; `align` no longer pads an already-aligned buffer.
+
+Every in-tree caller normalises explicitly and so is unaffected, but these are behavioural
+changes to a published surface and belong in the release notes. `align` is
+format-visible — NARCs written after the change are not byte-identical to those written
+before.
+
+Worth considering before the version is permanent: `readByte()` is now a duplicate of
+`readUInt8()`, no signed byte reader survives, and the name contradicts
+`DataInput.readByte()`. A deprecation and a clearly-named pair would cost nothing now and
+cannot be done cheaply later.
+
+### `getEncryptionKey()` uses -1 to mean "no key"
+`0xFFFFFFFF` is a legal key, so the sentinel is ambiguous in principle. In practice it is
+unreachable: producing it requires a stream of 61,741 words — 246,964 pixels — which no DS
+VRAM bank can hold. Recorded because the reasoning is not obvious, not because it needs
+fixing.
+
+The real defect at those lines is that `save()` passes the sentinel through as a live seed
+without checking.
+
+### Smaller items
+- `Palette(int)` accepts any size; `Palette(Color[])` rejects more than 256. The first will
+  happily emit a 1000-colour NCLR.
+- The NCGR parse constructor has no positive-dimension guard, so a 48-byte file yields a
+  zero-height image.
+- `getSubImage` copies `scanMode` and `encryptionKey` onto a freshly laid-out image, where
+  neither applies.
+- Sizing the scanned decode buffer from the tile count means a truncated file now fails with
+  "Not enough room to read" rather than a format error. It belongs in the malformed-input
+  suite.
+
+---
+
+## PokEditor-Core
+
+### The parsers have no coverage that runs in CI
+Round-trip tests against real game data need a retail ROM and skip without one. Of the tests
+that do run, most assert only that a parser is non-null. **A green build here says very
+little**: no format's parse is exercised.
+
+Run with `-Drom.dir=<dir>` before trusting a change to a parser. Expect failures — the
+round-trip assertions were strengthened, and the original author's own code counted "valid
+but non-1:1 matching" script files, which suggests scripts do not round-trip byte-exactly.
+
+### `isEndCommand` treats `endstd` as terminating a run
+An unannounced change to script traversal. If it is wrong, commands after an `endstd` are
+never visited and are silently dropped on save. The macro file documents command 21 as
+"Yield to parent context", so it is probably right — but it is the most consequential line
+in the script reader and it is unverified against a real ROM.
+
+### Abort-versus-tolerate is unresolved on the text and script load paths
+`TextBankData` bounds checks and `offsetObtainer` now abort where they previously degraded.
+For a retail ROM this is fine. For a hacked ROM — which is the population this tool
+serves — it converts a file that opened with one garbled entry into a file that will not
+open at all.
+
+The same question was already settled the other way for evolution files, where a cap fixed
+at the retail entry count made expanded tables unsavable. These two paths should be
+consistent, and currently are not.
+
+---
+
+## Nds4j-ToolUI
+
+### A multi-file save is not atomic
+Each file is written atomically on its own, but a save writes many. A failure on file 3 of
+20 leaves files 1–2 new and the rest old, with `markClean` unreached. For a ROM project,
+a new `personal.narc` beside an old TM table in `arm9.bin` is a specific and plausible
+corruption.
+
+### Nine `writeModified*` methods document a boolean they cannot return
+They return a constant `true` and throw on failure. A caller writing `if (!writeModifiedArm9())`
+gets dead code and an unchecked exception through its `ActionListener`. Either return
+`false` or drop the return type.
+
+### The git worker holds the save lock for the duration of a commit
+Staging a project of tens of thousands of files while holding `saveLock` means a save issued
+during a commit blocks the event thread, with no dialog and no feedback.
+
+---
+
+## Release sequencing
+
+Nds4j must be published to Maven Central **before** the other three merge. All three pin
+`Nds4j:1.0.0`; their CI falls back to Nds4j `main`, which is still `0.1.0`, and cannot
+resolve it. The Nds4j README also advertises a coordinate that does not exist until the
+release is published by hand from the portal.

@@ -11,6 +11,7 @@ import java.util.List;
 
 import static io.github.turtleisaac.pokeditor.gui.sheets.tables.cells.CellsTestSupport.*;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatCode;
 
 class ComboBoxCellEditorTest
 {
@@ -140,5 +141,54 @@ class ComboBoxCellEditorTest
             JLabel painted = (JLabel) renderer.getTableCellRendererComponent(table, stored, false, false, 1, 0);
             assertThat(painted.getText()).as("cell text for stored value %s", stored).isEqualTo(replacement[i]);
         }
+    }
+
+    @Test
+    @DisplayName("an edit that selects nothing leaves the cell as it was")
+    void noSelectionKeepsTheOriginalValue()
+    {
+        // A combo box reports -1 when nothing is selected, and that is what type-to-search
+        // leaves behind when the typed text matches no entry exactly. Reporting -1 as the new
+        // value made the sheet reject the edit outright, so typing a move name produced an error
+        // and the user had to find it in the list by hand. An edit that selected nothing should
+        // do nothing - which is how the numeric editor has always behaved.
+        ComboBoxCellEditor editor = new ComboBoxCellEditor(new String[] {"Tackle", "Growl", "Ember"});
+        editor.getTableCellEditorComponent(new javax.swing.JTable(), 2, false, 0, 0);
+
+        ((javax.swing.JComboBox<?>) editor.getTableCellEditorComponent(
+                new javax.swing.JTable(), 2, false, 0, 0)).setSelectedIndex(-1);
+
+        assertThat(editor.getCellEditorValue())
+                .as("nothing selected means the cell keeps what it had")
+                .isEqualTo(2);
+    }
+
+    @Test
+    @DisplayName("a real selection is reported as the new value")
+    void aSelectionIsReported()
+    {
+        // the other half: the no-op must not swallow a genuine edit
+        ComboBoxCellEditor editor = new ComboBoxCellEditor(new String[] {"Tackle", "Growl", "Ember"});
+        javax.swing.JComboBox<?> box = (javax.swing.JComboBox<?>) editor.getTableCellEditorComponent(
+                new javax.swing.JTable(), 0, false, 0, 0);
+        box.setSelectedIndex(2);
+
+        assertThat(editor.getCellEditorValue()).isEqualTo(2);
+    }
+
+    @Test
+    @DisplayName("a value the column has no name for still opens, and closing changes nothing")
+    void outOfRangeValueOpensAndIsPreserved()
+    {
+        // a hacked ROM can hold an index past the name list. The renderer paints it harmlessly,
+        // so the editor must open too - and if the user closes without picking, the odd value
+        // must survive rather than being replaced by -1 or by 0.
+        ComboBoxCellEditor editor = new ComboBoxCellEditor(new String[] {"Tackle", "Growl"});
+
+        assertThatCode(() -> editor.getTableCellEditorComponent(
+                new javax.swing.JTable(), 99, false, 0, 0)).doesNotThrowAnyException();
+        assertThat(editor.getCellEditorValue())
+                .as("an unrecognised value is left alone, not overwritten")
+                .isEqualTo(99);
     }
 }
