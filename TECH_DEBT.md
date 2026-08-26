@@ -290,6 +290,24 @@ consistent, and currently are not.
 
 ## Nds4j-ToolUI
 
+### Only the file helper is tested; the module's actual job is not
+**Severity: this is where the three items below live.**
+
+3,834 lines of `src/main` against 588 of tests, and the tests reach two files: `FileUtils` and
+the hexadecimal spinner's formatting. `Tool` (1,299 lines) has none, nor do `ToolFrame`,
+`PanelManager`, `ProjectCreateDialog`, `ProjectStartPanel` or `ThemeUtils`.
+
+That is the module owning project open and save, the save lock, and the git integration - and the
+three defects below are all in `Tool`, `ToolFrame` and `PanelManager`, which is not a
+coincidence. `FileUtils.atomicWrite` was the one part with tests, and it is the one part that got
+fixed properly, because the tests could show what was wrong.
+
+Worth stating precisely, because the raw numbers mislead in the other direction: the atomic-write
+tests are genuine. Three of them turn on POSIX permissions and skip when the suite runs as root -
+which is what a container does, so a local run reports `25 passed, 3 skipped`. Hosted runners are
+not root, and CI reports `25 passed, 0 skipped`. Those three are the ones with teeth: they are
+what proved the previous durability test asserted nothing.
+
 ### A multi-file save is not atomic
 Each file is written atomically on its own, but a save writes many. A failure on file 3 of
 20 leaves files 1–2 new and the rest old, with `markClean` unreached. For a ROM project,
