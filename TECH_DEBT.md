@@ -181,6 +181,15 @@ detect a wrong decryption key: `save()` re-encrypts from whatever key the decode
 so seed and direction errors cancel exactly and produce garbage pixels with a byte-identical
 round trip. Verified by experiment.
 
+A workflow appeared to cover this and never did. `maven-verify.yml` downloaded a ROM and ran the
+full suite, but it moved the file into the workspace *before* `actions/checkout`, which cleans
+untracked files and deleted it - and it ran on JDK 8, which cannot compile test sources using
+`java.util.HexFormat`. Two independent faults, so the ROM suite has never run in CI here at all.
+It obtained the ROM by reconstructing it with `xdelta3` against an empty source, meaning the
+archive it fetched held the entire commercial game; that step is gone, and the workflow now takes
+`-Drom.dir` so a runner with a legally obtained copy can point at one. Hosted runners have none,
+so this gap stays open until such a runner exists or the fixture below does.
+
 The fix is a committed synthetic fixture with expected pixel values derived from an
 independent implementation — DSPRE's decoder is separately written and agrees — asserting
 decoded pixels rather than the round trip.
@@ -324,9 +333,10 @@ work will clear it.
   `MAVEN_CENTRAL_PASSWORD`, `GPG_PRIVATE_KEY`, `GPG_PASSPHRASE`.
 - ~~`Nds4j/.github/workflows/maven-publish.yml` publishes to the decommissioned OSSRH.~~
   **Deleted.** `release.yml` is now the only publish path.
-- `Nds4j/.github/workflows/maven-verify.yml` is the same vintage - JDK 8, Python 3.8 - and does
-  not fire on any branch, so it is neither running nor blocking. Left alone, but it is the last
-  piece of the old publishing setup.
+- ~~`Nds4j/.github/workflows/maven-verify.yml` is the same vintage - JDK 8, Python 3.8.~~
+  **Rewritten.** It fired on every push to `main`, so merging would have turned `main` red on
+  JDK 8 for reasons unrelated to the merge. Now `workflow_dispatch` only, on build.yml's
+  toolchain. It also changes the scanned-NCGR coverage note above.
 
 ### ~~Open decision blocking a permanent API~~ - settled
 `CodeBinary.compressed` was private, had no getter, and was read nowhere - which is how it
