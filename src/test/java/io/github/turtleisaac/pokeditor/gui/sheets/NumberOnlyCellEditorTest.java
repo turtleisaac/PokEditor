@@ -8,6 +8,7 @@ import javax.swing.JTextField;
 import java.awt.HeadlessException;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatCode;
 
 /**
  * A cell editor for a numeric column has two jobs, and they pull against each other: show the
@@ -287,5 +288,79 @@ class NumberOnlyCellEditorTest
 
         field.setText("256");
         assertThat(commits(editor)).as("committing one past the maximum").isFalse();
+    }
+
+    /**
+     * A blank cell is not a malformed one. A Learnsets row is only as long as that species'
+     * learnset, so every column past its last entry reads back null - which is most of that
+     * sheet. Opening one and clicking away put a modal error in front of the user for having
+     * changed nothing.
+     * <p>
+     * {@link #commits} deliberately cannot tell the two apart: it reports a dialog attempt as a
+     * refusal, and a refusal is what this used to be. So the dialog is asserted on directly -
+     * in a headless JVM an attempt to open one throws, which makes "no throw" the proof that
+     * none was attempted.
+     */
+    @Test
+    @DisplayName("a blank cell left blank ends the edit quietly instead of raising an error")
+    void blankCellLeftBlankIsNotAnError()
+    {
+        NumberOnlyCellEditor editor = new NumberOnlyCellEditor(0, 100);
+        seed(editor, null);
+
+        assertThatCode(editor::stopCellEditing)
+                .as("opening a blank cell and typing nothing must not put a dialog in the user's way")
+                .doesNotThrowAnyException();
+
+        assertThat(editor.stopCellEditing())
+                .as("and it must not commit either - writing here pads a Learnsets row up to the "
+                        + "cell being set, so committing a blank cell injects junk entries")
+                .isFalse();
+    }
+
+    /**
+     * The fallback exists so that an edit which changed nothing gives the cell back unchanged.
+     * It used to store {@code String.valueOf(value)}, which turns a blank cell into the four
+     * letters "null" - so the thing handed back as the cell's contents was text the write path
+     * then rejected as not a number.
+     */
+    @Test
+    @DisplayName("a blank cell reads back as blank, not as the text \"null\"")
+    void blankCellDoesNotReadBackAsTheWordNull()
+    {
+        NumberOnlyCellEditor editor = new NumberOnlyCellEditor(0, 100);
+        seed(editor, null);
+
+        assertThat(editor.getCellEditorValue())
+                .as("a cell with nothing in it is still a cell with nothing in it")
+                .isNull();
+    }
+
+    /**
+     * The other side of the same change: leaving a cell alone is a no-op, but emptying one that
+     * had a value is a real attempt to store nothing in a numeric column, and still refused.
+     */
+    @Test
+    @DisplayName("clearing a cell that had a value is still refused")
+    void clearingAFilledCellIsStillRefused()
+    {
+        NumberOnlyCellEditor editor = new NumberOnlyCellEditor(0, 100);
+        JTextField field = seed(editor, 42);
+        field.setText("");
+
+        assertThat(commits(editor)).as("emptying a filled numeric cell").isFalse();
+    }
+
+    /** And a blank cell the user actually fills in commits normally. */
+    @Test
+    @DisplayName("a blank cell the user fills in commits the typed value")
+    void blankCellFilledInCommits()
+    {
+        NumberOnlyCellEditor editor = new NumberOnlyCellEditor(0, 100);
+        JTextField field = seed(editor, null);
+        field.setText("30");
+
+        assertThat(commits(editor)).as("committing a value typed into a blank cell").isTrue();
+        assertThat(readBack(editor)).isEqualTo(30);
     }
 }

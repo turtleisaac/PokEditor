@@ -84,10 +84,23 @@ public class NumberOnlyCellEditor extends AbstractCellEditor implements TableCel
         return maximum;
     }
 
+    /**
+     * @return whether {@code value} is a cell with nothing in it. Blank is a real state, not a
+     * malformed one: a Learnsets row is only as long as that species' learnset, and every column
+     * past its last entry reads back null - which is most of that sheet.
+     */
+    private static boolean isBlank(Object value)
+    {
+        return value == null || (value instanceof String s && s.trim().isEmpty());
+    }
+
     @Override
     public Component getTableCellEditorComponent(JTable table, Object value, boolean isSelected, int row, int column)
     {
-        lastValue = String.valueOf(value);
+        // the value itself, not String.valueOf(it) - which turned a blank cell into the four
+        // letters "null", and getCellEditorValue then handed that back as the cell's new
+        // contents for the write path to fail on
+        lastValue = value;
         if (value instanceof String)
             textField.setText((String) value);
         else if (value instanceof Integer)
@@ -101,6 +114,18 @@ public class NumberOnlyCellEditor extends AbstractCellEditor implements TableCel
     public boolean stopCellEditing()
     {
         String text = textField.getText().trim();
+
+        // A blank cell that is still blank is not an invalid entry, it is no entry: the user
+        // opened a cell, typed nothing, and clicked away. Rejecting that put a modal error in
+        // front of them for changing nothing, and on the Learnsets sheet - where most cells are
+        // blank - a stray double click was enough. Cancelling ends the edit without a write,
+        // which also matters because writing here grows the learnset: setValueFor pads every
+        // entry up to the one being set, so committing a blank cell would inject junk moves.
+        if (text.isEmpty() && isBlank(lastValue))
+        {
+            cancelCellEditing();
+            return false;
+        }
 
         int value;
         try {

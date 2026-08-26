@@ -89,6 +89,28 @@ so a half-working version damages a project rather than merely disappointing. It
 construction is commented out in `PokeditorManager`; the subsystem and its 202 tests are
 intact.
 
+### `CheckBoxEditor` turns anything that is not a Boolean into `false`
+**Latent, not reachable today. Recorded because what keeps it unreachable is not obvious.**
+
+It holds no copy of the value it was opened with, so `getCellEditorValue()` reports the
+checkbox's state whatever arrived: null, an Integer and a String all commit as `false`. Opening a
+cell would change it - the same defect fixed in the combo box and numeric editors.
+
+Nothing reaches it. Every live CHECKBOX column reads an element of a `boolean[]` - the eight
+Moves flags, the whole TM compatibility grid, Personal's FLIP - and the switch that serves them
+covers every enum constant that maps to CHECKBOX, so the `return null` fallback below it is
+unreachable for those columns.
+
+The part worth writing down is TM compatibility, where `getCellType` returns `CHECKBOX` for
+**every** column, including the two frozen ones. The species-name column is a String with a
+checkbox editor declared for it. That is harmless only because the frozen model overrides
+`isCellEditable` to false - so a change making a frozen column editable would write `false` over
+a species name, and nothing in the type declarations would suggest why.
+
+Not fixed rather than fixed speculatively: preserving the original value would hand null to a
+write path that casts it to Boolean, so the fix is to stop the unconditional `getCellType`
+claiming a type the column does not have, not to teach the editor to pass a value through.
+
 ### `jokes.txt` has never been committed
 `Main` reads `/pokeditor/jokes.txt`, which is in no commit on any branch. Startup no longer
 dies without it, but the start screen shows nothing. The file is the project owner's
