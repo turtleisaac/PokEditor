@@ -104,6 +104,91 @@ jobs:
           EXPECTED_TAGGED: '17'
           EXPECTED_RED: '17'
 
+      # The jar handed to testers and attached to releases. It is built here because it was
+      # previously assembled by hand outside the repository, which is how it came to ship
+      # without the two look-and-feel fixes below.
+      - name: Build the runnable jar
+        run: mvn -B -ntp -Pdist package -DskipTests
+
+      # Building it is not the same as checking it. Shade succeeds whether or not the manifest
+      # carries Add-Exports and whether or not WinLaF's classes made it in, so a build-only step
+      # would go green on exactly the artifact that crashes for a user. Both halves are executed
+      # here, and the second is executed against a deliberate negative so the check cannot
+      # quietly become decorative.
+      - name: Verify the runnable jar
+        run: |
+          set -euo pipefail
+          jar=target/PokEditor-3.2.0-dist.jar
+          javac -cp "$jar" -d target/probe .github/probe/JideResolutionProbe.java
+
+          # Continuation lines in a manifest begin with a single space and the break can fall
+          # mid-token: this value spans three lines and currently splits sun.awt.shell across
+          # two. Which tokens split moves with the value, so the raw file has to be unfolded --
+          # otherwise a present package can read as absent, and a split one becomes a garbage
+          # --add-exports flag rather than an error.
+          exports=$(unzip -p "$jar" META-INF/MANIFEST.MF | python3 .github/probe/manifest_value.py Add-Exports)
+          main=$(unzip -p "$jar" META-INF/MANIFEST.MF | python3 .github/probe/manifest_value.py Main-Class)
+          echo "Main-Class:  $main"
+          echo "Add-Exports: $exports"
+
+          if [ "$main" != "io.github.turtleisaac.pokeditor.Main" ]; then
+            echo "::error title=The jar is not runnable::Main-Class is '$main'. Launching it with java -jar will fail."
+            exit 1
+          fi
+
+          # 1. This runner's own conditions. No JDK outside Windows ships
+          #    com.sun.java.swing.plaf.windows, so the system-scoped WinLaF.jar is the only thing
+          #    satisfying the resolution -- and the shade plugin drops system scope unless the
+          #    pom unpacks it. Nothing in src/main names that class, so this step is what stands
+          #    between someone deleting WinLaF.jar as dead weight and a user hitting
+          #    NoClassDefFoundError on their first keystroke in a sheet.
+          if ! java -cp "$jar:target/probe" JideResolutionProbe; then
+            echo "::error title=WinLaF classes are missing from the jar::The look-and-feel class jide-oss resolves is absent, so building any JIDE component dies with NoClassDefFoundError. The dist profile unpacks WinLaF.jar because <scope>system</scope> is neither compile nor runtime and the shade plugin resolves neither."
+            exit 1
+          fi
+
+          # 2. Windows. There the JDK does ship that package, inside java.desktop, which does not
+          #    export it -- so resolution fails with IllegalAccessError no matter what is on the
+          #    classpath, and only the manifest entry helps. The condition is reproduced by
+          #    patching the class into java.desktop so it is present but encapsulated, exactly as
+          #    it is there, and by giving jide-oss an os.version it recognises: its table stops at
+          #    6.2, so on Windows 10 and 11 its own isWindowsVistaAbove() is false and the crash
+          #    arrives by a different branch.
+          #
+          #    The exports the jar itself declares are what get applied, so trimming the manifest
+          #    fails this step. On the command line the JVM warns about the packages java.desktop
+          #    does not have on Linux; in the manifest form the shipped jar uses, it is silent.
+          mkdir -p target/winpatch
+          unzip -qo "$jar" 'com/sun/java/swing/plaf/windows/*' -d target/winpatch
+          flags=""
+          for token in $exports; do flags="$flags --add-exports $token=ALL-UNNAMED"; done
+
+          if ! java -Dos.name="Windows 7" -Dos.version="6.1" \
+                    --patch-module java.desktop=target/winpatch $flags \
+                    -cp "$jar:target/probe" JideResolutionProbe; then
+            echo "::error title=The jar would crash on Windows::The Add-Exports entry in its manifest does not cover com.sun.java.swing.plaf.windows, so typing into a combo box in a sheet throws IllegalAccessError. See the dist profile in pom.xml."
+            exit 1
+          fi
+
+          # The negative. If this passes, the check above proves nothing -- either the simulation
+          # stopped reproducing the Windows condition or the probe stopped reaching the code that
+          # fails, and in both cases the step needs fixing rather than trusting.
+          echo "Negative control (an IllegalAccessError here is the expected result):"
+          if java -Dos.name="Windows 7" -Dos.version="6.1" \
+                  --patch-module java.desktop=target/winpatch \
+                  -cp "$jar:target/probe" JideResolutionProbe >/dev/null 2>&1; then
+            echo "::error title=This step no longer proves anything::The probe passed without any --add-exports, so it is not reaching the resolution that fails on Windows. Fix the check; do not delete it."
+            exit 1
+          fi
+          echo "Verified: resolves on this runner, resolves under the Windows condition, and fails without the manifest entry."
+
+      - name: Upload the runnable jar
+        uses: actions/upload-artifact@v4
+        with:
+          name: PokEditor-jar
+          path: target/PokEditor-3.2.0-dist.jar
+          if-no-files-found: error
+
       - name: Upload build output
         if: failure()
         uses: actions/upload-artifact@v4

@@ -86,6 +86,15 @@ jar that starts fine and then dies the first time someone types into a combo box
 Neither substitutes for the other — on Windows, parent-first delegation finds `java.desktop`'s
 copy and shadows `WinLaF.jar` entirely. `TECH_DEBT.md` has the full account.
 
+### CI builds this too
+
+Every push builds the same jar and uploads it as a run artifact named **PokEditor-jar**, so a
+tester can download it from the Actions run rather than waiting for a release. CI also verifies
+it: it runs the look-and-feel resolution described above against the built jar, once under this
+runner's own conditions and once under a simulated Windows one, and then checks that the second
+fails when the manifest entry is withheld — because a check that passes either way would go green
+on exactly the artifact that crashes.
+
 ### 3. Run it
 
 ```
