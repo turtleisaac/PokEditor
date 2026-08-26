@@ -322,14 +322,19 @@ work will clear it.
   `keyserver.ubuntu.com` and `keys.openpgp.org` - it is currently on the first only.
 - Four repository secrets must exist before `release.yml` can run: `MAVEN_CENTRAL_USERNAME`,
   `MAVEN_CENTRAL_PASSWORD`, `GPG_PRIVATE_KEY`, `GPG_PASSPHRASE`.
-- `Nds4j/.github/workflows/maven-publish.yml` still publishes to OSSRH on JDK 8, using
-  `OSSRH_USERNAME` / `OSSRH_TOKEN`. OSSRH is decommissioned and both of its hosts return 404, so
-  this workflow cannot succeed. `release.yml` replaces it. Delete it rather than leaving two
-  publish paths, one of which is dead.
+- ~~`Nds4j/.github/workflows/maven-publish.yml` publishes to the decommissioned OSSRH.~~
+  **Deleted.** `release.yml` is now the only publish path.
+- `Nds4j/.github/workflows/maven-verify.yml` is the same vintage - JDK 8, Python 3.8 - and does
+  not fire on any branch, so it is neither running nor blocking. Left alone, but it is the last
+  piece of the old publishing setup.
 
-### Open decision blocking a permanent API
-`CodeBinary.compressed` is private, has no getter, and is read nowhere in the library - which is
-how it carried an inverted value undetected. Its tests reach it by reflection. Either expose
-`isCompressed()` or delete the field; adding public API after 1.0.0 is on Central is not
-reversible. Raised on Nds4j#2 and still unanswered - that thread is the only unresolved review
-comment across the four pull requests.
+### ~~Open decision blocking a permanent API~~ - settled
+`CodeBinary.compressed` was private, had no getter, and was read nowhere - which is how it
+carried an inverted value undetected. It is now public as `isCompressed()`, and its tests ask
+the object rather than reaching in by reflection.
+
+The javadoc carries the one thing a caller cannot guess: the flag describes the data the binary
+was **constructed from**, not what it holds now. The buffer is decompressed either way and
+`getSize()` is the decompressed length, so a retail arm9 answers `true` while everything read out
+of it is plain. The name is the one that cannot be changed after 1.0.0; `wasCompressed()` would
+have said it better.
