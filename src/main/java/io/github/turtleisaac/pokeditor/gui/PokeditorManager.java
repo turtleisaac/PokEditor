@@ -284,15 +284,21 @@ public class PokeditorManager extends PanelManager
         DataManager.commitData(rom, preparedTextData);
         DataManager.saveCodeBinaries(rom, List.of(GameCodeBinaries.ARM9));
 
+        // One batch, not a file at a time. A sheet's save writes several NARCs and arm9, and
+        // stopping half way leaves a combination the ROM was never in - a new personal.narc
+        // beside the TM table that was meant to change with it. Everything is staged before
+        // anything is replaced, so a disk that fills up or a file someone has made read-only
+        // fails with the project still entirely the old version.
+        //
+        // arm9 is in the batch because TM/HM move reassignments are applied to the in-memory
+        // copy above; without writing it, reopening the project rebuilds arm9 from the unchanged
+        // file on disk and the edit silently disappears.
+        Tool.SaveBatch batch = saveBatch();
         for (GameFiles gameFile : gameFiles)
         {
-            writeModifiedFile(gameFile.getPath());
+            batch.file(gameFile.getPath());
         }
-
-        // TM/HM move reassignments are applied to the in-memory arm9 above, so it has to be
-        // written out too -- otherwise reopening the project rebuilds arm9 from the unchanged
-        // file on disk and the edit silently disappears.
-        writeModifiedArm9();
+        batch.arm9().write();
 
         if (gitEnabled)
         {

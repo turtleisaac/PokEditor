@@ -308,20 +308,33 @@ which is what a container does, so a local run reports `25 passed, 3 skipped`. H
 not root, and CI reports `25 passed, 0 skipped`. Those three are the ones with teeth: they are
 what proved the previous durability test asserted nothing.
 
-### A multi-file save is not atomic
-Each file is written atomically on its own, but a save writes many. A failure on file 3 of
-20 leaves files 1–2 new and the rest old, with `markClean` unreached. For a ROM project,
-a new `personal.narc` beside an old TM table in `arm9.bin` is a specific and plausible
-corruption.
+### ~~A multi-file save is not atomic~~ - fixed, with a named remainder
+`FileUtils.atomicWrite` is split into staging and the rename it ends with, and `atomicWriteAll`
+stages every entry before moving any of them. `Tool.SaveBatch` collects sections and writes them
+as one; PokEditor's sheet save is now a single batch.
 
-### Nine `writeModified*` methods document a boolean they cannot return
-They return a constant `true` and throw on failure. A caller writing `if (!writeModifiedArm9())`
-gets dead code and an unchecked exception through its `ActionListener`. Either return
-`false` or drop the return type.
+Staging is where a save actually fails - a full disk, a read-only file, a bad path - so those now
+happen while every target is still the old version.
 
-### The git worker holds the save lock for the duration of a commit
-Staging a project of tens of thousands of files while holding `saveLock` means a save issued
-during a commit blocks the event thread, with no dialog and no feedback.
+**What is not fixed**, and the javadoc says so rather than claiming otherwise: the run of renames
+at the end is not one operation. Each is atomic alone, but a process killed between two of them
+still leaves some files new and some old. Closing that needs a journal and a recovery pass on
+open, which would be the next step if it is ever wanted.
+
+### ~~Nine `writeModified*` methods document a boolean they cannot return~~ - fixed
+They return `void` and throw. `writeProjectInfo` keeps its boolean, which has always meant
+something. This is a source-breaking change for any caller testing the result, which is why it was
+worth doing before 1.0.0 rather than after.
+
+### ~~The git worker holds the save lock for the duration of a commit~~ - fixed
+Held across staging only. The reason recorded here for holding it - that a partially written file
+could be committed - was **wrong**: files are written through a temporary and renamed, so no file
+is ever visible in a partial state. The real reason is that a save landing mid-staging commits
+some files new and some old, and that reason justifies staging but not committing.
+
+A save that still has to wait now waits a bounded time and says why, instead of freezing the
+interface with nothing said. That is a mitigation, not a cure: saving still happens on the event
+thread, and moving it off is the actual fix.
 
 ---
 
