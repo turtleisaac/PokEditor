@@ -330,11 +330,17 @@ work will clear it.
 
 ### ~~Open decision blocking a permanent API~~ - settled
 `CodeBinary.compressed` was private, had no getter, and was read nowhere - which is how it
-carried an inverted value undetected. It is now public as `isCompressed()`, and its tests ask
+carried an inverted value undetected. It is now public as `wasCompressed()`, and its tests ask
 the object rather than reaching in by reflection.
 
-The javadoc carries the one thing a caller cannot guess: the flag describes the data the binary
-was **constructed from**, not what it holds now. The buffer is decompressed either way and
-`getSize()` is the decompressed length, so a retail arm9 answers `true` while everything read out
-of it is plain. The name is the one that cannot be changed after 1.0.0; `wasCompressed()` would
-have said it better.
+Past tense because the flag describes the data the binary was **constructed from**, not what it
+holds now: the buffer is decompressed either way and `getSize()` is the decompressed length, so a
+retail arm9 answers `true` while everything read out of it is plain.
+
+It went in as `isCompressed()` first, and that was wrong twice over. `Overlay` extends
+`CodeBinary` and already has an `isCompressed()` - the compression bit the ROM's overlay table
+stores, a different fact and a settable one - so the new method was silently overridden. Same
+signature, no `@Override`, nothing from the compiler, and a `CodeBinary` reference to an
+`Overlay` quietly answering the other question. The two can disagree, and a test now pins that
+they do. Worth remembering as the shape of the risk: adding a name to a base class can capture a
+subclass's existing method without a word from the compiler.
