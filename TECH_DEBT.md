@@ -298,9 +298,38 @@ during a commit blocks the event thread, with no dialog and no feedback.
 
 ---
 
-## Release sequencing
+## Merging and releasing
 
-Nds4j must be published to Maven Central **before** the other three merge. All three pin
-`Nds4j:1.0.0`; their CI falls back to Nds4j `main`, which is still `0.1.0`, and cannot
-resolve it. The Nds4j README also advertises a coordinate that does not exist until the
-release is published by hand from the portal.
+### Merge order
+Nds4j merges **first**. All three others pin `Nds4j:1.0.0` and Nds4j `main` is still `0.1.0`;
+their CI clones the sibling at a branch of the same name, or `main` when there is none, and
+builds it from source. So once Nds4j's branch is on `main`, `main` is 1.0.0 and the other three
+resolve without a matching branch. Until then they depend on their branches existing.
+
+Publication to Central is **not** a merge prerequisite - an earlier version of this file said it
+was, which was wrong: nothing in CI resolves these from Central. It is a prerequisite for users
+and for the Nds4j README, which advertises a coordinate that 404s until the release is pushed by
+hand from the portal.
+
+### PokEditor's build is red and will stay red
+Every run fails at *Verify dependencies resolve*, on the unpublished `VariableTracker` above, and
+every step after it is skipped - including the jar build and its checks. This is the one thing
+standing between PokEditor's PR and a green build; it is not a test failure and no amount of test
+work will clear it.
+
+### Publishing prerequisites, none of them code
+- The signing key's subkey has expired. Extend it, then re-upload to **both**
+  `keyserver.ubuntu.com` and `keys.openpgp.org` - it is currently on the first only.
+- Four repository secrets must exist before `release.yml` can run: `MAVEN_CENTRAL_USERNAME`,
+  `MAVEN_CENTRAL_PASSWORD`, `GPG_PRIVATE_KEY`, `GPG_PASSPHRASE`.
+- `Nds4j/.github/workflows/maven-publish.yml` still publishes to OSSRH on JDK 8, using
+  `OSSRH_USERNAME` / `OSSRH_TOKEN`. OSSRH is decommissioned and both of its hosts return 404, so
+  this workflow cannot succeed. `release.yml` replaces it. Delete it rather than leaving two
+  publish paths, one of which is dead.
+
+### Open decision blocking a permanent API
+`CodeBinary.compressed` is private, has no getter, and is read nowhere in the library - which is
+how it carried an inverted value undetected. Its tests reach it by reflection. Either expose
+`isCompressed()` or delete the field; adding public API after 1.0.0 is on Central is not
+reversible. Raised on Nds4j#2 and still unanswered - that thread is the only unresolved review
+comment across the four pull requests.
