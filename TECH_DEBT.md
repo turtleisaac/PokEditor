@@ -308,6 +308,24 @@ which is what a container does, so a local run reports `25 passed, 3 skipped`. H
 not root, and CI reports `25 passed, 0 skipped`. Those three are the ones with teeth: they are
 what proved the previous durability test asserted nothing.
 
+### ~~The backup commit failed for anyone who signs commits with SSH~~ - fixed
+`gpg.format = ssh` in a user's global config made JGit refuse the repository, with an unchecked
+`IllegalArgumentException` that escaped the worker's handlers and reached the user as "an
+unexpected error occurred" after **every save**. The save had worked; only the backup was missing,
+and nothing distinguished the two.
+
+Needed both a bump to JGit 7.1.0 and an explicit `setSign(false)` - on 6.7 and 6.10 the commit
+throws whatever `setSign` says, and on 7.1 it throws unless signing is explicitly off. Signing an
+automatic local backup was never meaningful anyway.
+
+PokEditor also declared JGit itself, at 6.7.0, and a direct dependency beats a transitive one - so
+upgrading ToolUI alone would have left the shipped application unchanged. That declaration is
+removed rather than bumped: nothing in PokEditor references JGit, and pinning it again is how the
+versions drift apart in the first place. **Let ToolUI own this version.**
+
+The general lesson is worth more than the fix: no test had a repository configured the way a real
+user's is. It surfaced only because this container happened to have that setting.
+
 ### ~~A multi-file save is not atomic~~ - fixed, with a named remainder
 `FileUtils.atomicWrite` is split into staging and the rename it ends with, and `atomicWriteAll`
 stages every entry before moving any of them. `Tool.SaveBatch` collects sections and writes them
