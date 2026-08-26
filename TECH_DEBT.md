@@ -356,6 +356,44 @@ thread, and moving it off is the actual fix.
 
 ---
 
+## Dependency declarations
+
+Swept after the JGit pin turned out to be a class of problem rather than one mistake. The rule
+that came out of it: **a module declares what it imports, and nothing else.** Both halves were
+being broken.
+
+*Declaring what is not used* - a direct declaration overrides what an upstream dependency asks
+for, and since nothing imports it, a wrong version cannot fail to compile. JGit was this, and
+shipped broken. Also removed: `jsvg` from ToolUI and PokEditor, which belongs to flatlaf-extras
+and was pinned one version ahead of what flatlaf asks for; `flatlaf-intellij-themes` from ToolUI,
+which never referenced it - `ThemeUtils` holds an empty list and the consumer supplies themes;
+`jackson-dataformat-xml` from all three; `junit:junit` from Core and PokEditor, both entirely on
+JUnit 5.
+
+*Using what is not declared* - the same sweep proved why this matters. Removing
+`jackson-dataformat-xml`, which nothing imported, also removed the only route to
+`jackson-databind`, which several modules do import, and the build stopped compiling.
+`jackson-databind` and `jackson-core` are declared explicitly now.
+
+Guice moved to test scope in Core, where nothing in `src/main` imports it.
+
+Two things worth keeping in mind for the next sweep:
+
+- **`dependency:analyze` is a report, not a verdict.** It reads bytecode, so it called `jsvg` and
+  `flatlaf-intellij-themes` unused in PokEditor, which genuinely uses both - through runtime
+  loading it cannot see. Every entry above was checked against the source.
+- **A dependency change proves nothing without `clean`.** The first pass here reported a green
+  build on stale `target/classes`: the poms had changed but no source had, so nothing was
+  recompiled. The clean build failed immediately.
+
+### The remaining hazard, unfixed
+`Nds4j` is declared at `1.0.0` in three poms, and `assertj` and `junit-jupiter` in all four.
+Nothing disagrees today - every shared artifact was checked - but there is no parent pom or
+`dependencyManagement`, so each is a place the versions can drift apart silently. That drift,
+already happened, is what the JGit bug was.
+
+---
+
 ## Merging and releasing
 
 ### Merge order
