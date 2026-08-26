@@ -32,6 +32,47 @@ sheets, or "delete row" should mean "delete this species everywhere", which is a
 coordinated change across four sheets and the name bank. Until then a deletion is a
 renumbering the user is unlikely to be expecting.
 
+### jide-oss reaches into encapsulated JDK packages, and breaks differently on each platform
+**Severity: was high on Windows - one keystroke, every user. Fixed in packaging; the hazard
+remains.**
+
+`LookAndFeelFactory` chooses a style with
+`lnf instanceof com.sun.java.swing.plaf.windows.WindowsLookAndFeel`, on the branch taken for
+every look and feel it does not recognise - which includes FlatLaf, the one this application
+sets. Every JIDE component runs it: `JidePopup.updateUI()` calls `installJideExtension()`, and
+`updateUI()` runs from the JComponent constructor. This application arrives there whenever
+someone types into a combo box in a sheet, because `EditorComboBox` installs a
+`ComboBoxSearchable` whose search popup is a `JidePopup`.
+
+An `instanceof` resolves its class before it can answer false, so the platform decides the
+failure:
+
+| | `com.sun.java.swing.plaf.windows` in `java.desktop`? | failure | what fixes it |
+|---|---|---|---|
+| Windows | yes, not exported | `IllegalAccessError` | `Add-Exports` in the jar manifest |
+| Linux, macOS | no | `NoClassDefFoundError` | `WinLaF.jar` on the classpath |
+
+**Neither fixes the other.** On Windows, parent-first delegation finds `java.desktop`'s copy and
+shadows `WinLaF.jar` entirely, which is why the classpath copy that has always been there never
+helped; `Add-Exports` naming a package a module does not have is ignored silently, which is why
+carrying it on every platform is free. Both were reproduced and both fixes verified, including
+against a `--patch-module` simulation of the Windows condition.
+
+The `dist` profile now writes that manifest entry, and `JideLookAndFeelResolutionTest` guards
+the classpath half - it fails if `WinLaF.jar` is dropped as apparent dead weight, which nothing
+else would catch, since nothing names the class.
+
+What remains is the dependency itself. jide-oss 3.6.18 is from 2015, predates the module system,
+and also reaches `sun.awt`, `sun.awt.windows`, `sun.awt.image`, `sun.awt.shell` and
+`com.apple.laf`; those are exported pre-emptively so the next one reached is not a second bug
+report. It is used for exactly one class, `ComboBoxSearchable`, to give combo boxes type-to-
+search. Replacing that one behaviour would remove a 2MB dependency, the `WinLaF.jar`
+system-scoped hack, and this entire class of failure. That is the real fix and it is not done.
+
+Note also that the version detection is stale: JIDE knows `os.version` 6.0, 6.1 and 6.2, so on
+Windows 10 and 11 its own `isWindowsVistaAbove()` returns false. The crash arrives through the
+`XPUtils` branch instead. Any workaround keyed on JIDE's idea of the OS would miss.
+
 ### `VariableTracker` is not published, so the project cannot be built from a clean checkout
 **Severity: high for contributors, none for users.**
 
