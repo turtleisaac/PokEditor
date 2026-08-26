@@ -29,7 +29,7 @@ public class BitfieldComboBoxEditor extends ComboBoxCellEditor
     }
 
     @Override
-    public Component getTableCellEditorComponent(JTable table, Object value, boolean isSelected, int row, int column)
+    protected void selectValue(Object value)
     {
         // must agree with BitfieldStringCellRenderer exactly, and by sharing its arithmetic
         // rather than by restating it - the two used to round the same log expression at
@@ -47,7 +47,5 @@ public class BitfieldComboBoxEditor extends ComboBoxCellEditor
             // where setSelectedIndex would throw on the EDT and make the cell unopenable
             comboBox.setSelectedIndex(idx >= 0 && idx < comboBox.getItemCount() ? idx : -1);
         }
-
-        return comboBox;
     }
 }

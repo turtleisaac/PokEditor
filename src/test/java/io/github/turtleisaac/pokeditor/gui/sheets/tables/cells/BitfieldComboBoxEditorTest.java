@@ -145,4 +145,50 @@ class BitfieldComboBoxEditorTest
 
         assertThat(failures).as("stored values this editor cannot open a cell on").isEmpty();
     }
+
+    @Test
+    @DisplayName("an edit that selects nothing leaves the bitfield as it was")
+    void noSelectionKeepsTheOriginalValue()
+    {
+        // Same defect as ComboBoxCellEditor, in the subclass, and it was live: this editor
+        // overrode getTableCellEditorComponent without calling super, so the value the cell
+        // arrived with was never recorded and an edit selecting nothing handed back null. Not
+        // -1 and not the old flag - null, which is the cell losing its contents. Type-to-search
+        // leaves the selection empty whenever the typed text matches no entry exactly, so a
+        // mistyped flag name was enough to reach it.
+        editor.getTableCellEditorComponent(table, 1 << 2, false, 1, 0);
+
+        ((javax.swing.JComboBox<?>) editor.getTableCellEditorComponent(table, 1 << 2, false, 1, 0))
+                .setSelectedIndex(-1);
+
+        assertThat(editor.getCellEditorValue())
+                .as("nothing selected means the bitfield keeps the flag it had")
+                .isEqualTo(1 << 2);
+    }
+
+    @Test
+    @DisplayName("a bit this column has no name for survives an edit that selects nothing")
+    void undeclaredBitIsPreserved()
+    {
+        // Opening on an undeclared bit deliberately clears the selection - there is no entry to
+        // show. That must not be read as "the user cleared the flag": closing the editor has to
+        // leave the odd value alone, or merely looking at a hacked ROM's row rewrites it.
+        editor.getTableCellEditorComponent(table, 1 << 20, false, 1, 0);
+
+        assertThat(editor.getCellEditorValue())
+                .as("an undeclared bit is left alone, not replaced by null or 0")
+                .isEqualTo(1 << 20);
+    }
+
+    @Test
+    @DisplayName("a real selection is still reported as the new bitfield")
+    void aSelectionIsStillReported()
+    {
+        // the control: leaving an unselected edit alone must not swallow a genuine one
+        javax.swing.JComboBox<?> box =
+                (javax.swing.JComboBox<?>) editor.getTableCellEditorComponent(table, 0, false, 1, 0);
+        box.setSelectedIndex(3);
+
+        assertThat(editor.getCellEditorValue()).isEqualTo(1 << 2);
+    }
 }

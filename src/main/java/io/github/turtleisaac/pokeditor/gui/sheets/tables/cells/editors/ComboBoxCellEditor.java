@@ -49,16 +49,36 @@ public class ComboBoxCellEditor extends AbstractCellEditor implements TableCellE
         return selected >= 0 ? selected : lastValue;
     }
 
+    /**
+     * Final so that recording the incoming value cannot be forgotten. A subclass that overrode
+     * this and did not call super left {@link #lastValue} null, and an edit selecting nothing
+     * then cleared the cell instead of leaving it alone - this class's own bug, reintroduced one
+     * level down. Subclasses change how a value maps to an entry by overriding
+     * {@link #selectValue}, and the bookkeeping happens either way.
+     */
     @Override
-    public Component getTableCellEditorComponent(JTable table, Object value, boolean isSelected, int row, int column)
+    public final Component getTableCellEditorComponent(JTable table, Object value, boolean isSelected, int row, int column)
     {
-        // the matching renderer ignores an out of range index and paints the cell harmlessly, so
-        // without the same tolerance here a cell can be displayed but not opened - and a value
-        // the sheet shows as wrong becomes one the user has no way to correct. clamp to "no
-        // selection" instead of throwing on the EDT.
-        int idx = (value instanceof Integer i) ? i : -1;
         lastValue = value;
-        comboBox.setSelectedIndex(idx >= 0 && idx < comboBox.getItemCount() ? idx : -1);
+        selectValue(value);
         return comboBox;
+    }
+
+    /**
+     * Moves the selection to the entry representing {@code value}, or clears it when no entry
+     * does.
+     * <p>
+     * The matching renderer ignores an out of range index and paints the cell harmlessly, so
+     * without the same tolerance here a cell can be displayed but not opened - and a value the
+     * sheet shows as wrong becomes one the user has no way to correct. Clamp to "no selection"
+     * instead of throwing on the EDT; {@link #getCellEditorValue()} turns that back into the
+     * value the cell already held rather than into -1.
+     *
+     * @param value the value the cell holds
+     */
+    protected void selectValue(Object value)
+    {
+        int idx = (value instanceof Integer i) ? i : -1;
+        comboBox.setSelectedIndex(idx >= 0 && idx < comboBox.getItemCount() ? idx : -1);
     }
 }
