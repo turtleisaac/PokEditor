@@ -1,0 +1,215 @@
+JFDML JFormDesigner: "8.0.5.0.268" Java: "17.0.8" encoding: "UTF-8"
+
+new FormModel {
+	"i18n.bundlePackage": "variable_tracker"
+	"i18n.bundleName": "gui"
+	"i18n.autoExternalize": true
+	"i18n.keyPrefix": "VariableTracker"
+	contentType: "form/swing"
+	root: new FormRoot {
+		add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class net.miginfocom.swing.MigLayout ) {
+			"$layoutConstraints": "hidemode 3"
+			"$columnConstraints": "[grow,fill]"
+			"$rowConstraints": "[grow,fill]"
+		} ) {
+			name: "this"
+			"minimumSize": new java.awt.Dimension( 650, 400 )
+			"preferredSize": new java.awt.Dimension( 650, 400 )
+			add( new FormContainer( "javax.swing.JSplitPane", new FormLayoutManager( class javax.swing.JSplitPane ) ) {
+				name: "splitPane1"
+				"lastDividerLocation": -1
+				"dividerLocation": 321
+				"border": new javax.swing.border.LineBorder( sfield java.awt.Color black, 1, false )
+				add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class net.miginfocom.swing.MigLayout ) {
+					"$layoutConstraints": "insets 0 5 0 5,hidemode 3"
+					"$columnConstraints": "[grow,fill]"
+					"$rowConstraints": "[][grow,fill][]"
+				} ) {
+					name: "panel2"
+					add( new FormComponent( "javax.swing.JLabel" ) {
+						name: "variablesLabel"
+						"text": new FormMessage( null, "VariableTracker.variablesLabel.text" )
+					}, new FormLayoutConstraints( class net.miginfocom.layout.CC ) {
+						"value": "cell 0 0"
+					} )
+					add( new FormComponent( "javax.swing.JRadioButton" ) {
+						name: "hideTempVarButton"
+						"text": new FormMessage( null, "VariableTracker.hideTempVarButton.text" )
+						addEvent( new FormEvent( "java.awt.event.ActionListener", "actionPerformed", "hideTempVarButtonPressed", true ) )
+					}, new FormLayoutConstraints( class net.miginfocom.layout.CC ) {
+						"value": "cell 0 0,alignx right,growx 0"
+					} )
+					add( new FormContainer( "javax.swing.JScrollPane", new FormLayoutManager( class javax.swing.JScrollPane ) ) {
+						name: "scrollPane1"
+						addEvent( new FormEvent( "java.awt.event.MouseListener", "mouseReleased", "scrollPane1MouseReleased", true ) )
+						add( new FormComponent( "javax.swing.JTable" ) {
+							name: "variableTable"
+							"autoCreateRowSorter": true
+							"model": new com.jformdesigner.model.SwingTableModel( new java.util.Vector, new java.util.Vector, new java.util.Vector, new java.util.Vector, new java.util.Vector )
+							"selectionMode": 0
+							"autoResizeMode": 3
+							auxiliary() {
+								"JavaCodeGenerator.customCreateCode": "new VariableTable();"
+								"JavaCodeGenerator.preInitCode": "TableModel variableTableModel = variableTable.getModel();"
+								"JavaCodeGenerator.postInitCode": "variableTable.setModel(variableTableModel);\n((VariableTable) variableTable).updateRenderersAndEditors();"
+							}
+							addEvent( new FormEvent( "java.awt.event.MouseListener", "mousePressed", "variableTableMousePressed", true ) )
+							addEvent( new FormEvent( "java.awt.event.MouseListener", "mouseReleased", "variableTableMouseReleased", true ) )
+						} )
+					}, new FormLayoutConstraints( class net.miginfocom.layout.CC ) {
+						"value": "cell 0 1"
+					} )
+					add( new FormComponent( "com.jformdesigner.designer.wrapper.VSpacer" ) {
+						name: "vSpacer1"
+					}, new FormLayoutConstraints( class net.miginfocom.layout.CC ) {
+						"value": "cell 0 2"
+					} )
+				}, new FormLayoutConstraints( class java.lang.String ) {
+					"value": "left"
+				} )
+				add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class net.miginfocom.swing.MigLayout ) {
+					"$layoutConstraints": "insets 0 5 0 5,hidemode 3"
+					"$columnConstraints": "[grow,fill]"
+					"$rowConstraints": "[][top][grow,fill][grow,top][]"
+				} ) {
+					name: "panel1"
+					add( new FormComponent( "javax.swing.JLabel" ) {
+						name: "selectedLabel"
+						"text": new FormMessage( null, "VariableTracker.selectedLabel.text" )
+					}, new FormLayoutConstraints( class net.miginfocom.layout.CC ) {
+						"value": "cell 0 0,alignx left,growx 0"
+					} )
+					add( new FormComponent( "javax.swing.JTextField" ) {
+						name: "selectedTextField"
+						"editable": false
+						"enabled": false
+					}, new FormLayoutConstraints( class net.miginfocom.layout.CC ) {
+						"value": "cell 0 0"
+					} )
+					add( new FormComponent( "javax.swing.JLabel" ) {
+						name: "variableDescriptionLabel"
+						"text": new FormMessage( null, "VariableTracker.variableDescriptionLabel.text" )
+					}, new FormLayoutConstraints( class net.miginfocom.layout.CC ) {
+						"value": "cell 0 1,aligny top,growy 0"
+					} )
+					add( new FormContainer( "javax.swing.JScrollPane", new FormLayoutManager( class javax.swing.JScrollPane ) ) {
+						name: "scrollPane3"
+						add( new FormComponent( "javax.swing.JTextArea" ) {
+							name: "variableDescriptionTextArea"
+							"wrapStyleWord": true
+							auxiliary() {
+								"JavaCodeGenerator.postInitCode": "variableDescriptionTextArea.setLineWrap(true);\nvariableDescriptionTextArea.setWrapStyleWord(true);"
+							}
+						} )
+					}, new FormLayoutConstraints( class net.miginfocom.layout.CC ) {
+						"value": "cell 0 2,growy"
+					} )
+					add( new FormContainer( "javax.swing.JScrollPane", new FormLayoutManager( class javax.swing.JScrollPane ) ) {
+						name: "scrollPane2"
+						add( new FormComponent( "javax.swing.JTable" ) {
+							name: "variableValuesTable"
+							"model": new com.jformdesigner.model.SwingTableModel( new java.util.Vector {
+								add( new java.util.Vector {
+									add( null )
+									add( null )
+									add( null )
+								} )
+								add( new java.util.Vector {
+									add( null )
+									add( null )
+									add( null )
+								} )
+							}, new java.util.Vector {
+								add( "Value" )
+								add( "Name" )
+								add( "Description" )
+							}, new java.util.Vector {
+								add( class java.lang.Integer )
+								add( class java.lang.String )
+								add( class java.lang.String )
+							}, new java.util.Vector {
+								add( null )
+								add( null )
+								add( null )
+							}, new java.util.Vector {
+								add( null )
+								add( null )
+								add( null )
+							} )
+							"preferredScrollableViewportSize": new java.awt.Dimension( 450, 150 )
+							auxiliary() {
+								"JavaCodeGenerator.customCreateCode": "new VariableValueTable();"
+								"JavaCodeGenerator.preInitCode": "TableModel variableValueTableModel = variableValuesTable.getModel();"
+								"JavaCodeGenerator.postInitCode": "variableValuesTable.setModel(variableValueTableModel);\n((VariableValueTable) variableValuesTable).updateRenderersAndEditors();"
+							}
+						} )
+					}, new FormLayoutConstraints( class net.miginfocom.layout.CC ) {
+						"value": "cell 0 3,grow"
+					} )
+					add( new FormComponent( "com.jformdesigner.designer.wrapper.VSpacer" ) {
+						name: "vSpacer2"
+					}, new FormLayoutConstraints( class net.miginfocom.layout.CC ) {
+						"value": "cell 0 4"
+					} )
+				}, new FormLayoutConstraints( class java.lang.String ) {
+					"value": "right"
+				} )
+			}, new FormLayoutConstraints( class net.miginfocom.layout.CC ) {
+				"value": "cell 0 0,growx"
+			} )
+			add( new FormContainer( "javax.swing.JToolBar", new FormLayoutManager( class javax.swing.JToolBar ) ) {
+				name: "toolBar1"
+				"floatable": false
+				add( new FormComponent( "javax.swing.JLabel" ) {
+					name: "searchLabel"
+					"text": new FormMessage( null, "VariableTracker.searchLabel.text" )
+				} )
+				add( new FormComponent( "javax.swing.JTextField" ) {
+					name: "searchTextField"
+				} )
+				add( new FormComponent( "javax.swing.JToolBar$Separator" ) {
+					name: "separator1"
+				} )
+				add( new FormComponent( "javax.swing.JButton" ) {
+					name: "optionsButton"
+					"text": new FormMessage( null, "VariableTracker.optionsButton.text" )
+				} )
+			}, new FormLayoutConstraints( class net.miginfocom.layout.CC ) {
+				"value": "north"
+			} )
+		}, new FormLayoutConstraints( null ) {
+			"location": new java.awt.Point( 0, 0 )
+			"size": new java.awt.Dimension( 650, 400 )
+		} )
+		add( new FormContainer( "javax.swing.JMenuBar", new FormLayoutManager( class javax.swing.JMenuBar ) ) {
+			name: "menuBar"
+			add( new FormContainer( "javax.swing.JMenu", new FormLayoutManager( class javax.swing.JMenu ) ) {
+				name: "fileMenu"
+				"text": new FormMessage( null, "VariableTracker.fileMenu.text" )
+				add( new FormComponent( "javax.swing.JMenuItem" ) {
+					name: "openMenuItem"
+					"text": new FormMessage( null, "VariableTracker.openMenuItem.text" )
+				} )
+				add( new FormComponent( "javax.swing.JMenuItem" ) {
+					name: "saveMenuItem"
+					"text": new FormMessage( null, "VariableTracker.saveMenuItem.text" )
+				} )
+			} )
+			add( new FormContainer( "javax.swing.JMenu", new FormLayoutManager( class javax.swing.JMenu ) ) {
+				name: "editMenu"
+				"text": new FormMessage( null, "VariableTracker.editMenu.text" )
+			} )
+			add( new FormContainer( "javax.swing.JMenu", new FormLayoutManager( class javax.swing.JMenu ) ) {
+				name: "helpMenu"
+				"text": new FormMessage( null, "VariableTracker.helpMenu.text" )
+				add( new FormComponent( "javax.swing.JMenuItem" ) {
+					name: "infoMenuItem"
+					"text": new FormMessage( null, "VariableTracker.infoMenuItem.text" )
+					addEvent( new FormEvent( "java.awt.event.ActionListener", "actionPerformed", "infoMenuItemPressed", true ) )
+				} )
+			} )
+		}, new FormLayoutConstraints( null ) {
+			"location": new java.awt.Point( 45, 455 )
+		} )
+	}
+}

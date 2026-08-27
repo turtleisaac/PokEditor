@@ -73,15 +73,20 @@ Note also that the version detection is stale: JIDE knows `os.version` 6.0, 6.1 
 Windows 10 and 11 its own `isWindowsVistaAbove()` returns false. The crash arrives through the
 `XPUtils` branch instead. Any workaround keyed on JIDE's idea of the OS would miss.
 
-### `VariableTracker` is not published, so the project cannot be built from a clean checkout
-**Severity: high for contributors, none for users.**
+### ~~`VariableTracker` is not published, so the project cannot be built from a clean checkout~~ (resolved: vendored)
+**Was: severity high for contributors, none for users. Now resolved.**
 
-`pom.xml` declares `io.github.turtleisaac:VariableTracker:1.0-SNAPSHOT`, which exists in no
-repository the build can reach and has no `<repositories>` entry. CI cannot build this
-module, and neither can a new contributor. The field script editor is disabled, but
-`ScriptDocument` still imports the library, so the dependency is still required to compile.
+`pom.xml` used to declare `io.github.turtleisaac:VariableTracker:1.0-SNAPSHOT`, which existed in no
+repository the build could reach and had no `<repositories>` entry - only a local `~/.m2` copy and
+one un-remoted clone. CI could not build this module, and neither could a new contributor.
 
-Fix by publishing VariableTracker, adding a repository that serves it, or vendoring it.
+Resolved by **vendoring**: the `io.github.turtleisaac.variabletracker` package (models
+`ScriptVariable`/`ScriptFlag`, the `VariableTracker`/`FlagTracker` Swing panels, hex cell helpers,
+their `.jfd` forms, and the `variable_tracker/*.properties` resources) now lives under
+`src/main/java` and `src/main/resources`, and the Maven dependency is gone. Its only third-party
+needs - Jackson, FlatLaf, MigLayout - were already declared by PokEditor. A
+`ScriptVariable(String, int)` constructor was added to satisfy `ScriptDocumentHighlightingTest`,
+which the published artifact never had.
 
 ### The field script editor is disabled
 **Deliberate, not a defect.** It is the one editor that compiles scripts back into the ROM,
@@ -407,11 +412,12 @@ was, which was wrong: nothing in CI resolves these from Central. It is a prerequ
 and for the Nds4j README, which advertises a coordinate that 404s until the release is pushed by
 hand from the portal.
 
-### PokEditor's build is red and will stay red
-Every run fails at *Verify dependencies resolve*, on the unpublished `VariableTracker` above, and
-every step after it is skipped - including the jar build and its checks. This is the one thing
-standing between PokEditor's PR and a green build; it is not a test failure and no amount of test
-work will clear it.
+### ~~PokEditor's build is red and will stay red~~ (the `VariableTracker` blocker is cleared)
+Every run used to fail at *Verify dependencies resolve*, on the unpublished `VariableTracker` above,
+skipping every step after it - including the jar build and its checks. That was the one thing
+standing between PokEditor's PR and a green build; it was not a test failure and no amount of test
+work would have cleared it. Vendoring `VariableTracker` (see above) removes that unresolvable
+coordinate, so dependency resolution no longer 404s on it.
 
 ### Publishing prerequisites, none of them code
 - The signing key's subkey has expired. Extend it, then re-upload to **both**
