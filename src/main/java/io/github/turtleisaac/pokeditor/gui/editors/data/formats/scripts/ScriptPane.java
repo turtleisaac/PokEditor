@@ -23,21 +23,19 @@ public class ScriptPane extends JTextPane
             {
                 if (e.isMetaDown() || e.isControlDown())
                 {
-                    int offset = viewToModel2D(getMousePosition());
-                    highlight(offset);
+                    // null whenever the pointer is not over this component, which used to throw
+                    // straight out of processKeyEvent and silently break Ctrl+C/V/A
+                    Point mousePosition = getMousePosition();
+                    if (mousePosition == null)
+                        return;
+
+                    highlight(viewToModel2D(mousePosition));
                 }
             }
 
-            @Override
-            public void keyReleased(KeyEvent e)
-            {
-                try {
-                    scriptDocument.setSyntaxAttributes();
-                }
-                catch(BadLocationException ex) {
-                    throw new RuntimeException(ex);
-                }
-            }
+            // NOTE: there is deliberately no keyReleased re-parse here - the document already
+            // re-highlights itself whenever it is mutated, so re-lexing the whole file again on
+            // every key release (including arrow keys and bare modifiers) only made typing stutter
         });
     }
 
@@ -83,6 +81,9 @@ public class ScriptPane extends JTextPane
 
     private void highlight(int offset)
     {
+        if (scriptDocument == null)
+            return;
+
         ScriptDocument.ElementRange elementRange = scriptDocument.getScriptElementList().find(offset);
         if (elementRange != null && elementRange.getElementType() == ScriptDocument.ElementType.LABEL)
         {
@@ -94,7 +95,7 @@ public class ScriptPane extends JTextPane
                 throw new RuntimeException(ex);
             }
 
-            scriptDocument.setCharacterAttributes(elementRange.getMin(), elementRange.getMaxExclusive() - elementRange.getMin() + 1, scriptDocument.getStyle(ScriptDocument.GOTO_LABEL), true);
+            scriptDocument.setCharacterAttributes(elementRange.getMin(), elementRange.getMaxExclusive() - elementRange.getMin(), scriptDocument.getStyle(ScriptDocument.GOTO_LABEL), true);
         }
     }
 
@@ -108,7 +109,7 @@ public class ScriptPane extends JTextPane
             getHighlighter().removeAllHighlights();
         }
 
-        if ((modifiers & (MouseEvent.CTRL_DOWN_MASK | MouseEvent.META_DOWN_MASK)) != 0 && (modifiers & MouseEvent.SHIFT_DOWN_MASK) == 0)
+        if (scriptDocument != null && (modifiers & (MouseEvent.CTRL_DOWN_MASK | MouseEvent.META_DOWN_MASK)) != 0 && (modifiers & MouseEvent.SHIFT_DOWN_MASK) == 0)
         {
             int offset = viewToModel2D(e.getPoint());
 
@@ -130,6 +131,13 @@ public class ScriptPane extends JTextPane
                 }
                 String labelName = text.substring(elementRange.getMin(), elementRange.getMaxExclusive());
                 int definitionOffset = text.indexOf(labelName + ":");
+
+                if (definitionOffset < 0) // the label is undefined (or has been renamed)
+                {
+                    Toolkit.getDefaultToolkit().beep();
+                    super.processMouseEvent(e);
+                    return;
+                }
 
 //                JPopupMenu popupMenu = new JPopupMenu();
 //                popupMenu.setPopupSize(500, 500);

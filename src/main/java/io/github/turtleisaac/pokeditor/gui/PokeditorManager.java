@@ -29,8 +29,11 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileWriter;
 import java.io.IOException;
+import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.*;
 import java.util.List;
 
@@ -90,13 +93,13 @@ public class PokeditorManager extends PanelManager
 
     static {
         try {
-            sheetExportIcon = new FlatSVGIcon(PokeditorManager.class.getResourceAsStream("/pokeditor/icons/svg/table-export.svg"));
-            sheetImportIcon = new FlatSVGIcon(PokeditorManager.class.getResourceAsStream("/pokeditor/icons/svg/table-import.svg"));
-            rowRemoveIcon = new FlatSVGIcon(PokeditorManager.class.getResourceAsStream("/pokeditor/icons/svg/row-remove.svg"));
-            rowInsertIcon = new FlatSVGIcon(PokeditorManager.class.getResourceAsStream("/pokeditor/icons/svg/row-insert-bottom.svg"));
-            searchIcon = new FlatSVGIcon(PokeditorManager.class.getResourceAsStream("/pokeditor/icons/svg/list-search.svg"));
-            clipboardIcon = new FlatSVGIcon(PokeditorManager.class.getResourceAsStream("/pokeditor/icons/svg/clipboard-copy.svg"));
-            copyIcon = new FlatSVGIcon(PokeditorManager.class.getResourceAsStream("/pokeditor/icons/svg/copy.svg"));
+            sheetExportIcon = loadIcon("/pokeditor/icons/svg/table-export.svg");
+            sheetImportIcon = loadIcon("/pokeditor/icons/svg/table-import.svg");
+            rowRemoveIcon = loadIcon("/pokeditor/icons/svg/row-remove.svg");
+            rowInsertIcon = loadIcon("/pokeditor/icons/svg/row-insert-bottom.svg");
+            searchIcon = loadIcon("/pokeditor/icons/svg/list-search.svg");
+            clipboardIcon = loadIcon("/pokeditor/icons/svg/clipboard-copy.svg");
+            copyIcon = loadIcon("/pokeditor/icons/svg/copy.svg");
 
             sheetExportIcon.setColorFilter(ThemeUtils.iconColorFilter);
             sheetImportIcon.setColorFilter(ThemeUtils.iconColorFilter);
@@ -123,6 +126,14 @@ public class PokeditorManager extends PanelManager
         }
     }
 
+    private static FlatSVGIcon loadIcon(String path) throws IOException
+    {
+        try (InputStream stream = PokeditorManager.class.getResourceAsStream(path))
+        {
+            return new FlatSVGIcon(stream);
+        }
+    }
+
     private List<JPanel> panels;
 
     private NintendoDsRom rom;
@@ -134,12 +145,15 @@ public class PokeditorManager extends PanelManager
         super(tool, "PokEditor");
 
         rom = tool.getRom();
-        baseRom = Game.parseBaseRom(rom.getGameCode());
+        Game.BaseRomInfo baseRomInfo = Game.parseBaseRom(rom.getGameCode());
+        baseRom = baseRomInfo.game();
         gitEnabled = tool.isGitEnabled();
         GameFiles.initialize(baseRom);
         TextFiles.initialize(baseRom);
         GameCodeBinaries.initialize(baseRom);
-        Tables.initialize(baseRom);
+        // The region is passed explicitly rather than read back off the Game enum, which used to
+        // carry it as mutable per-constant state shared across every ROM opened in the process.
+        Tables.initialize(baseRom, baseRomInfo.region());
 
         DataManager.codeBinarySetup(rom);
 
@@ -173,9 +187,12 @@ public class PokeditorManager extends PanelManager
         DefaultSheetPanel<MoveData, ?> movesPanel = DataManager.createMoveSheet(this, rom);
         movesPanel.setName("Moves Sheet");
 
-        DefaultDataEditorPanel<GenericScriptData, ?> fieldScriptEditor = DataManager.createFieldScriptEditor(this, rom);
-        fieldScriptEditor.setName("Field Scripts");
-        fieldScriptEditor.setPreferredSize(fieldScriptEditor.getPreferredSize());
+        // The field script editor is not in a working state and is not built. It is left out
+        // rather than shown and broken: it is the one editor that can compile a script back
+        // into the ROM, so a half-working version of it damages a project rather than merely
+        // disappointing.
+        //
+        // To bring it back: restore the construction below and the panels.add further down.
 
 
 //        JPanel fieldPanel = new JPanel();
@@ -189,22 +206,37 @@ public class PokeditorManager extends PanelManager
 //        panels.add(battleSpriteEditor);
         panels.add(movesPanel);
 //        panels.add(encounters);
-        panels.add(fieldScriptEditor);
+//        panels.add(fieldScriptEditor); // disabled - see above
 //        panels.add(placeholder);
     }
 
     public <E extends GenericFileData> void saveData(Class<E> dataClass)
     {
-        Set<GameFiles> gameFileSet = DataManager.saveData(rom, dataClass);
-        if (gameFileSet == null)
+        // Both confirmations happen before anything is prepared.
+        //
+        // processDataList is not side effect free: PersonalParser writes the TM/HM table straight
+        // into the shared arm9 buffer, and PokemonSpriteParser does the same. Preparing first and
+        // asking afterwards therefore left arm9 already modified when the user said no - and the
+        // next confirmed save of any sheet wrote that cancelled edit to disk. Reloading could not
+        // undo it either, because the reload re-reads the TM table out of the arm9 it just
+        // mutated. Asking first removes the window entirely.
+        if (!DataManager.isLoaded(dataClass))
         {
             JOptionPane.showMessageDialog(null, "A fatal error occurred while attempting to save.", "Abort", JOptionPane.ERROR_MESSAGE);
             return;
         }
 
-        List<GameFiles> gameFiles = new ArrayList<>(gameFileSet);
-        gameFiles.addAll(DataManager.saveData(rom, TextBankData.class));
-//        DataManager.saveCodeBinaries(rom, List.of(GameCodeBinaries.ARM9));
+        // the files a save will write, taken from the parser's own requirements rather than from
+        // prepared output - the two are the same set for every parser in Core
+        List<GameFiles> gameFiles = new ArrayList<>(DataManager.filesWrittenBy(dataClass));
+        if (DataManager.isLoaded(TextBankData.class))
+        {
+            for (GameFiles gameFile : DataManager.filesWrittenBy(TextBankData.class))
+            {
+                if (!gameFiles.contains(gameFile))
+                    gameFiles.add(gameFile);
+            }
+        }
 
         StringBuilder stringBuilder = new StringBuilder("This operation will write the following files:\n");
         for (GameFiles gameFile : gameFiles)
@@ -235,22 +267,121 @@ public class PokeditorManager extends PanelManager
             }
         }
 
+        // Past this point the user has committed to the save. Serialising can still fail on a
+        // value the data refuses, which leaves arm9 partly written - that is a failure rather
+        // than a cancellation, and it behaved the same way before.
+        Map<GameFiles, Narc> preparedData = DataManager.prepareData(rom, dataClass);
+        if (preparedData == null)
+        {
+            JOptionPane.showMessageDialog(null, "A fatal error occurred while attempting to save.", "Abort", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        Map<GameFiles, Narc> preparedTextData = DataManager.prepareData(rom, TextBankData.class);
+
+        // only now is anything actually modified
+        DataManager.commitData(rom, preparedData);
+        DataManager.commitData(rom, preparedTextData);
+        DataManager.saveCodeBinaries(rom, List.of(GameCodeBinaries.ARM9));
+
+        // One batch, not a file at a time. A sheet's save writes several NARCs and arm9, and
+        // stopping half way leaves a combination the ROM was never in - a new personal.narc
+        // beside the TM table that was meant to change with it. Everything is staged before
+        // anything is replaced, so a disk that fills up or a file someone has made read-only
+        // fails with the project still entirely the old version.
+        //
+        // arm9 is in the batch because TM/HM move reassignments are applied to the in-memory
+        // copy above; without writing it, reopening the project rebuilds arm9 from the unchanged
+        // file on disk and the edit silently disappears.
+        Tool.SaveBatch batch = saveBatch();
         for (GameFiles gameFile : gameFiles)
         {
-            writeModifiedFile(gameFile.getPath());
+            batch.file(gameFile.getPath());
         }
+        batch.arm9().write();
 
         if (gitEnabled)
         {
             commit(message);
         }
 
+        DataManager.markClean(dataClass);
+        DataManager.markClean(TextBankData.class);
+
         JOptionPane.showMessageDialog(null, "Success! (If any error popups came before this message, then disregard).", "PokEditor", JOptionPane.INFORMATION_MESSAGE);
+    }
+
+    public void markSheetDirty(Class<? extends GenericFileData> dataClass)
+    {
+        DataManager.markDirty(dataClass);
+        DataManager.markDirty(TextBankData.class);
     }
 
     public <E extends GenericFileData> void resetData(Class<E> dataClass)
     {
         DataManager.resetData(rom, dataClass);
+    }
+
+    /**
+     * Tells every other sheet backed by the same name bank that a row was added or removed.
+     * <p>
+     * Several sheets index the same text bank: Personal, TM compatibility, Evolutions and
+     * Learnsets all show the species names, across three different data classes. Adding or
+     * removing a row shifts that shared bank, so a sheet the user is not even looking at ends
+     * up displaying every name below the change against the wrong entry - and because the bank
+     * is marked dirty, the next save of any sheet writes it to the ROM. There is no error and
+     * nothing to see on the sheet being edited.
+     * <p>
+     * Only the display is corrected here, and deliberately so: the underlying operation is
+     * still questionable, because these tables are positional and deleting a row renumbers
+     * every entry after it. Correcting the view is what stops a silent wrong-row edit; whether
+     * the row buttons should exist on species-indexed sheets at all is a separate decision.
+     *
+     * @param bank the name bank that changed
+     * @param source the sheet that changed it, which has already fired its own events
+     */
+    public void nameBankRowsChanged(TextBankData bank, DefaultSheetPanel<?, ?> source)
+    {
+        if (bank == null)
+            return;
+
+        for (DefaultSheetPanel<?, ?> sheetPanel : sheetPanels())
+        {
+            if (sheetPanel == source)
+                continue;
+
+            // identity, not equality: the point is that these sheets hold the very same object
+            if (sheetPanel.getTable().getFormatModel().getNameTextBank() != bank)
+                continue;
+
+            // the names are read through the frozen column model, and a full structure change
+            // would discard the column widths and renderers the table configured at build time
+            sheetPanel.getTable().getFormatModel().fireTableDataChanged();
+            if (sheetPanel.getFrozenColumns().getModel() instanceof javax.swing.table.AbstractTableModel frozen)
+                frozen.fireTableDataChanged();
+        }
+    }
+
+    /** Every sheet panel currently open, flattened out of the groups they are arranged in. */
+    private List<DefaultSheetPanel<?, ?>> sheetPanels()
+    {
+        List<DefaultSheetPanel<?, ?>> found = new ArrayList<>();
+        for (JPanel panel : panels)
+        {
+            if (panel instanceof DefaultSheetPanel<?,?> sheetPanel)
+            {
+                found.add(sheetPanel);
+            }
+            else if (panel instanceof PanelGroup panelGroup)
+            {
+                for (JPanel groupPanel : panelGroup.getPanels())
+                {
+                    if (groupPanel instanceof DefaultSheetPanel<?,?> sheetPanel)
+                        found.add(sheetPanel);
+                }
+            }
+        }
+        return found;
     }
 
     public void resetAllIndexedCellRendererText()
@@ -303,22 +434,37 @@ public class PokeditorManager extends PanelManager
             String path = selected.getAbsolutePath();
             if (!path.endsWith(".csv"))
                 path = path + ".csv";
-            try
+            try (BufferedWriter writer = Files.newBufferedWriter(Path.of(path), StandardCharsets.UTF_8))
             {
-                BufferedWriter writer = new BufferedWriter(new FileWriter(path));
                 for (String[] row : data) {
-                    for (String s : row)
-                        writer.write(s + ",");
+                    String[] quoted = new String[row.length];
+                    for (int i = 0; i < row.length; i++)
+                        quoted[i] = quoteCsvField(row[i]);
+                    writer.write(String.join(",", quoted));
                     writer.write("\n");
                 }
-
-                writer.close();
             }
             catch(IOException e) {
+                JOptionPane.showMessageDialog(null, "A fatal error occurred while writing the sheet to disk. See command-line for details.", "Error", JOptionPane.ERROR_MESSAGE);
                 throw new RuntimeException(e);
             }
 
         }
+    }
+
+    /**
+     * Quotes a single CSV field as per RFC 4180 - fields containing a comma, a double quote,
+     * or a line break are wrapped in double quotes with any embedded quotes doubled.
+     */
+    private static String quoteCsvField(String field)
+    {
+        if (field == null)
+            return "";
+
+        if (field.indexOf(',') >= 0 || field.indexOf('"') >= 0 || field.indexOf('\r') >= 0 || field.indexOf('\n') >= 0)
+            return '"' + field.replace("\"", "\"\"") + '"';
+
+        return field;
     }
 
     private static JFileChooser prepareImageChooser(String title, boolean allowPalette)
@@ -419,8 +565,7 @@ public class PokeditorManager extends PanelManager
     @Override
     public boolean hasUnsavedChanges()
     {
-        //todo
-        return false;
+        return DataManager.hasUnsavedChanges();
     }
 
     @Override

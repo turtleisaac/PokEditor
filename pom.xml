@@ -6,7 +6,7 @@
 
     <groupId>io.github.turtleisaac</groupId>
     <artifactId>PokEditor</artifactId>
-    <version>3.0-SNAPSHOT</version>
+    <version>3.2.0</version>
 
     <properties>
         <maven.compiler.source>20</maven.compiler.source>
@@ -15,16 +15,20 @@
     </properties>
 
     <dependencies>
+        <!-- Declared because this module imports it. It used to arrive through
+             jackson-dataformat-xml, which nothing here used - so removing that dead entry took
+             Jackson with it and the build stopped compiling. Declare what is used; do not declare
+             what is not. -->
+        <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-databind</artifactId>
+            <version>2.15.2</version>
+        </dependency>
+
         <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter</artifactId>
             <version>5.9.2</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>junit</groupId>
-            <artifactId>junit</artifactId>
-            <version>4.13.2</version>
             <scope>test</scope>
         </dependency>
         <dependency>
@@ -54,12 +58,6 @@
             <version>3.2.1</version>
         </dependency>
 
-        <dependency>
-            <groupId>com.github.weisj</groupId>
-            <artifactId>jsvg</artifactId>
-            <version>1.2.0</version>
-        </dependency>
-
         <!-- https://mvnrepository.com/artifact/com.miglayout/miglayout -->
         <dependency>
             <groupId>com.miglayout</groupId>
@@ -72,19 +70,6 @@
             <groupId>com.jidesoft</groupId>
             <artifactId>jide-oss</artifactId>
             <version>3.6.18</version>
-        </dependency>
-
-        <!-- https://mvnrepository.com/artifact/org.eclipse.jgit/org.eclipse.jgit -->
-        <dependency>
-            <groupId>org.eclipse.jgit</groupId>
-            <artifactId>org.eclipse.jgit</artifactId>
-            <version>6.7.0.202309050840-r</version>
-        </dependency>
-
-        <dependency>
-            <groupId>com.fasterxml.jackson.dataformat</groupId>
-            <artifactId>jackson-dataformat-xml</artifactId>
-            <version>2.15.2</version>
         </dependency>
 
         <dependency>
@@ -105,27 +90,24 @@
         <dependency>
             <groupId>io.github.turtleisaac</groupId>
             <artifactId>Nds4j</artifactId>
-            <version>0.1.0</version>
+            <version>1.0.0</version>
         </dependency>
         <dependency>
             <groupId>io.github.turtleisaac</groupId>
             <artifactId>PokEditor-Core</artifactId>
-            <version>1.0-SNAPSHOT</version>
+            <version>1.0.0</version>
         </dependency>
         <dependency>
             <groupId>io.github.turtleisaac</groupId>
             <artifactId>Nds4j-ToolUI</artifactId>
-            <version>1.0-SNAPSHOT</version>
+            <version>1.0.0</version>
         </dependency>
-        <dependency>
-            <groupId>io.github.turtleisaac</groupId>
-            <artifactId>VariableTracker</artifactId>
-            <version>1.0-SNAPSHOT</version>
-        </dependency>
+        <!-- VariableTracker was vendored into src/main/java/io/github/turtleisaac/variabletracker
+             (unpublished 1.0-SNAPSHOT existed only in a local ~/.m2 and one un-remoted clone). -->
 
 
 
-        <!--todo ok look I know I'm not supposed to do this (see below) but it was a pain manually reimporting the jar into IntelliJ each time. I'll fix this once I have a stable build of Nds4j 0.1.0 on maven-->
+        <!--todo ok look I know I'm not supposed to do this (see below) but it was a pain manually reimporting the jar into IntelliJ each time. I'll fix this once I have a stable build of Nds4j 1.0.0 on maven-->
         <dependency>
             <groupId>io.github.turtleisaac</groupId>
             <artifactId>WinLaF</artifactId>
@@ -133,6 +115,144 @@
             <scope>system</scope>
             <systemPath>${project.basedir}/WinLaF.jar</systemPath>
         </dependency>
+
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter</artifactId>
+            <version>5.9.2</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.assertj</groupId>
+            <artifactId>assertj-core</artifactId>
+            <version>3.24.2</version>
+            <scope>test</scope>
+        </dependency>
     </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <version>3.2.5</version>
+                <configuration>
+                    <!--
+                        headless: the whole UI layer under test is Swing, and there is no display.
+                        add-opens: the paste action reads the system clipboard straight off the
+                        default Toolkit, which a headless toolkit refuses to provide; the test
+                        lends it a working one for the duration of the action instead of a seam
+                        being cut into production code for the tests' benefit.
+                    -->
+                    <argLine>-Djava.awt.headless=true --add-opens java.desktop/java.awt=ALL-UNNAMED</argLine>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+
+    <profiles>
+        <!--
+            Builds the runnable jar that gets handed to testers: every dependency unpacked into
+            one archive, launched with "java -jar". The default build deliberately does not do
+            this - it produces a 24MB artifact and nothing in CI consumes it.
+
+            The two manifest concerns below are both about one 2015-era dependency, jide-oss,
+            which predates the module system. LookAndFeelFactory does
+            "instanceof com.sun.java.swing.plaf.windows.WindowsLookAndFeel" on a code path that
+            every JIDE component reaches through JidePopup.updateUI - and this application
+            reaches it whenever someone types into a combo box in a sheet, because
+            EditorComboBox installs a ComboBoxSearchable whose search popup is a JidePopup.
+
+            An instanceof needs its class *resolved*, which fails before it can return false, so
+            the platform decides which way it breaks:
+
+              Windows - java.desktop contains that package but does not export it, so resolution
+                        fails with IllegalAccessError. The WinLaF.jar copy on the classpath
+                        cannot help: parent-first delegation finds java.desktop's copy first and
+                        the classpath copy is shadowed. Only Add-Exports fixes this.
+              elsewhere - java.desktop has no such package at all, so resolution fails with
+                        NoClassDefFoundError, and the WinLaF.jar copy on the classpath is what
+                        satisfies it. Add-Exports naming a package the module does not have is
+                        ignored without warning, so carrying it everywhere is free.
+
+            Both are therefore required, on different platforms, and neither substitutes for the
+            other. The remaining packages are the other encapsulated ones jide-oss references;
+            they are listed pre-emptively so the next one to be reached is not a second bug
+            report.
+        -->
+        <profile>
+            <id>dist</id>
+            <build>
+                <plugins>
+                    <!--
+                        WinLaF.jar is declared with <scope>system</scope>, and the shade plugin
+                        resolves only compile and runtime scope, so it is silently left out of
+                        the shaded jar - which then dies on Linux and macOS with
+                        NoClassDefFoundError the first time a JIDE component is built. Its
+                        classes are unpacked into the build output so they are carried into the
+                        shaded artifact like any other class. This is a workaround for the
+                        system-scoped dependency, not an endorsement of it; the pom already
+                        carries the author's note about replacing it.
+                    -->
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-antrun-plugin</artifactId>
+                        <version>3.1.0</version>
+                        <executions>
+                            <execution>
+                                <id>unpack-winlaf</id>
+                                <phase>prepare-package</phase>
+                                <goals><goal>run</goal></goals>
+                                <configuration>
+                                    <target>
+                                        <unzip src="${project.basedir}/WinLaF.jar"
+                                               dest="${project.build.outputDirectory}">
+                                            <patternset><include name="com/sun/java/swing/plaf/**"/></patternset>
+                                        </unzip>
+                                    </target>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-shade-plugin</artifactId>
+                        <version>3.5.2</version>
+                        <executions>
+                            <execution>
+                                <phase>package</phase>
+                                <goals><goal>shade</goal></goals>
+                                <configuration>
+                                    <createDependencyReducedPom>false</createDependencyReducedPom>
+                                    <shadedArtifactAttached>true</shadedArtifactAttached>
+                                    <shadedClassifierName>dist</shadedClassifierName>
+                                    <filters>
+                                        <filter>
+                                            <artifact>*:*</artifact>
+                                            <excludes>
+                                                <exclude>META-INF/*.SF</exclude>
+                                                <exclude>META-INF/*.DSA</exclude>
+                                                <exclude>META-INF/*.RSA</exclude>
+                                                <exclude>module-info.class</exclude>
+                                            </excludes>
+                                        </filter>
+                                    </filters>
+                                    <transformers>
+                                        <transformer implementation="org.apache.maven.plugins.shade.resource.ServicesResourceTransformer"/>
+                                        <transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
+                                            <mainClass>io.github.turtleisaac.pokeditor.Main</mainClass>
+                                            <manifestEntries>
+                                                <Add-Exports>java.desktop/com.sun.java.swing.plaf.windows java.desktop/sun.awt java.desktop/sun.awt.windows java.desktop/sun.awt.image java.desktop/sun.awt.shell java.desktop/com.apple.laf</Add-Exports>
+                                            </manifestEntries>
+                                        </transformer>
+                                    </transformers>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
 
 </project>

@@ -26,17 +26,28 @@ public class IndexedStringCellRenderer extends DefaultSheetCellRenderer
         {
             if (value instanceof Integer val)
             {
-                if (val < items.length)
+                if (val >= 0 && val < items.length)
                 {
                     this.setText(items[val]);
                 }
             }
             else if (value instanceof String s)
             {
-                int val = Integer.parseInt(s);
-                if (val < items.length)
+                // a cell can hold text which is not a number at all - an empty cell, a partial
+                // edit, a bad paste. this runs on the paint path, so an unguarded parse would
+                // take the whole sheet down over one cell rather than just showing that cell oddly
+                try
                 {
-                    this.setText(items[val]);
+                    int val = Integer.parseInt(s.trim());
+                    if (val >= 0 && val < items.length)
+                    {
+                        this.setText(items[val]);
+                    }
+                }
+                catch (NumberFormatException ignored)
+                {
+                    // leave the raw value the superclass already set - showing the user what is
+                    // actually stored is more use than showing them nothing
                 }
             }
         }
@@ -61,9 +72,15 @@ public class IndexedStringCellRenderer extends DefaultSheetCellRenderer
 //            Border border = getBorder();
             if (!isSelected && value != null)
             {
-                if (value instanceof Integer)
+                if (value instanceof Integer val)
                 {
-                    this.setBackground(colors[(int) value]); // always in bounds because of earlier check
+                    // NOTE: the superclass checks against items.length, but this array is a
+                    // separate (and shorter) list of type colors, so it needs its own check -
+                    // an out of range type value used to make the sheet permanently unpaintable
+                    if (val < 0 || val >= colors.length)
+                        return this;
+
+                    this.setBackground(colors[val]);
 //                    this.setForeground(Color.black);
 //                    setBorder(border);
                 }

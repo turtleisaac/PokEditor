@@ -82,7 +82,7 @@ public class MovesTable extends DefaultTable<MoveData, MovesTable.MovesColumn>
             MoveData entry = getData().get(entryIdx);
             TextBankData moveNames = getTextBankData().get(TextFiles.MOVE_NAMES.getValue());
 
-            aValue = prepareObjectForWriting(aValue, property.cellType);
+            aValue = prepareObjectForWriting(aValue, property.cellType, property.getValueRange());
 
             switch (property) {
                 case ID -> {}
@@ -181,6 +181,19 @@ public class MovesTable extends DefaultTable<MoveData, MovesTable.MovesColumn>
         }
 
         @Override
+        public int[] getCellValueRange(int columnIndex)
+        {
+            return MovesColumn.getColumn(columnIndex).getValueRange();
+        }
+
+
+        @Override
+        public TextBankData getNameTextBank()
+        {
+            return getTextBankData().get(TextFiles.MOVE_NAMES.getValue());
+        }
+
+        @Override
         public FormatModel<MoveData, MovesColumn> getFrozenColumnModel()
         {
             return new MovesModel(getData(), getTextBankData()) {
@@ -188,6 +201,18 @@ public class MovesTable extends DefaultTable<MoveData, MovesTable.MovesColumn>
                 public int getColumnCount()
                 {
                     return super.getNumFrozenColumns();
+                }
+
+                @Override
+                public String getColumnName(int column)
+                {
+                    // this model presents only the frozen columns, so its column 0 is the sheet's
+                    // first frozen column. FormatModel.getColumnName adds getNumFrozenColumns()
+                    // back on, which for this wrapper is its whole width - without undoing that
+                    // here, asking it for the name of column 0 answers with the first UNfrozen
+                    // column instead. getCornerTableHeader used to compensate by passing a
+                    // negative index; two wrongs that happened to cancel.
+                    return super.getColumnName(column - super.getNumFrozenColumns());
                 }
 
                 @Override
@@ -251,6 +276,18 @@ public class MovesTable extends DefaultTable<MoveData, MovesTable.MovesColumn>
             this.idx = idx;
             this.key = key;
             this.cellType = cellType;
+        }
+
+        /**
+         * @return the inclusive {min, max} range this column's underlying storage can hold
+         */
+        int[] getValueRange()
+        {
+            return switch (this) {
+                case EFFECT, TARGET -> new int[] {0, 0xFFFF}; // written as a short
+                case PRIORITY -> new int[] {-128, 127}; // written as a signed byte
+                default -> new int[] {0, 255};
+            };
         }
 
         static MovesColumn getColumn(int idx)

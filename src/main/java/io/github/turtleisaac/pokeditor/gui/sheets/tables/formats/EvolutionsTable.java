@@ -98,12 +98,12 @@ public class EvolutionsTable extends DefaultTable<EvolutionData, EvolutionsTable
         {
             EvolutionData species = getData().get(rowIndex);
 
-            aValue = prepareObjectForWriting(aValue, property.cellType);
+            aValue = prepareObjectForWriting(aValue, property.cellType, getCellValueRange(property.idx));
 
             if (property.idx >= 0)
             {
                 int entryIdx = property.repetition / EvolutionsColumn.NUMBER_OF_COLUMNS.idx;
-                while (entryIdx > species.size())
+                while (entryIdx >= species.size())
                 {
                     species.add(new EvolutionData.EvolutionEntry());
                 }
@@ -143,10 +143,13 @@ public class EvolutionsTable extends DefaultTable<EvolutionData, EvolutionsTable
             if (property.idx >= 0)
             {
                 int entryIdx = property.repetition / EvolutionsColumn.NUMBER_OF_COLUMNS.idx;
-                while (entryIdx > species.size())
-                {
-                    species.add(new EvolutionData.EvolutionEntry());
-                }
+
+                // read path called from getValueAt during painting - it must not grow the list.
+                // 0 is the neutral value here ("no evolution"), and the requirement/result
+                // renderers read the neighbouring method column, so it must not be null.
+                if (entryIdx >= species.size())
+                    return 0;
+
                 EvolutionData.EvolutionEntry entry = species.get(entryIdx);
 
                 switch (property) {
@@ -188,6 +191,19 @@ public class EvolutionsTable extends DefaultTable<EvolutionData, EvolutionsTable
         }
 
         @Override
+        public int[] getCellValueRange(int columnIndex)
+        {
+            return new int[] {0, 0xFFFF}; // every evolution field is stored as a u16
+        }
+
+
+        @Override
+        public TextBankData getNameTextBank()
+        {
+            return getTextBankData().get(TextFiles.SPECIES_NAMES.getValue());
+        }
+
+        @Override
         public FormatModel<EvolutionData, EvolutionsColumn> getFrozenColumnModel()
         {
             return new EvolutionsTable.EvolutionsModel(getData(), getTextBankData()) {
@@ -195,6 +211,18 @@ public class EvolutionsTable extends DefaultTable<EvolutionData, EvolutionsTable
                 public int getColumnCount()
                 {
                     return super.getNumFrozenColumns();
+                }
+
+                @Override
+                public String getColumnName(int column)
+                {
+                    // this model presents only the frozen columns, so its column 0 is the sheet's
+                    // first frozen column. FormatModel.getColumnName adds getNumFrozenColumns()
+                    // back on, which for this wrapper is its whole width - without undoing that
+                    // here, asking it for the name of column 0 answers with the first UNfrozen
+                    // column instead. getCornerTableHeader used to compensate by passing a
+                    // negative index; two wrongs that happened to cancel.
+                    return super.getColumnName(column - super.getNumFrozenColumns());
                 }
 
                 @Override
@@ -232,7 +260,7 @@ public class EvolutionsTable extends DefaultTable<EvolutionData, EvolutionsTable
             speciesRequirementEditor = new ComboBoxCellEditor(speciesNames);
             itemRequirementEditor = new ComboBoxCellEditor(itemNames);
             moveRequirementEditor = new ComboBoxCellEditor(moveNames);
-            intValueRequirementEditor = new NumberOnlyCellEditor();
+            intValueRequirementEditor = new NumberOnlyCellEditor(0, 0xFFFF);
 
             current = null;
         }

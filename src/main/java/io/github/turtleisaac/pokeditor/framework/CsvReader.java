@@ -2,8 +2,10 @@ package io.github.turtleisaac.pokeditor.framework;
 
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileReader;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Arrays;
 
@@ -48,13 +50,21 @@ public class CsvReader
     private String[][] getData(String filePath, int firstX, int firstY) throws IOException
     {
         ArrayList<String> fileLines= new ArrayList<>();
-        BufferedReader reader= new BufferedReader(new FileReader(filePath));
-        String line;
-        while((line= reader.readLine()) != null)
+        try (BufferedReader reader = Files.newBufferedReader(Path.of(filePath), StandardCharsets.UTF_8))
         {
-            fileLines.add(line);
+            String line;
+            boolean firstLine= true;
+            while((line= reader.readLine()) != null)
+            {
+                if(firstLine)
+                {
+                    firstLine= false;
+                    if(!line.isEmpty() && line.charAt(0) == '\ufeff') // strip the UTF-8 BOM
+                        line= line.substring(1);
+                }
+                fileLines.add(line);
+            }
         }
-        reader.close();
         for(; firstY != 0; firstY--)
         {
             fileLines.remove(0);
@@ -72,9 +82,62 @@ public class CsvReader
                 thisLine= thisLine.substring(thisLine.indexOf(",")+1);
             }
             thisLine= thisLine.replaceAll("×","x");
-            fileData[i]= thisLine.split(",");
+            fileData[i]= splitCsvLine(thisLine);
         }
         return fileData;
+    }
+
+    /**
+     * Splits a single CSV record into fields as per RFC 4180 - commas inside a quoted field
+     * are part of the field, a doubled quote inside a quoted field is a literal quote, and
+     * trailing empty fields are preserved (which {@code split(",")} would silently drop,
+     * shifting every downstream column).
+     */
+    static String[] splitCsvLine(String line)
+    {
+        ArrayList<String> fields= new ArrayList<>();
+        StringBuilder current= new StringBuilder();
+        boolean inQuotes= false;
+
+        for(int i= 0; i < line.length(); i++)
+        {
+            char c= line.charAt(i);
+            if(inQuotes)
+            {
+                if(c == '"')
+                {
+                    if(i + 1 < line.length() && line.charAt(i + 1) == '"')
+                    {
+                        current.append('"');
+                        i++;
+                    }
+                    else
+                    {
+                        inQuotes= false;
+                    }
+                }
+                else
+                {
+                    current.append(c);
+                }
+            }
+            else if(c == '"')
+            {
+                inQuotes= true;
+            }
+            else if(c == ',')
+            {
+                fields.add(current.toString());
+                current.setLength(0);
+            }
+            else
+            {
+                current.append(c);
+            }
+        }
+        fields.add(current.toString());
+
+        return fields.toArray(new String[0]);
     }
 
     public String[] next()
@@ -114,7 +177,14 @@ public class CsvReader
         String red= "\u001b[31m";
         String reset= "\u001b[0m";
 
-        int[] columnWidths= new int[in.length];
+        // sized by the widest ROW, because it is indexed by column below
+        int maxColumns= 0;
+        for (String[] strings : in)
+        {
+            maxColumns= Math.max(maxColumns, strings.length);
+        }
+
+        int[] columnWidths= new int[maxColumns];
         Arrays.fill(columnWidths,Integer.MIN_VALUE);
 
         for (String[] strings : in)

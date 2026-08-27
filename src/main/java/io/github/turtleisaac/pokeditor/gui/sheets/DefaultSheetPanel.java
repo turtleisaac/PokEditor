@@ -12,6 +12,7 @@ import javax.swing.table.*;
 
 import io.github.turtleisaac.nds4j.ui.ThemeUtils;
 import io.github.turtleisaac.pokeditor.formats.GenericFileData;
+import io.github.turtleisaac.pokeditor.formats.text.TextBankData;
 import io.github.turtleisaac.pokeditor.gui.PokeditorManager;
 import io.github.turtleisaac.pokeditor.gui.sheets.tables.DefaultTable;
 import io.github.turtleisaac.pokeditor.gui.sheets.tables.FrozenColumnTable;
@@ -53,6 +54,9 @@ public class DefaultSheetPanel<G extends GenericFileData, E extends Enum<E>> ext
         scrollPane1.getRowHeader().setPreferredSize(new Dimension(frozenColumns.getPreferredSize().width, scrollPane1.getRowHeader().getMaximumSize().height));
 
         scrollPane1.setCorner(JScrollPane.UPPER_LEFT_CORNER, frozenColumns.getCornerTableHeader());
+
+        table.putClientProperty("terminateEditOnFocusLost", Boolean.TRUE);
+        frozenColumns.putClientProperty("terminateEditOnFocusLost", Boolean.TRUE);
 
         table.getSelectionModel().addListSelectionListener(e -> frozenColumns.clearSelection());
         frozenColumns.getSelectionModel().addListSelectionListener(e -> table.clearSelection());
@@ -156,25 +160,134 @@ public class DefaultSheetPanel<G extends GenericFileData, E extends Enum<E>> ext
         resizeColumnWidth(this.table);
     }
 
+    /**
+     * Terminates any in-progress cell edit on both tables so the value the user just typed is
+     * committed to the model before it is read. Without this, typing a value and clicking Save
+     * writes the OLD value while the editor still displays the new one.
+     * @return false if an editor refused to stop (i.e. the typed value failed validation)
+     */
+    private boolean stopEditing()
+    {
+        boolean stopped = true;
+
+        if (table.isEditing())
+            stopped = table.getCellEditor().stopCellEditing();
+
+        if (frozenColumns.isEditing())
+            stopped &= frozenColumns.getCellEditor().stopCellEditing();
+
+        return stopped;
+    }
+
+    /**
+     * @return the selected row, resolved from whichever of the two tables actually has a
+     * selection (they clear each other's), or -1 if neither does
+     */
+    private int getSelectedModelRow()
+    {
+        int row = table.getSelectedRow();
+        if (row < 0)
+            row = frozenColumns.getSelectedRow();
+        return row;
+    }
+
     private void addRowButtonPressed(ActionEvent e) {
+        if (!stopEditing())
+            return;
+
         List<GenericFileData> data = (List<GenericFileData>) table.getFormatModel().getData();
+        if (data.isEmpty())
+        {
+            JOptionPane.showMessageDialog(this, "This sheet has no rows to base a new row on.", "PokEditor", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        GenericFileData v;
         try
         {
-            GenericFileData v = data.get(0).getClass().getDeclaredConstructor().newInstance();
-            data.add(v);
+            v = data.get(0).getClass().getDeclaredConstructor().newInstance();
         }
-        catch (InvocationTargetException | InstantiationException | IllegalAccessException | NoSuchMethodException ex) {
-            throw new RuntimeException(ex);
+        catch (NoSuchMethodException ex) {
+            /*
+                TODO: EvolutionData and LearnsetData (both owned by PokEditor-Core) declare only
+                 a (BytesDataContainer) constructor, and GenericParser exposes no "create blank
+                 entry" factory, so there is no way to build a blank row for those sheets from
+                 here. Once Core gains a public no-arg constructor (or the parser gains a
+                 factory method), route creation through it and drop this branch.
+             */
+            ex.printStackTrace();
+            JOptionPane.showMessageDialog(this,
+                    "Rows cannot be added to this sheet yet - the underlying data format (" + data.get(0).getClass().getSimpleName() + ")\ndoes not provide a way to create a blank entry.",
+                    "Unsupported", JOptionPane.ERROR_MESSAGE);
+            return;
         }
+        catch (InvocationTargetException | InstantiationException | IllegalAccessException ex) {
+            ex.printStackTrace();
+            JOptionPane.showMessageDialog(this,
+                    "A new row could not be created:\n" + ex.getMessage(),
+                    "Error", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        int newRow = data.size();
+        data.add(v);
+
+        // keep the parallel name bank the same length, otherwise typing a name into the new
+        // row throws
+        TextBankData nameBank = table.getFormatModel().getNameTextBank();
+        if (nameBank != null)
+        {
+            while (nameBank.size() <= newRow)
+                nameBank.add(new TextBankData.Message(""));
+        }
+
+        table.getFormatModel().fireTableRowsInserted(newRow, newRow);
+        if (frozenColumns.getModel() instanceof AbstractTableModel frozenModel)
+            frozenModel.fireTableRowsInserted(newRow, newRow);
+
+        // other open sheets read the same name bank and have just had it grow underneath them
+        manager.nameBankRowsChanged(nameBank, this);
+        manager.markSheetDirty(table.getDataClass());
     }
 
     private void deleteRowButtonPressed(ActionEvent e) {
-        // todo figure out how I'm going to remove the name of the species when a row is deleted (because right now the name just stays at that index and the data moves up)
-        table.getFormatModel().getData().remove(table.getSelectedRow());
+        if (!stopEditing())
+            return;
+
+        int row = getSelectedModelRow();
+        if (row < 0)
+        {
+            JOptionPane.showMessageDialog(this, "Select the row you would like to delete first.", "PokEditor", JOptionPane.INFORMATION_MESSAGE);
+            return;
+        }
+
+        List<?> data = table.getFormatModel().getData();
+        if (row >= data.size())
+            return;
+
+        data.remove(row);
+
+        // the name bank has to be shifted along with the data, otherwise every name below the
+        // deleted row labels the wrong entry
+        TextBankData nameBank = table.getFormatModel().getNameTextBank();
+        if (nameBank != null && row < nameBank.size())
+            nameBank.remove(row);
+
+        table.getFormatModel().fireTableRowsDeleted(row, row);
+        if (frozenColumns.getModel() instanceof AbstractTableModel frozenModel)
+            frozenModel.fireTableRowsDeleted(row, row);
+
+        // Personal, TM compatibility, Evolutions and Learnsets all read the same species name
+        // bank across three different data classes, so the sheets that are not being edited
+        // have just had every name below this row shifted under them.
+        manager.nameBankRowsChanged(nameBank, this);
+        manager.markSheetDirty(table.getDataClass());
     }
 
     private void exportSheetButtonPressed(ActionEvent e) {
-        // TODO add your code here
+        if (!stopEditing())
+            return;
+
         manager.writeSheet(table.exportClean());
     }
 
@@ -184,17 +297,118 @@ public class DefaultSheetPanel<G extends GenericFileData, E extends Enum<E>> ext
     }
 
     private void saveSheetButtonPressed(ActionEvent e) {
+        if (!stopEditing())
+            return;
+
         manager.saveData(table.getDataClass());
     }
 
     private void reloadSheetButtonPressed(ActionEvent e) {
+        if (!stopEditing())
+            return;
+
         manager.resetData(table.getDataClass());
         table.getFormatModel().fireTableDataChanged();
     }
 
     private void findButtonPressed(ActionEvent e) {
-        // TODO add your code here
-        FindDialog findDialog = new FindDialog(this);
+        if (!stopEditing())
+            return;
+
+        new FindDialog(this).setVisible(true);
+    }
+
+    /**
+     * Moves the selection to (and scrolls to) the provided cell. Used by {@link FindDialog}.
+     */
+    public void selectCell(int row, int column)
+    {
+        table.clearSelection();
+        frozenColumns.clearSelection();
+
+        if (column < 0) // a hit in one of the frozen ID/Name columns
+        {
+            frozenColumns.setRowSelectionInterval(row, row);
+            frozenColumns.scrollRectToVisible(frozenColumns.getCellRect(row, 0, true));
+            return;
+        }
+
+        table.setRowSelectionInterval(row, row);
+        table.setColumnSelectionInterval(column, column);
+        table.scrollRectToVisible(table.getCellRect(row, column, true));
+    }
+
+    public FrozenColumnTable<G> getFrozenColumns()
+    {
+        return frozenColumns;
+    }
+
+    /**
+     * @return how many frozen (ID/Name) columns precede column 0 of the main table
+     */
+    public int getFrozenColumnCount()
+    {
+        return frozenColumns.getColumnCount();
+    }
+
+    /**
+     * The text a search should match against for the given cell - the text the user can
+     * actually see, so searching for a move or species name works.
+     * @param column the main table's column index, or a negative index into the frozen columns
+     */
+    private String getSearchableText(int row, int column)
+    {
+        if (column < 0)
+            return String.valueOf(frozenColumns.getValueAt(row, column + getFrozenColumnCount()));
+
+        TableCellRenderer renderer = table.getCellRenderer(row, column);
+        Component component = table.prepareRenderer(renderer, row, column);
+        if (component instanceof JLabel label)
+            return String.valueOf(label.getText());
+
+        return String.valueOf(table.getValueAt(row, column));
+    }
+
+    /**
+     * Searches the sheet for the provided text, starting just after the provided cell and
+     * wrapping around. There is no RowSorter in this project, so view and model coordinates
+     * are the same.
+     * @param fromColumn the column of the previous hit (may be negative for a frozen column);
+     *                   pass {@code -getFrozenColumnCount() - 1} to start at the very beginning
+     * @return {row, column} of the next match, or null if there is none
+     */
+    public int[] findNext(String query, boolean matchCase, boolean matchEntireContents, int fromRow, int fromColumn)
+    {
+        int frozenCount = getFrozenColumnCount();
+        int rowCount = table.getRowCount();
+        int columnCount = table.getColumnCount();
+        int totalColumns = frozenCount + columnCount;
+
+        if (query == null || query.isEmpty() || rowCount == 0 || totalColumns == 0)
+            return null;
+
+        String needle = matchCase ? query : query.toLowerCase(Locale.ROOT);
+        int totalCells = rowCount * totalColumns;
+
+        int startIdx = Math.max(0, fromRow) * totalColumns + (fromColumn + frozenCount) + 1;
+
+        for (int offset = 0; offset < totalCells; offset++)
+        {
+            int idx = Math.floorMod(startIdx + offset, totalCells);
+            int row = idx / totalColumns;
+            int column = (idx % totalColumns) - frozenCount;
+
+            String cell = getSearchableText(row, column);
+            if (cell == null)
+                continue;
+
+            String haystack = matchCase ? cell : cell.toLowerCase(Locale.ROOT);
+
+            if (matchEntireContents ? haystack.equals(needle) : haystack.contains(needle))
+                return new int[] {row, column};
+        }
+
+        return null;
     }
 
     private void copyModeButtonPressed(ActionEvent e) {

@@ -15,6 +15,7 @@ import javax.swing.text.*;
 import io.github.turtleisaac.nds4j.ui.*;
 
 import io.github.turtleisaac.nds4j.ui.ThemeUtils;
+import io.github.turtleisaac.pokeditor.DataManager;
 import io.github.turtleisaac.pokeditor.formats.GenericFileData;
 import io.github.turtleisaac.pokeditor.formats.scripts.GenericScriptData;
 import io.github.turtleisaac.pokeditor.formats.scripts.FieldScriptData;
@@ -61,8 +62,8 @@ public class FieldScriptEditor extends DefaultDataEditor<GenericScriptData, Fiel
         editMode = false;
         initComponents();
 //        FieldScriptEditorKit editorKit = new FieldScriptEditorKit();
-        StyledDocument document = new ScriptDocument(textPane1);
-        textPane1.setDocument(document);
+        ScriptDocument document = new ScriptDocument(textPane1);
+        textPane1.setScriptDocument(document); // NOT setDocument - that leaves scriptDocument null
         textPane1.setBackground(new Color(58, 56, 77));
         textPane1.setScrollPane(scrollPane1);
         textPane1.setForeground(Color.WHITE);
@@ -74,10 +75,10 @@ public class FieldScriptEditor extends DefaultDataEditor<GenericScriptData, Fiel
         levelScriptList.setSelectedIndex(-1);
         levelScriptListValueChanged(null);
         clearInputFields();
-//        valueField.addChangeListener(e -> paramFieldTextChange());
-//        scriptNoField.addChangeListener(e -> paramFieldTextChange());
-//        variableField.addChangeListener(e -> paramFieldTextChange());
-        removeButton.setEnabled(false);
+        valueField.addChangeListener(e -> paramFieldTextChange());
+        scriptNoField.addChangeListener(e -> paramFieldTextChange());
+        variableField.addChangeListener(e -> paramFieldTextChange());
+        paddingCheckbox.addActionListener(e -> commitLevelScriptChanges());
 
         try
         {
@@ -94,7 +95,40 @@ public class FieldScriptEditor extends DefaultDataEditor<GenericScriptData, Fiel
         setIcons();
         setupVariableTracker();
         setupFlagTracker();
-        replaceVariableNumbersWithNames();
+
+        textPane1.getScriptDocument().setVariableList(variableTracker.getVariableList());
+        installDocumentDirtyListener(textPane1.getScriptDocument());
+
+        // establishes the non-edit-mode button states - addButton is declared disabled by the
+        // generated code and nothing else ever turned it back on, which made the level script
+        // editor completely read-only
+        editMode = false;
+        toggleEditModeStates();
+        levelScriptListValueChanged(null);
+    }
+
+    /**
+     * Tracks whether the script text has been edited since it was last loaded or saved, so
+     * switching entries can offer to save instead of silently throwing the edits away.
+     */
+    private boolean documentDirty;
+
+    private void installDocumentDirtyListener(ScriptDocument document)
+    {
+        if (document == null)
+            return;
+
+        document.addDocumentListener(new DocumentListener()
+        {
+            @Override
+            public void insertUpdate(DocumentEvent e) { documentDirty = true; }
+
+            @Override
+            public void removeUpdate(DocumentEvent e) { documentDirty = true; }
+
+            @Override
+            public void changedUpdate(DocumentEvent e) { /* attribute-only change (syntax highlighting) */ }
+        });
     }
 
     private void setupVariableTracker()
@@ -115,10 +149,26 @@ public class FieldScriptEditor extends DefaultDataEditor<GenericScriptData, Fiel
             public void actionPerformed(ActionEvent e)
             {
                 ScriptVariable variable = variableTracker.getSelectedVariable();
+                if (variable == null)
+                {
+                    JOptionPane.showMessageDialog(variableTracker, "Select a variable to rename first.", "PokEditor", JOptionPane.INFORMATION_MESSAGE);
+                    return;
+                }
+
                 String oldName = variable.getVariableName();
                 String newName = JOptionPane.showInputDialog(variableTracker, "Enter the new name for this variable");
 
-                if (oldName.equalsIgnoreCase(newName))
+                if (newName == null) // the user cancelled
+                    return;
+
+                newName = newName.trim();
+                if (newName.isEmpty())
+                {
+                    JOptionPane.showMessageDialog(variableTracker, "A variable name cannot be blank.\nAction aborted.", "Error", JOptionPane.ERROR_MESSAGE);
+                    return;
+                }
+
+                if (newName.equalsIgnoreCase(oldName))
                 {
                     return;
                 }
@@ -132,32 +182,11 @@ public class FieldScriptEditor extends DefaultDataEditor<GenericScriptData, Fiel
                     }
                 }
 
-                for (GenericScriptData data : ((FormatModel<GenericScriptData, FieldScriptContents>) getModel()).getData())
-                {
-                    if (data instanceof FieldScriptData fieldScriptData)
-                    {
-                        for (GenericScriptData.ScriptComponent component : fieldScriptData)
-                        {
-                            if (component instanceof FieldScriptData.ScriptCommand scriptCommand)
-                            {
-                                Object[] parameters = scriptCommand.getParameters();
-                                if (parameters != null)
-                                {
-                                    for (int i = 0; i < parameters.length; i++)
-                                    {
-                                        if (oldName.equals(parameters[i]))
-                                        {
-                                            parameters[i] = newName;
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-
+                // NOTE: the model only ever holds Integers - variable names exist purely in the
+                // displayed text - so a rename only needs the display refreshed
                 variable.setVariableName(newName);
                 variableTracker.fireTableDataChanged();
+                replaceVariableNumbersWithNames();
             }
         });
 
@@ -188,52 +217,52 @@ public class FieldScriptEditor extends DefaultDataEditor<GenericScriptData, Fiel
 //        flagTrackerFrame.setJMenuBar(variableTracker.getMenuBar());
     }
 
+    /**
+     * Refreshes the DISPLAYED script text so variable IDs read as their friendly names.
+     * <p>
+     * This deliberately does not touch the model: it used to walk every field script and swap
+     * Integer parameters >= 0x4000 for Strings, which the command writer's parameter resolver
+     * cannot understand - saving then threw "An invalid parameter was provided (NAME)" and
+     * aborted the entire ROM write, for every script rather than just the open one. The
+     * substitution now lives purely in the display path, and {@link ScriptDocument#getScriptData()}
+     * reverses it before the text is compiled.
+     */
     private void replaceVariableNumbersWithNames()
     {
-        List<ScriptVariable> variableList = variableTracker.getVariableList();
+        ScriptDocument document = textPane1.getScriptDocument();
+        if (document == null)
+            return;
 
-        Map<Integer, String> variableIdToNameMap = new HashMap<>();
+        document.setVariableList(variableTracker.getVariableList());
 
-        for (ScriptVariable variable : variableList)
-        {
-            variableIdToNameMap.put(variable.getVariableID(),variable.getVariableName());
-        }
+        if (documentDirty) // never clobber unsaved edits just to relabel variables
+            return;
 
-//        ScriptDocument doc = textPane1.getScriptDocument();
-//        if (doc != null)
-//        {
-//            for (int i = 0x4000; i <= 0x800C; i++)
-//            {
-//                if (variableIdToNameMap.containsKey(i))
-//                    doc.refactorString("0x" + Integer.toHexString(i).toUpperCase(), variableIdToNameMap.get(i));
-//            }
-//        }
+        int idx = getSelectedIndex();
+        if (idx < 0)
+            return;
 
-        for (GenericScriptData data : ((FormatModel<GenericScriptData, FieldScriptContents>) getModel()).getData())
-        {
-            if (data instanceof FieldScriptData fieldScriptData)
-            {
-                for (GenericScriptData.ScriptComponent component : fieldScriptData)
-                {
-                    if (component instanceof FieldScriptData.ScriptCommand scriptCommand)
-                    {
-                        Object[] parameters = scriptCommand.getParameters();
-                        if (parameters != null)
-                        {
-                            for (int i = 0; i < parameters.length; i++)
-                            {
-                                if (parameters[i] instanceof Integer value && value >= 0x4000 && variableIdToNameMap.containsKey(value))
-                                {
-                                    parameters[i] = variableIdToNameMap.get(value);
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        }
+        Object entry = getModel().getValueFor(idx, null);
+        if (entry instanceof FieldScriptData scriptData)
+            loadScriptText(document, scriptData);
     }
 
+    /**
+     * Replaces the contents of the document with the provided script, applying variable names
+     * for display only.
+     */
+    private void loadScriptText(ScriptDocument document, FieldScriptData scriptData)
+    {
+        try {
+            document.remove(0, document.getLength());
+            document.insertString(0, document.replaceVariableNumbersWithNames(scriptData.toString()), document.getStyle("regular"));
+        }
+        catch (BadLocationException ble) {
+            System.err.println("Couldn't insert text into text pane.");
+            ble.printStackTrace();
+        }
+        documentDirty = false;
+    }
 
     private void setIcons()
     {
@@ -246,10 +275,25 @@ public class FieldScriptEditor extends DefaultDataEditor<GenericScriptData, Fiel
     @Override
     public void selectedIndexedChanged(int idx, ActionEvent e)
     {
+        int previousIndex = getSelectedIndex();
+
+        if (idx != previousIndex && !confirmDiscardUnsavedScript())
+        {
+            // the user backed out - put the selector back where it was
+            if (getPanel() != null && previousIndex >= 0)
+                getPanel().setSelectedEntryIndex(previousIndex);
+            return;
+        }
+
         super.selectedIndexedChanged(idx, e);
+
+        if (idx < 0)
+            return;
+
         EditorDataModel<FieldScriptContents> model = getModel();
         GenericScriptData data = (GenericScriptData) model.getValueFor(idx, null);
-//        errorsList.removeAll();
+
+        errorsList.setModel(new DefaultListModel<>()); // stale errors from another script
 
         if (data instanceof FieldScriptData scriptData)
         {
@@ -259,17 +303,14 @@ public class FieldScriptEditor extends DefaultDataEditor<GenericScriptData, Fiel
             ScriptDocument document = new ScriptDocument(textPane1);
             document.setVariableList(variableTracker.getVariableList());
             textPane1.setScriptDocument(document);
+            installDocumentDirtyListener(document);
 
             resetDisplayedFieldScriptData(scriptData);
 
-            try {
-                document.insertString(0, scriptData.toString(), document.getStyle("regular"));
-            } catch (BadLocationException ble) {
-                System.err.println("Couldn't insert initial text into text pane.");
-            }
+            loadScriptText(document, scriptData);
             scrollPane1.getVerticalScrollBar().setValue(0);
         }
-        else if (data instanceof LevelScriptData)
+        else if (data instanceof LevelScriptData levelScriptData)
         {
             remove(fieldScriptPanel);
             add(levelScriptPanel, "cell 1 0");
@@ -277,12 +318,68 @@ public class FieldScriptEditor extends DefaultDataEditor<GenericScriptData, Fiel
             levelScriptDataListModel = new DefaultListModel<>();
             levelScriptDataListModel.addAll(data);
             levelScriptList.setModel(levelScriptDataListModel);
+            paddingCheckbox.setSelected(levelScriptData.isHasPadding());
+
+            editMode = false;
+            toggleEditModeStates();
+            levelScriptListValueChanged(null);
         }
 
         updateUI();
+    }
 
+    /**
+     * @return true if it is safe to throw away the current script text (either it is unchanged,
+     * or the user chose to save/discard it); false if the user cancelled
+     */
+    private boolean confirmDiscardUnsavedScript()
+    {
+        if (!documentDirty)
+            return true;
 
-//        errorsList.setModel(listModel);
+        int result = JOptionPane.showConfirmDialog(this,
+                "This script has unsaved changes.\nWould you like to save them first?",
+                "Unsaved Changes", JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.WARNING_MESSAGE);
+
+        switch (result)
+        {
+            case JOptionPane.YES_OPTION -> {
+                return saveScriptChanges();
+            }
+            case JOptionPane.NO_OPTION -> {
+                documentDirty = false;
+                return true;
+            }
+            default -> {
+                return false;
+            }
+        }
+    }
+
+    /**
+     * Rebuilds the selected level script from the on-screen trigger list and pushes it through
+     * the model - without this every Add/Remove/Confirm and the padding checkbox were purely
+     * decorative, because the list model is a throwaway copy.
+     */
+    private void commitLevelScriptChanges()
+    {
+        int idx = getSelectedIndex();
+        if (idx < 0)
+            return;
+
+        EditorDataModel<FieldScriptContents> model = getModel();
+        Object entry = model.getValueFor(idx, null);
+        if (!(entry instanceof LevelScriptData levelScriptData))
+            return;
+
+        levelScriptData.clear();
+        for (int i = 0; i < levelScriptDataListModel.getSize(); i++)
+        {
+            levelScriptData.add(levelScriptDataListModel.get(i));
+        }
+        levelScriptData.setHasPadding(paddingCheckbox.isSelected());
+
+        model.setValueFor(levelScriptData, idx, null);
     }
 
     @Override
@@ -294,6 +391,9 @@ public class FieldScriptEditor extends DefaultDataEditor<GenericScriptData, Fiel
         String levelScript = bundle.getString("FieldScriptEditor.newEntryDialog.option2.text");
 
         Object selection = JOptionPane.showInputDialog(this, message, "PokEditor", JOptionPane.INFORMATION_MESSAGE, null, new Object[] {fieldScript, levelScript}, fieldScript);
+
+        if (selection == null) // the user cancelled
+            return;
 
         EditorDataModel<FieldScriptContents> model = getModel();
 
@@ -312,6 +412,11 @@ public class FieldScriptEditor extends DefaultDataEditor<GenericScriptData, Fiel
             else
                 return;
 
+            // the selector is only populated in DefaultDataEditorPanel's constructor, so without
+            // this the new entry is written to the NARC but is unreachable
+            if (getPanel() != null)
+                getPanel().entryAdded(newIndex);
+
             selectedIndexedChanged(newIndex, null);
             updateUI();
         }
@@ -321,7 +426,34 @@ public class FieldScriptEditor extends DefaultDataEditor<GenericScriptData, Fiel
     @Override
     public void deleteCurrentEntry()
     {
+        int idx = getSelectedIndex();
+        if (idx < 0)
+        {
+            JOptionPane.showMessageDialog(this, "Select the entry you would like to delete first.", "PokEditor", JOptionPane.INFORMATION_MESSAGE);
+            return;
+        }
 
+        if (!(getModel() instanceof FormatModel<?, ?> formatModel))
+            return;
+
+        List<?> data = formatModel.getData();
+        if (idx >= data.size())
+            return;
+
+        if (JOptionPane.showConfirmDialog(this,
+                "Delete script entry " + idx + "?\nEvery script after it will shift down by one, which will break any\nscript reference which points at them.",
+                "PokEditor", JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE) != JOptionPane.YES_OPTION)
+            return;
+
+        documentDirty = false;
+        data.remove(idx);
+
+        if (getPanel() != null)
+            getPanel().entryRemoved(idx);
+
+        int neighbour = Math.min(idx, data.size() - 1);
+        selectedIndexedChanged(neighbour, null);
+        updateUI();
     }
 
     private void resetDisplayedFieldScriptData(FieldScriptData scriptData)
@@ -358,30 +490,46 @@ public class FieldScriptEditor extends DefaultDataEditor<GenericScriptData, Fiel
     }
 
     private void saveScriptChangesButtonPressed(ActionEvent e) {
-        if (textPane1.getDocument() instanceof ScriptDocument scriptDocument)
+        saveScriptChanges();
+    }
+
+    /**
+     * @return true if the script compiled and was written back into the model
+     */
+    private boolean saveScriptChanges()
+    {
+        if (!(textPane1.getDocument() instanceof ScriptDocument scriptDocument))
+            return false;
+
+        try
         {
-            try
+            FieldScriptData data = scriptDocument.getScriptData();
+
+            EditorDataModel<FieldScriptContents> model = getModel();
+            model.setValueFor(data, getSelectedIndex(), null);
+
+            resetDisplayedFieldScriptData(data);
+            errorsList.setModel(new DefaultListModel<>());
+            documentDirty = false;
+
+            // only claim success once the write has actually happened
+            JOptionPane.showMessageDialog(this, "Script file saved!", "Field Script Editor", JOptionPane.INFORMATION_MESSAGE);
+            return true;
+        }
+        catch(BadLocationException ex) {
+            ex.printStackTrace();
+            JOptionPane.showMessageDialog(this, "The script could not be read from the editor:\n" + ex.getMessage(), "Field Script Editor", JOptionPane.ERROR_MESSAGE);
+            return false;
+        }
+        catch(ScriptDataProducer.ScriptCompilationException ex) {
+            DefaultListModel<String> errorListModel = new DefaultListModel<>();
+            for (Throwable throwable : ex.getSuppressed())
             {
-                FieldScriptData data = scriptDocument.getScriptData();
-                JOptionPane.showMessageDialog(this, "Script file saved!", "Field Script Editor", JOptionPane.INFORMATION_MESSAGE);
-
-                EditorDataModel<FieldScriptContents> model = getModel();
-                model.setValueFor(data, getSelectedIndex(), null);
-
-                resetDisplayedFieldScriptData(data);
+                errorListModel.addElement(throwable.getMessage());
+                System.err.println(throwable.getMessage());
             }
-            catch(BadLocationException ex) {
-                throw new RuntimeException(ex);
-            }
-            catch(ScriptDataProducer.ScriptCompilationException ex) {
-                DefaultListModel<String> errorListModel = new DefaultListModel<>();
-                for (Throwable throwable : ex.getSuppressed())
-                {
-                    errorListModel.addElement(throwable.getMessage());
-                    System.err.println(throwable.getMessage());
-                }
-                errorsList.setModel(errorListModel);
-            }
+            errorsList.setModel(errorListModel);
+            return false;
         }
     }
 
@@ -467,6 +615,10 @@ public class FieldScriptEditor extends DefaultDataEditor<GenericScriptData, Fiel
 
     }
 
+    /**
+     * Called from BOTH mousePressed and mouseReleased - isPopupTrigger() is only ever true on
+     * the release on Windows, which made the trigger context menu unreachable there.
+     */
     private void levelScriptListMousePressed(MouseEvent e) {
         if (e.isPopupTrigger()) {
             JPopupMenu menu = new JPopupMenu();
@@ -548,10 +700,24 @@ public class FieldScriptEditor extends DefaultDataEditor<GenericScriptData, Fiel
     }
 
     private void confirmButtonActionPerformed(ActionEvent e) {
+        // capture the index BEFORE addTriggerToList() - clicking empty space below the last row
+        // clears the selection while edit mode stays on, and remove(-1) throws while leaving a
+        // duplicate trigger appended
+        int editedIndex = levelScriptList.getSelectedIndex();
+
+        if (editedIndex == -1)
+        {
+            JOptionPane.showMessageDialog(this, "The trigger being edited is no longer selected.\nAction has been aborted.", "Level Script Editor", JOptionPane.ERROR_MESSAGE);
+            clearInputFields();
+            editMode = false;
+            toggleEditModeStates();
+            return;
+        }
+
         GenericScriptData.ScriptComponent built = addTriggerToList();
 
         if (built != null)
-            levelScriptDataListModel.remove(levelScriptList.getSelectedIndex());
+            levelScriptDataListModel.remove(editedIndex);
 
         int count = -1;
         for (LevelScriptData.LevelScriptTrigger lst : Arrays.stream(levelScriptDataListModel.toArray()).map(s -> (LevelScriptData.LevelScriptTrigger) s).toList()) {
@@ -563,6 +729,7 @@ public class FieldScriptEditor extends DefaultDataEditor<GenericScriptData, Fiel
         levelScriptList.setSelectedIndex(count + 1);
         editMode = false;
         toggleEditModeStates();
+        commitLevelScriptChanges();
     }
 
     private void clearInputFields() {
@@ -602,12 +769,17 @@ public class FieldScriptEditor extends DefaultDataEditor<GenericScriptData, Fiel
     }
 
     private void addButtonActionPerformed(ActionEvent e) {
-        addTriggerToList();
+        if (addTriggerToList() != null)
+            commitLevelScriptChanges();
     }
 
     private void removeButtonActionPerformed(ActionEvent e) {
-        if (levelScriptList.getSelectedIndex() != -1)
-            levelScriptDataListModel.remove(levelScriptList.getSelectedIndex());
+        int idx = levelScriptList.getSelectedIndex();
+        if (idx != -1)
+        {
+            levelScriptDataListModel.remove(idx);
+            commitLevelScriptChanges();
+        }
     }
 
     void changeFieldVisibility(boolean setting) {
@@ -624,6 +796,9 @@ public class FieldScriptEditor extends DefaultDataEditor<GenericScriptData, Fiel
     }
 
     private void labelDisplayListSelectionChanged(ListSelectionEvent e) {
+        if (e != null && e.getValueIsAdjusting())
+            return;
+
         textPane1.getHighlighter().removeAllHighlights();
 
         if (!labelDisplayList.isSelectionEmpty())
@@ -643,6 +818,14 @@ public class FieldScriptEditor extends DefaultDataEditor<GenericScriptData, Fiel
 
                 int index = text.indexOf(toFind);
 
+                if (index < 0)
+                {
+                    // the jump lists are only rebuilt on entry switch and successful save, so
+                    // they go stale as soon as the user edits the script
+                    Toolkit.getDefaultToolkit().beep();
+                    return;
+                }
+
                 ScriptPane.gotoStartOfLine(textPane1, ScriptPane.getLineAtOffset(textPane1, index));
 
                 DefaultHighlighter.DefaultHighlightPainter highlightPainter =
@@ -651,7 +834,7 @@ public class FieldScriptEditor extends DefaultDataEditor<GenericScriptData, Fiel
                         highlightPainter);
             }
             catch (BadLocationException ex) {
-                throw new RuntimeException(ex);
+                ex.printStackTrace();
             }
         }
     }
@@ -951,6 +1134,11 @@ public class FieldScriptEditor extends DefaultDataEditor<GenericScriptData, Fiel
                     public void mousePressed(MouseEvent e) {
                         levelScriptListMousePressed(e);
                     }
+
+                    @Override
+                    public void mouseReleased(MouseEvent e) {
+                        levelScriptListMousePressed(e);
+                    }
                 });
                 scrollPane3.setViewportView(levelScriptList);
             }
@@ -1090,6 +1278,12 @@ public class FieldScriptEditor extends DefaultDataEditor<GenericScriptData, Fiel
         @Override
         public void setValueFor(Object aValue, int entryIdx, FieldScriptContents property)
         {
+            if (entryIdx < 0 || !(aValue instanceof GenericScriptData scriptData))
+                return;
+
+            getData().set(entryIdx, scriptData);
+            DataManager.markDirty(GenericScriptData.class);
+
 //            GenericScriptData entry = getData().get(entryIdx);
 //
 //            switch (property) {

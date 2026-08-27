@@ -1,6 +1,8 @@
 package io.github.turtleisaac.pokeditor.gui.sheets.tables;
 
+import io.github.turtleisaac.pokeditor.DataManager;
 import io.github.turtleisaac.pokeditor.formats.GenericFileData;
+import io.github.turtleisaac.pokeditor.formats.text.TextBankData;
 import io.github.turtleisaac.pokeditor.gui.sheets.tables.cells.renderers.DefaultSheetCellRenderer;
 import io.github.turtleisaac.pokeditor.gui.sheets.tables.cells.renderers.MultiLineTableHeaderRenderer;
 
@@ -55,6 +57,26 @@ public class FrozenColumnTable<E extends GenericFileData> extends JTable
         setDefaultRenderer(Object.class, new DefaultSheetCellRenderer());
     }
 
+    /**
+     * The frozen columns edit the parallel name bank, so writes have to mark it dirty, and
+     * validation failures thrown by the underlying data have to reach the user rather than
+     * escaping onto the EDT.
+     */
+    @Override
+    public void setValueAt(Object aValue, int row, int column)
+    {
+        try {
+            super.setValueAt(aValue, row, column);
+            DataManager.markDirty(TextBankData.class);
+        }
+        catch (RuntimeException e) {
+            e.printStackTrace();
+            JOptionPane.showMessageDialog(this,
+                    String.format("The value \"%s\" could not be applied to row %d:%n%s", aValue, row, e.getMessage()),
+                    "Invalid Value", JOptionPane.ERROR_MESSAGE);
+        }
+    }
+
     public JTable getCornerTableHeader()
     {
         TableModel model = new DefaultTableModel() {
@@ -73,7 +95,12 @@ public class FrozenColumnTable<E extends GenericFileData> extends JTable
             @Override
             public Object getValueAt(int row, int column)
             {
-                return getModel().getColumnName(column - getColumnModel().getColumnCount());
+                // corner cell c names frozen column c, so c is the index to ask for. This used
+                // to subtract the column count, handing getColumnName an index in [-n, -1] -
+                // outside its domain for every column. It produced the right strings only
+                // because the frozen models added the same offset straight back on; a model
+                // without that quirk got a blank header instead.
+                return getModel().getColumnName(column);
             }
 
             @Override

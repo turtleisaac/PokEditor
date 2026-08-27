@@ -30,6 +30,9 @@ public class DefaultDataEditorPanel<G extends GenericFileData, E extends Enum<E>
 
     private BytesDataContainer copiedEntry;
 
+    /** guards against the selector's own action listener re-entering the editor */
+    private boolean suppressSelectionEvents;
+
     public DefaultDataEditorPanel(PokeditorManager manager, DefaultDataEditor<G, E> editor) {
         initComponents();
         this.manager = manager;
@@ -72,7 +75,62 @@ public class DefaultDataEditorPanel<G extends GenericFileData, E extends Enum<E>
         if (!enabledToolbarButtons.contains(DataEditorButtons.IMPORT_FILE))
         {
             toolBar1.remove(importFileButton);
-            toolBar1.remove(separator3);
+            toolBar1.remove(separator8); // separator3 belongs to addButton
+        }
+
+        editor.setPanel(this);
+    }
+
+    /**
+     * Adds the newly created entry to the selector and selects it - without this a new entry
+     * is written to the NARC but is unreachable, because the combo box is only ever populated
+     * in this class' constructor.
+     */
+    public void entryAdded(int index)
+    {
+        EditorDataModel<?> model = editor.getModel();
+        entrySelectorComboBox.addItem(new ComboBoxItem(model.getEntryName(index)));
+        setSelectedEntryIndex(entrySelectorComboBox.getItemCount() - 1);
+    }
+
+    /**
+     * Removes the provided entry from the selector and selects a neighbouring one.
+     */
+    public void entryRemoved(int index)
+    {
+        if (index < 0 || index >= entrySelectorComboBox.getItemCount())
+            return;
+
+        suppressSelectionEvents = true;
+        try {
+            entrySelectorComboBox.removeItemAt(index);
+        }
+        finally {
+            suppressSelectionEvents = false;
+        }
+
+        if (entrySelectorComboBox.getItemCount() == 0)
+            return;
+
+        setSelectedEntryIndex(Math.min(index, entrySelectorComboBox.getItemCount() - 1));
+    }
+
+    /**
+     * Selects an entry WITHOUT notifying the editor - used both to restore the previous
+     * selection when the user cancels out of a switch, and after add/remove, where the editor
+     * drives the reload itself.
+     */
+    public void setSelectedEntryIndex(int index)
+    {
+        if (index < 0 || index >= entrySelectorComboBox.getItemCount())
+            return;
+
+        suppressSelectionEvents = true;
+        try {
+            entrySelectorComboBox.setSelectedIndex(index);
+        }
+        finally {
+            suppressSelectionEvents = false;
         }
     }
 
@@ -89,6 +147,9 @@ public class DefaultDataEditorPanel<G extends GenericFileData, E extends Enum<E>
     }
 
     private void selectedEntryChanged(ActionEvent e) {
+        if (suppressSelectionEvents)
+            return;
+
         editor.selectedIndexedChanged(entrySelectorComboBox.getSelectedIndex(), e);
     }
 
@@ -126,16 +187,23 @@ public class DefaultDataEditorPanel<G extends GenericFileData, E extends Enum<E>
      */
     private void exportFileButtonPressed(ActionEvent e) {
         BytesDataContainer container = editor.writeSelectedEntryForCopy();
+        if (container == null)
+            return;
+
         for (Map<BytesDataContainer.PatternIndex, byte[]> entry : container.values())
         {
             for (byte[] data : entry.values())
             {
                 try {
-                    FileUtils.promptLocationAndWriteFile(this, "exportFile", data, "Script File", ".scr");
+                    // A null return means the user cancelled the chooser or declined an
+                    // overwrite. Nothing was written, so there is nothing to report.
+                    if (FileUtils.promptLocationAndWriteFile(this, "exportFile", data, "Script File", ".scr") == null)
+                        return;
                     JOptionPane.showMessageDialog(this, "Success!", "Success", JOptionPane.INFORMATION_MESSAGE);
                 }
                 catch(IOException ex) {
-                    throw new RuntimeException(ex);
+                    ex.printStackTrace();
+                    JOptionPane.showMessageDialog(this, "The file could not be written:\n" + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
                 }
                 return;
             }
@@ -153,11 +221,20 @@ public class DefaultDataEditorPanel<G extends GenericFileData, E extends Enum<E>
             data = FileUtils.promptLocationAndReadFile(this, "exportFile", "Script File", ".scr");
         }
         catch(IOException ex) {
-            throw new RuntimeException(ex);
+            ex.printStackTrace();
+            JOptionPane.showMessageDialog(this, "The file could not be read:\n" + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+            return;
         }
 
+        if (data == null) // the user cancelled the file chooser
+            return;
+
+        BytesDataContainer existing = editor.writeSelectedEntryForCopy();
+        if (existing == null)
+            return;
+
         BytesDataContainer container = new BytesDataContainer();
-        container.insert(editor.writeSelectedEntryForCopy().keySet().toArray(GameFiles[]::new)[0], null, data);
+        container.insert(existing.keySet().toArray(GameFiles[]::new)[0], null, data);
         editor.applyCopiedEntry(container);
         selectedEntryChanged(null);
     }

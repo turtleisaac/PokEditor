@@ -7,21 +7,77 @@ package io.github.turtleisaac.pokeditor.gui.sheets;
 import java.awt.*;
 import java.util.*;
 import javax.swing.*;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
 import net.miginfocom.swing.*;
 
 /**
  * @author turtleisaac
  */
 public class FindDialog extends JFrame {
+    private final DefaultSheetPanel<?, ?> parent;
+
+    /** the cell the last hit was found at, so "Find" continues from there and wraps around */
+    private int lastRow;
+    private int lastColumn;
+
     public FindDialog(DefaultSheetPanel<?, ?> parent) {
         super();
+        this.parent = parent;
         initComponents();
-        setPreferredSize(dialogPane.getPreferredSize());
-        setMinimumSize(dialogPane.getPreferredSize());
-        setMaximumSize(dialogPane.getPreferredSize());
-        setVisible(true);
+
+        // the stray extra search field in the generated layout is not wired up to anything
+        panel1.remove(label1);
+        panel1.remove(textField1);
+        panel1.remove(radioButton1);
+
+        resetSearchPosition();
+        findTextField.getDocument().addDocumentListener(new DocumentListener() {
+            @Override
+            public void insertUpdate(DocumentEvent e) { resetSearchPosition(); }
+
+            @Override
+            public void removeUpdate(DocumentEvent e) { resetSearchPosition(); }
+
+            @Override
+            public void changedUpdate(DocumentEvent e) { resetSearchPosition(); }
+        });
+
+        findButton.addActionListener(e -> findButtonPressed());
+        doneButton.addActionListener(e -> dispose());
+        getRootPane().setDefaultButton(findButton);
+
+        setDefaultCloseOperation(DISPOSE_ON_CLOSE);
         pack();
+        setPreferredSize(getPreferredSize());
+        setMinimumSize(getPreferredSize());
         setLocationRelativeTo(parent);
+    }
+
+    private void resetSearchPosition()
+    {
+        lastRow = 0;
+        lastColumn = -parent.getFrozenColumnCount() - 1;
+    }
+
+    private void findButtonPressed()
+    {
+        String query = findTextField.getText();
+        if (query == null || query.isEmpty())
+            return;
+
+        int[] hit = parent.findNext(query, matchCaseCheckbox.isSelected(), matchEntireContentsCheckbox.isSelected(), lastRow, lastColumn);
+
+        if (hit == null)
+        {
+            JOptionPane.showMessageDialog(this, "No cell containing \"" + query + "\" was found.", "Find", JOptionPane.INFORMATION_MESSAGE);
+            resetSearchPosition();
+            return;
+        }
+
+        lastRow = hit[0];
+        lastColumn = hit[1];
+        parent.selectCell(lastRow, lastColumn);
     }
 
     private void initComponents() {

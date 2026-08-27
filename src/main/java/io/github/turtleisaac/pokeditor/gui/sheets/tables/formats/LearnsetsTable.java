@@ -82,12 +82,12 @@ public class LearnsetsTable extends DefaultTable<LearnsetData, LearnsetsTable.Le
         {
             LearnsetData learnset = getData().get(rowIdx);
 
-            aValue = prepareObjectForWriting(aValue, property.cellType);
+            aValue = prepareObjectForWriting(aValue, property.cellType, property.getValueRange());
 
             if (property.idx >= 0)
             {
                 int entryIdx = property.repetition / LearnsetsColumn.NUMBER_OF_COLUMNS.idx;
-                while (entryIdx > learnset.size())
+                while (entryIdx >= learnset.size())
                 {
                     learnset.add(new LearnsetData.LearnsetEntry());
                 }
@@ -126,10 +126,14 @@ public class LearnsetsTable extends DefaultTable<LearnsetData, LearnsetsTable.Le
             if (property.idx >= 0)
             {
                 int entryIdx = property.repetition / LearnsetsColumn.NUMBER_OF_COLUMNS.idx;
-                while (entryIdx >= learnset.size())
-                {
-                    learnset.add(new LearnsetData.LearnsetEntry());
-                }
+
+                // this is a read path called from getValueAt during painting - it must NOT grow
+                // the learnset, or merely scrolling the sheet would permanently inject junk
+                // moves (a padding entry serialises as 0x0000, not the 0xFFFF terminator).
+                // The list is only grown by setValueFor, when the user actually types something.
+                if (entryIdx >= learnset.size())
+                    return null;
+
                 LearnsetData.LearnsetEntry entry = learnset.get(entryIdx);
 
                 switch (property) {
@@ -168,6 +172,24 @@ public class LearnsetsTable extends DefaultTable<LearnsetData, LearnsetsTable.Le
         }
 
         @Override
+        public int[] getCellValueRange(int columnIndex)
+        {
+            if (columnIndex >= 0)
+            {
+                return LearnsetsColumn.getColumn(columnIndex % LearnsetsColumn.NUMBER_OF_COLUMNS.idx).getValueRange();
+            }
+
+            return LearnsetsColumn.getColumn(columnIndex).getValueRange();
+        }
+
+
+        @Override
+        public TextBankData getNameTextBank()
+        {
+            return getTextBankData().get(TextFiles.SPECIES_NAMES.getValue());
+        }
+
+        @Override
         public FormatModel<LearnsetData, LearnsetsColumn> getFrozenColumnModel()
         {
             return new LearnsetsTable.LearnsetsModel(getData(), getTextBankData()) {
@@ -175,6 +197,18 @@ public class LearnsetsTable extends DefaultTable<LearnsetData, LearnsetsTable.Le
                 public int getColumnCount()
                 {
                     return super.getNumFrozenColumns();
+                }
+
+                @Override
+                public String getColumnName(int column)
+                {
+                    // this model presents only the frozen columns, so its column 0 is the sheet's
+                    // first frozen column. FormatModel.getColumnName adds getNumFrozenColumns()
+                    // back on, which for this wrapper is its whole width - without undoing that
+                    // here, asking it for the name of column 0 answers with the first UNfrozen
+                    // column instead. getCornerTableHeader used to compensate by passing a
+                    // negative index; two wrongs that happened to cancel.
+                    return super.getColumnName(column - super.getNumFrozenColumns());
                 }
 
                 @Override
@@ -216,6 +250,18 @@ public class LearnsetsTable extends DefaultTable<LearnsetData, LearnsetsTable.Le
             this.idx = idx;
             this.key = key;
             this.cellType = cellType;
+        }
+
+        /**
+         * @return the inclusive {min, max} range this column's underlying storage can hold
+         */
+        int[] getValueRange()
+        {
+            return switch (this) {
+                case MOVE -> new int[] {0, 511}; // 9 bits
+                case LEVEL -> new int[] {0, 127}; // 7 bits
+                default -> new int[] {0, 0xFFFF};
+            };
         }
 
         static LearnsetsColumn getColumn(int idx)

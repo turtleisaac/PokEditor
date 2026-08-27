@@ -16,6 +16,7 @@ import javax.swing.event.*;
 import io.github.turtleisaac.nds4j.framework.GenericNtrFile;
 import io.github.turtleisaac.nds4j.images.IndexedImage;
 import io.github.turtleisaac.nds4j.images.Palette;
+import io.github.turtleisaac.pokeditor.DataManager;
 import io.github.turtleisaac.pokeditor.formats.pokemon_sprites.PokemonSpriteData;
 import io.github.turtleisaac.pokeditor.formats.text.TextBankData;
 import io.github.turtleisaac.pokeditor.gamedata.TextFiles;
@@ -75,7 +76,10 @@ public class PokemonSpriteEditor extends DefaultDataEditor<PokemonSpriteData, Po
         maleFrontYSpinner.setValue(model.getValueFor(idx, SpriteContents.MALE_FRONT_Y));
         movementSpinner.setValue(model.getValueFor(idx, SpriteContents.MOVEMENT));
         shadowXSpinner.setValue(model.getValueFor(idx, SpriteContents.SHADOW_X));
-        shadowSizeComboBox.setSelectedIndex((Integer) model.getValueFor(idx, SpriteContents.SHADOW_SIZE));
+        // shadowSize is read as a full u8, but this combo only has four entries - anything
+        // larger used to throw and leave the editor half-populated
+        int shadowSize = (Integer) model.getValueFor(idx, SpriteContents.SHADOW_SIZE);
+        shadowSizeComboBox.setSelectedIndex(Math.max(0, Math.min(shadowSize, shadowSizeComboBox.getItemCount() - 1)));
 
         int paletteIdx = (int) model.getValueFor(idx, SpriteContents.PARTY_ICON_PALETTE);
         partyIconPaletteSpinner.setValue(paletteIdx);
@@ -191,6 +195,29 @@ public class PokemonSpriteEditor extends DefaultDataEditor<PokemonSpriteData, Po
 
     private void importSprite(PokemonSpriteDisplayPanel panel)
     {
+        try {
+            doImportSprite(panel);
+        }
+        catch (RuntimeException e) {
+            e.printStackTrace();
+            JOptionPane.showMessageDialog(this,
+                    "The sprite could not be imported:\n" + e.getMessage() + "\n\nSee the command-line for details.",
+                    "Import Error", JOptionPane.ERROR_MESSAGE);
+        }
+    }
+
+    private void doImportSprite(PokemonSpriteDisplayPanel panel)
+    {
+        if (!panel.hasImage())
+        {
+            // the placeholder standing in for an empty slot has the wrong dimensions and no
+            // scan mode, so writing into it produces an all-black sprite in the ROM
+            JOptionPane.showMessageDialog(this,
+                    "This species has no sprite in this slot, so there is nothing to import into.\nAction has been aborted.",
+                    "No Sprite", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
         GenericNtrFile result = PokeditorManager.readIndexedImage(panel.contents != SpriteContents.PARTY_ICON);
         if (result == null) {
             JOptionPane.showMessageDialog(this, "An error occurred while reading the provided file.\nAction has been aborted.");
@@ -210,6 +237,8 @@ public class PokemonSpriteEditor extends DefaultDataEditor<PokemonSpriteData, Po
                 return;
             }
 
+            boolean isBattleSprite = panel.buttonStyle == PokemonSpriteDisplayPanel.HORIZONTAL;
+
             if (panel.panel.image != null && !image.getPalette().equals(Palette.defaultPalette)) {
                 if (image.getPalette().getColors().length > MAXIMUM_PALETTE_SIZE) {
                     JOptionPane.showMessageDialog(this,
@@ -219,7 +248,7 @@ public class PokemonSpriteEditor extends DefaultDataEditor<PokemonSpriteData, Po
                     return;
                 }
 
-                if (panel.buttonStyle == PokemonSpriteDisplayPanel.HORIZONTAL && !image.getPalette().equals(panel.panel.image.getPalette())) {
+                if (isBattleSprite && !image.getPalette().equals(panel.panel.image.getPalette())) {
                     int confirmResult = JOptionPane.showConfirmDialog(this, "The provided image has a palette which differs from that of the current image. Would you like to overwrite?", "Palette Conflict", JOptionPane.YES_NO_CANCEL_OPTION);
 
                     switch (confirmResult) {
@@ -234,7 +263,9 @@ public class PokemonSpriteEditor extends DefaultDataEditor<PokemonSpriteData, Po
                 }
             }
 
-            if (!image.getPalette().equals(Palette.defaultPalette))
+            // the party icon has its own palette in a completely different file, so importing
+            // one must never write over the battle sprite palette
+            if (isBattleSprite && !image.getPalette().equals(Palette.defaultPalette))
             {
                 if (tabbedPane1.getSelectedComponent().equals(palettePanel))
                 {
@@ -595,6 +626,9 @@ public class PokemonSpriteEditor extends DefaultDataEditor<PokemonSpriteData, Po
 
         private final int buttonStyle;
 
+        /** false while this slot is showing the empty-slot placeholder rather than a real sprite */
+        private boolean hasImage;
+
         private SpriteContents contents;
 
         public PokemonSpriteDisplayPanel()
@@ -687,15 +721,28 @@ public class PokemonSpriteEditor extends DefaultDataEditor<PokemonSpriteData, Po
         public void setImage(IndexedImage image)
         {
             if (image == null) {
-                setImage(new IndexedImage(80, 160, 4, Palette.defaultPalette));
+                // most species have no female sprites - the placeholder below only exists so
+                // something can be painted, it is NOT a real sprite and must never be saved
+                hasImage = false;
+                panel.setImage(new IndexedImage(80, 160, 4, Palette.defaultPalette));
+                setMaximumSize(getPreferredSize());
                 setEnabled(false);
             }
             else {
+                hasImage = true;
                 setEnabled(true);
                 panel.setImage(image);
                 setMaximumSize(getPreferredSize());
             }
             repaint();
+        }
+
+        /**
+         * @return whether this slot holds a real sprite (as opposed to the empty-slot placeholder)
+         */
+        public boolean hasImage()
+        {
+            return hasImage;
         }
 
         public void setPalette(Palette palette)
@@ -714,6 +761,10 @@ public class PokemonSpriteEditor extends DefaultDataEditor<PokemonSpriteData, Po
 //            super.setEnabled(enabled);
             exportButton.setEnabled(enabled);
             swapButton.setEnabled(enabled);
+            // the placeholder for an empty slot has the wrong dimensions and no scan mode, so
+            // importing into it can only produce a corrupt sprite - keep Import consistent with
+            // importSprite(), which refuses empty slots
+            importButton.setEnabled(enabled);
         }
 
         public void setContents(SpriteContents contents)
@@ -763,6 +814,9 @@ public class PokemonSpriteEditor extends DefaultDataEditor<PokemonSpriteData, Po
         static Image mediumShadow = new ImageIcon(BattleMockupPanel.class.getResource("/pokeditor/icons/shadow_medium.png")).getImage();
         static Image largeShadow = new ImageIcon(BattleMockupPanel.class.getResource("/pokeditor/icons/shadow_large.png")).getImage();
 
+        /** set once a paint has failed, so the failure is not reported over and over */
+        private boolean paintFailed;
+
         public BattleMockupPanel()
         {
             super();
@@ -775,8 +829,13 @@ public class PokemonSpriteEditor extends DefaultDataEditor<PokemonSpriteData, Po
         }
 
         @Override
-        public void paint(Graphics g)
+        protected void paintComponent(Graphics g)
         {
+            super.paintComponent(g);
+
+            if (paintFailed)
+                return;
+
             try
             {
                 //The origin (top left) is 0, 0
@@ -818,12 +877,18 @@ public class PokemonSpriteEditor extends DefaultDataEditor<PokemonSpriteData, Po
                     back = maleBackPanel.panel.image;
                 }
 
-                int startCoordinateX = toggleFrameButton.isSelected() ? spriteSize : 0;
+                int requestedX = toggleFrameButton.isSelected() ? spriteSize : 0;
 
                 if (front != null)
+                {
+                    int startCoordinateX = Math.max(0, Math.min(requestedX, front.getWidth() - spriteSize));
                     frontSprite = front.getSubImage(startCoordinateX, 0, spriteSize, spriteSize).getTransparentImage();
+                }
                 if (back != null)
+                {
+                    int startCoordinateX = Math.max(0, Math.min(requestedX, back.getWidth() - spriteSize));
                     backSprite = back.getSubImage(startCoordinateX, 0, spriteSize, spriteSize).getTransparentImage();
+                }
 
                 int frontModifier = (int) (isFemale ? femaleFrontYSpinner.getValue() : maleFrontYSpinner.getValue());
                 int backModifier = (int) (isFemale ? femaleBackYSpinner.getValue() : maleBackYSpinner.getValue());
@@ -845,10 +910,18 @@ public class PokemonSpriteEditor extends DefaultDataEditor<PokemonSpriteData, Po
 
                 g.drawImage(image, 0, 0, getWidth(), getHeight(), null);
             }
-            catch(IndexedImage.ImageException e)
+            catch(IndexedImage.ImageException | RuntimeException e)
             {
+                // NEVER open a modal dialog from a paint method - dismissing it repaints, which
+                // re-enters here, throws again and reopens the dialog forever. Draw a placeholder
+                // and latch the failure instead.
                 e.printStackTrace();
-                JOptionPane.showMessageDialog(this, "A fatal image-parsing error has occurred while attempting to display the in-battle sprite preview. Check the command-line for details.", "Error", JOptionPane.ERROR_MESSAGE);
+                paintFailed = true;
+
+                g.setColor(Color.DARK_GRAY);
+                g.fillRect(0, 0, getWidth(), getHeight());
+                g.setColor(Color.WHITE);
+                g.drawString("Battle preview unavailable - see command-line", 8, getHeight() / 2);
             }
 
         }
@@ -905,8 +978,9 @@ public class PokemonSpriteEditor extends DefaultDataEditor<PokemonSpriteData, Po
                     add(button, String.format("cell %d %d", col, row));
                 }
             }
-            add(new JButton("Set to Shiny"), "cell 0 4 4 1");
-            add(new JButton("Swap with Shiny"), "cell 0 4 4 1");
+            // NOTE: the "Set to Shiny" and "Swap with Shiny" buttons which used to be added here
+            // were constructed with no ActionListener at all - they looked functional and did
+            // nothing, so they have been removed rather than shipped as dead controls
 
             for (JButton button : buttons) {
                 button.addActionListener(this::colorChangeRequested);
@@ -916,11 +990,15 @@ public class PokemonSpriteEditor extends DefaultDataEditor<PokemonSpriteData, Po
         public void setPalette(Palette palette)
         {
             this.palette = palette;
-            int i = 0;
-            for (JButton button : buttons)
+
+            // an optimal indexed PNG out of GIMP/Aseprite frequently has fewer than 16 colors,
+            // and reading past the end used to throw and leave this panel half-updated
+            int available = palette == null ? 0 : Math.min(buttons.length, palette.getNumColors());
+
+            for (int i = 0; i < buttons.length; i++)
             {
-                Color c = palette.getColor(i++);
-                button.setBackground(c);
+                buttons[i].setBackground(i < available ? palette.getColor(i) : null);
+                buttons[i].setEnabled(i < available);
             }
         }
 
@@ -1113,6 +1191,7 @@ public class PokemonSpriteEditor extends DefaultDataEditor<PokemonSpriteData, Po
         public void setValueFor(Object aValue, int entryIdx, SpriteContents property)
         {
             PokemonSpriteData entry = getData().get(entryIdx);
+            DataManager.markDirty(PokemonSpriteData.class);
 
             switch (property) {
                 case FEMALE_BACK -> entry.setFemaleBack((IndexedImage) aValue);

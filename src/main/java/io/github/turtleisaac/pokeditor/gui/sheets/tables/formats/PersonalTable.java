@@ -1,6 +1,7 @@
 package io.github.turtleisaac.pokeditor.gui.sheets.tables.formats;
 
 import io.github.turtleisaac.pokeditor.formats.personal.PersonalData;
+import io.github.turtleisaac.pokeditor.gui.PokeditorManager;
 import io.github.turtleisaac.pokeditor.formats.text.TextBankData;
 import io.github.turtleisaac.pokeditor.gamedata.TextFiles;
 import io.github.turtleisaac.pokeditor.gui.sheets.tables.cells.CellTypes;
@@ -84,7 +85,7 @@ public class PersonalTable extends DefaultTable<PersonalData, PersonalTable.Pers
             PersonalData entry = getData().get(entryIdx);
             TextBankData speciesNames = getTextBankData().get(TextFiles.SPECIES_NAMES.getValue());
 
-            aValue = prepareObjectForWriting(aValue, property.cellType);
+            aValue = prepareObjectForWriting(aValue, property.cellType, property.getValueRange());
 
             switch (property) {
                 case ID -> {}
@@ -251,6 +252,19 @@ public class PersonalTable extends DefaultTable<PersonalData, PersonalTable.Pers
         }
 
         @Override
+        public int[] getCellValueRange(int columnIndex)
+        {
+            return PersonalColumns.getColumn(columnIndex).getValueRange();
+        }
+
+
+        @Override
+        public TextBankData getNameTextBank()
+        {
+            return getTextBankData().get(TextFiles.SPECIES_NAMES.getValue());
+        }
+
+        @Override
         public FormatModel<PersonalData, PersonalColumns> getFrozenColumnModel()
         {
             return new PersonalModel(getData(), getTextBankData()) {
@@ -258,6 +272,18 @@ public class PersonalTable extends DefaultTable<PersonalData, PersonalTable.Pers
                 public int getColumnCount()
                 {
                     return super.getNumFrozenColumns();
+                }
+
+                @Override
+                public String getColumnName(int column)
+                {
+                    // this model presents only the frozen columns, so its column 0 is the sheet's
+                    // first frozen column. FormatModel.getColumnName adds getNumFrozenColumns()
+                    // back on, which for this wrapper is its whole width - without undoing that
+                    // here, asking it for the name of column 0 answers with the first UNfrozen
+                    // column instead. getCornerTableHeader used to compensate by passing a
+                    // negative index; two wrongs that happened to cancel.
+                    return super.getColumnName(column - super.getNumFrozenColumns());
                 }
 
                 @Override
@@ -324,6 +350,29 @@ public class PersonalTable extends DefaultTable<PersonalData, PersonalTable.Pers
             this.idx = idx;
             this.key = key;
             this.cellType = cellType;
+        }
+
+        /**
+         * @return the inclusive {min, max} range this column's underlying storage can hold
+         */
+        int[] getValueRange()
+        {
+            return switch (this) {
+                // the EV yields are packed two bits apiece into a single short
+                case HP_EV_YIELD, ATK_EV_YIELD, DEF_EV_YIELD, SPEED_EV_YIELD, SP_ATK_EV_YIELD, SP_DEF_EV_YIELD -> new int[] {0, 3};
+                // the dex color shares its byte with the flip flag (bit 7)
+                case COLOR -> new int[] {0, 127};
+                // A type is stored in a whole byte, so this bound is not about storage - it is
+                // the number of types this sheet can name and colour. PokeditorManager.typeColors
+                // has one entry per Generation 4 type, and a value past the end has no name to
+                // show and no colour to draw. Core deliberately does not enforce it: a ROM hack
+                // with more types is valid data, and refusing to store it there would make the
+                // file unopenable rather than merely awkward to edit here. Raising typeColors is
+                // what widens this.
+                case TYPE_1, TYPE_2 -> new int[] {0, PokeditorManager.typeColors.length - 1};
+                case UNCOMMON_HELD_ITEM, RARE_HELD_ITEM -> new int[] {0, 0xFFFF};
+                default -> new int[] {0, 255};
+            };
         }
 
         static PersonalColumns getColumn(int idx)

@@ -22,15 +22,35 @@ import java.util.List;
 
 public class TmCompatibilityTable extends DefaultTable<PersonalData, TmCompatibilityTable.TmCompatibilityColumns>
 {
+    /**
+     * The TM/HM tables live on the parser instance rather than in statics, so that opening a
+     * second ROM cannot write the first ROM's TM list into it. Guice binds this as a singleton,
+     * so this is the same instance that populated the tables while parsing.
+     */
+    private static PersonalParser personalParser()
+    {
+        return (PersonalParser) DataManager.getParser(PersonalData.class);
+    }
+
     //todo 0xF0BFC is address of TMs table
     static final int[] columnWidths = new int[102];
     static {
         Arrays.fill(columnWidths, 120);
     }
 
-    public TmCompatibilityTable(List<PersonalData> data, List<TextBankData> textData)
+    private final List<MoveData> moves;
+
+    /**
+     * @param moves the move list the TM header editor reassigns from. Held rather than fetched
+     *              on demand: this table has no ROM to fetch with, and the header listener used
+     *              to ask DataManager with a null one - which since the caches became ROM-scoped
+     *              discards every loaded sheet and then throws. resetData refills the same list
+     *              object, so holding the reference stays correct across a reload.
+     */
+    public TmCompatibilityTable(List<PersonalData> data, List<TextBankData> textData, List<MoveData> moves)
     {
         super(new TmCompatibilityModel(data, textData), textData, columnWidths, null);
+        this.moves = moves;
         String[] moveNames = textData.get(TextFiles.MOVE_NAMES.getValue()).getStringList().toArray(String[]::new);
 
         TableCellRenderer renderer = new DefaultTableCellRenderer() {
@@ -108,7 +128,7 @@ public class TmCompatibilityTable extends DefaultTable<PersonalData, TmCompatibi
         {
             if (column < 0)
                 return super.getColumnName(column);
-            return "" + PersonalParser.tmMoveIdNumbers[column];
+            return "" + personalParser().getTmMoveIdNumber(column);
         }
 
         @Override
@@ -180,6 +200,13 @@ public class TmCompatibilityTable extends DefaultTable<PersonalData, TmCompatibi
             return CellTypes.CHECKBOX;
         }
 
+
+        @Override
+        public TextBankData getNameTextBank()
+        {
+            return getTextBankData().get(TextFiles.SPECIES_NAMES.getValue());
+        }
+
         @Override
         public FormatModel<PersonalData, TmCompatibilityColumns> getFrozenColumnModel()
         {
@@ -188,6 +215,18 @@ public class TmCompatibilityTable extends DefaultTable<PersonalData, TmCompatibi
                 public int getColumnCount()
                 {
                     return super.getNumFrozenColumns();
+                }
+
+                @Override
+                public String getColumnName(int column)
+                {
+                    // this model presents only the frozen columns, so its column 0 is the sheet's
+                    // first frozen column. FormatModel.getColumnName adds getNumFrozenColumns()
+                    // back on, which for this wrapper is its whole width - without undoing that
+                    // here, asking it for the name of column 0 answers with the first UNfrozen
+                    // column instead. getCornerTableHeader used to compensate by passing a
+                    // negative index; two wrongs that happened to cancel.
+                    return super.getColumnName(column - super.getNumFrozenColumns());
                 }
 
                 @Override
@@ -267,11 +306,15 @@ public class TmCompatibilityTable extends DefaultTable<PersonalData, TmCompatibi
                             items.addElement(new EditorComboBox.ComboBoxItem(moveName));
                         }
                         JList<EditorComboBox.ComboBoxItem> list = new JList<>(items);
-                        list.setSelectedIndex(PersonalParser.tmMoveIdNumbers[columnIndex]);
+                        list.setSelectedIndex(personalParser().getTmMoveIdNumber(columnIndex));
 
                         list.addListSelectionListener(e -> {
-                            PersonalParser.updateTmType(columnIndex, list.getSelectedIndex(), DataManager.getData(null, MoveData.class));
+                            personalParser().updateTmType(columnIndex, list.getSelectedIndex(), moves);
                             column.setHeaderValue(list.getSelectedIndex());
+                            // the reassignment lives on the parser, not in any sheet's data, so
+                            // nothing else marks it. Without this the edit is real, is written by
+                            // the next save, and yet the exit prompt reports no unsaved changes.
+                            DataManager.markDirty(PersonalData.class);
                         });
 
                         popupMenu.setPreferredSize(
