@@ -399,37 +399,91 @@ already happened, is what the JGit bug was.
 
 ---
 
-## Merging and releasing
+## Building and releasing
 
-### Merge order
-Nds4j merges **first**. All three others pin `Nds4j:1.0.0` and Nds4j `main` is still `0.1.0`;
-their CI clones the sibling at a branch of the same name, or `main` when there is none, and
-builds it from source. So once Nds4j's branch is on `main`, `main` is 1.0.0 and the other three
-resolve without a matching branch. Until then they depend on their branches existing.
+### What is published, and what is not
+| Artifact | Version | On Central |
+|---|---|---|
+| `Nds4j` | 1.0.0 | **yes** - jar, pom, sources, javadoc and `.asc` all resolve |
+| `Nds4j-ToolUI` | 1.0.0 | no - 404 |
+| `PokEditor-Core` | 1.0.0 | no - 404 |
+| `PokEditor` | 3.2.0 | n/a - an application, not a library |
 
-Publication to Central is **not** a merge prerequisite - an earlier version of this file said it
-was, which was wrong: nothing in CI resolves these from Central. It is a prerequisite for users
-and for the Nds4j README, which advertises a coordinate that 404s until the release is pushed by
-hand from the portal.
+Nds4j 1.0.0 is **permanent**. A published coordinate cannot be replaced, which is why the
+Nds4j section above is stricter about its API than the other three.
 
-### ~~PokEditor's build is red and will stay red~~ (the `VariableTracker` blocker is cleared)
-Every run used to fail at *Verify dependencies resolve*, on the unpublished `VariableTracker` above,
-skipping every step after it - including the jar build and its checks. That was the one thing
-standing between PokEditor's PR and a green build; it was not a test failure and no amount of test
-work would have cleared it. Vendoring `VariableTracker` (see above) removes that unresolvable
-coordinate, so dependency resolution no longer 404s on it.
+### Building the chain from a clean checkout
+Only Nds4j resolves on its own. ToolUI and Core have to be installed locally before PokEditor
+can compile, in dependency order:
 
-### Publishing prerequisites, none of them code
-- The signing key's subkey has expired. Extend it, then re-upload to **both**
-  `keyserver.ubuntu.com` and `keys.openpgp.org` - it is currently on the first only.
-- Four repository secrets must exist before `release.yml` can run: `MAVEN_CENTRAL_USERNAME`,
-  `MAVEN_CENTRAL_PASSWORD`, `GPG_PRIVATE_KEY`, `GPG_PASSPHRASE`.
-- ~~`Nds4j/.github/workflows/maven-publish.yml` publishes to the decommissioned OSSRH.~~
-  **Deleted.** `release.yml` is now the only publish path.
-- ~~`Nds4j/.github/workflows/maven-verify.yml` is the same vintage - JDK 8, Python 3.8.~~
-  **Rewritten.** It fired on every push to `main`, so merging would have turned `main` red on
-  JDK 8 for reasons unrelated to the merge. Now `workflow_dispatch` only, on build.yml's
-  toolchain. It also changes the scanned-NCGR coverage note above.
+```
+mvn -q install -DskipTests -f Nds4j/pom.xml          # only if you changed it
+mvn -q install -DskipTests -f Nds4j-ToolUI/pom.xml
+mvn -q install -DskipTests -f PokEditor-Core/pom.xml
+mvn verify -f PokEditor/pom.xml -DexcludedGroups=dead-code
+```
+
+Nds4j's line is optional because 1.0.0 comes from Central. Include it when testing a change to
+Nds4j against its consumers - installing a snapshot locally is now the way a cross-repository
+change gets exercised end to end, and it is a better test than CI ever ran, because it exercises
+the exact combination about to ship rather than whichever branches happened to share a name.
+
+**`-DexcludedGroups=dead-code` is not optional on PokEditor.** Without it the build goes red:
+545 tests run, 17 of them fail, and every one of those 17 is a `@Tag("dead-code")` specification
+that is *expected* to fail - the header of this file explains why they exist. With the exclusion
+it is 528 passing and green. CI passes the same flag, which is why CI is green and a plain
+`mvn verify` is not. Anyone following these steps without it will conclude the build is broken.
+
+From a cold local repository: the two sibling installs take about 25 seconds together, and
+PokEditor's own `verify` about 17 more.
+
+### CI resolves Nds4j from Central rather than building it
+ToolUI's and Core's workflows used to resolve a branch of the same name, clone Nds4j and install
+it from source. That is removed. Once Nds4j was published and both modules pinned `1.0.0`, the
+steps no longer affected what the build resolved; and once Nds4j's `main` moved on they installed
+a coordinate nothing asks for, so the jar they built was discarded. CI now tests against the same
+artifact a consumer downloads.
+
+The cost is real and is worth stating: **CI can no longer exercise a change that spans two
+repositories.** Picking up new Nds4j behaviour means editing the version pin, which is a
+reviewable line in a diff instead of an implicit consequence of a branch name; the combined test
+moves to a local checkout of all four, as above.
+
+PokEditor's CI still builds **ToolUI and Core** from source, because neither is published and
+there is no other way for it to resolve them. Nds4j is still in that loop and no longer needs to
+be - a one-word change, not yet made.
+
+### A version bump propagates by hand
+`Nds4j` is pinned at `1.0.0` in three poms. Nothing updates them automatically, and with the CI
+source-builds gone nothing disagrees loudly either, so a bump is now three deliberate edits.
+
+Nds4j `main` currently declares `1.0.0` while sitting **8 commits past the `v1.0.0` tag**, having
+gained `CellAnimation`, `Screen` and a rewritten `CellBank` since the release - so the name
+"Nds4j 1.0.0" presently refers to two different jars. An open PR moves `main` to
+`1.1.0-SNAPSHOT`, with a test asserting that an in-development version carries a qualifier. Until
+it merges, a local `mvn install` of Nds4j `main` silently overwrites the published 1.0.0 in the
+local repository with different code, which is the failure mode worth knowing about when
+following the local build steps above.
+
+### Publishing
+**Nds4j** publishes through `release.yml`, triggered by a tag. It has run once, on `v1.0.0`
+(`ad9c08a`), and succeeded. The signature on Central is the evidence that the four repository
+secrets exist and the signing key works - an earlier version of this file listed both as
+outstanding prerequisites, and both were cleared by that run. An earlier version also claimed
+publication was a prerequisite for merging, which was never true: nothing in CI resolved these
+from Central at the time.
+
+**ToolUI and Core have no publishing path at all.** Neither has a `release.yml`, a
+`central-publishing-maven-plugin`, a `maven-gpg-plugin` or a `maven-javadoc-plugin`, and neither
+pom carries any of `<name>`, `<description>`, `<url>`, `<licenses>`, `<developers>` or `<scm>` -
+all of which Central requires. This is an open decision rather than a defect: ToolUI is a library
+other people are invited to build tools against, so it has a real case for being published; Core
+is PokEditor's own data layer with no independent consumers, so it has much less of one. Until
+either is decided, both stay source-built by whoever needs them.
+
+### ~~PokEditor's build is red and will stay red~~ - resolved
+Every run used to fail at *Verify dependencies resolve*, on the unpublished `VariableTracker`,
+skipping every later step including the jar build. Resolved by vendoring, as recorded above.
 
 ### ~~Open decision blocking a permanent API~~ - settled
 `CodeBinary.compressed` was private, had no getter, and was read nowhere - which is how it
