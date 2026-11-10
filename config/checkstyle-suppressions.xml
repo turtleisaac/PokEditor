@@ -1,0 +1,14 @@
+<?xml version="1.0"?>
+<!DOCTYPE suppressions PUBLIC
+        "-//Checkstyle//DTD SuppressionFilter Configuration 1.2//EN"
+        "https://checkstyle.org/dtds/suppressions_1_2.dtd">
+<!--
+  Files already in the tree that miss a final newline. New files are checked.
+  These are not being rewritten in the commit that adds the gate.
+-->
+<suppressions>
+    <suppress checks="NewlineAtEndOfFile" files="[/\\]Main\.java$"/>
+    <suppress checks="NewlineAtEndOfFile" files="[/\\]JCheckboxTree\.java$"/>
+    <suppress checks="NewlineAtEndOfFile" files="[/\\]JarClassLoader\.java$"/>
+    <suppress checks="NewlineAtEndOfFile" files="[/\\]MultiLineTableHeaderRenderer\.java$"/>
+</suppressions>

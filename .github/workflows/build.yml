@@ -16,6 +16,9 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
+        with:
+          # Spotless ratchetFrom origin/main needs the base branch.
+          fetch-depth: 0
 
       - name: Set up JDK
         uses: actions/setup-java@v4

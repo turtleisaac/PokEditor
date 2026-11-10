@@ -1,0 +1,116 @@
+---
+description: Java style taken from turtleisaac's pre-2026 Nds4j, PokEditor, and PokEditor-Core
+globs: "**/*.java"
+alwaysApply: false
+---
+
+# Java style
+
+The target is the style of code written for the split library stack, not PokEditor v2 and not the files copied out of it unchanged.
+
+PokEditor v2 (2021–2023, `com.turtleisaac.pokeditor`) was already mostly Allman in the editors, but `if(` and `for(` were the habit: about 42% of `if`s had a space. The third-party DSPRE reader under `com.jackhack96` was end-of-line braces and was rewritten, not kept. When that monolith was split, the new files (Nds4j parsers, PokEditor-Core, Nds4j-ToolUI) kept Allman and put the space in: new Nds4j files are 92% `if (` and 96% `for (`, new PokEditor-Core files 98% and 98%, and every hand-written ToolUI `if` and `for` has the space. `PersonalEditor.java` in v2 (`if(files.length > nameData.length)`) became `if (` in `PersonalParser`.
+
+These modern files are v2 carry-overs and still show the old habit. Do not copy them: `MemBuf`, `Buffer`, `BinaryWriter`, `CRC16`, `BitVector`, `BitStream`, `ArrayProcessor`, `CsvReader`, `XmlReader`, `CircleButton`, `TrainerPersonalityCalculator`. `MemBuf.java` in v2 is already `public class MemBuf {`.
+
+Code added in 2026 drifted again (long javadocs, same-line `if (x) return;`, column-aligned comments). Do not copy that drift either.
+
+JFormDesigner files (`Created by JFormDesigner`, including the generated `initComponents` blocks) are not a style sample. Generated ANTLR (`src/main/generated-sources`, gitignored) is not either. Hand-written GUI, including Nds4j-ToolUI classes such as `PanelManager` and `HexadecimalSpinner`, is.
+
+## Keywords are not methods
+
+Write a space after `if`, `for`, `while`, `switch`, `catch`, and `synchronized`:
+
+```java
+if (folders != null)
+    this.folders = new HashMap<>(folders);
+
+for (byte[] data : files)
+{
+    fimgWriter.write(data);
+}
+```
+
+Older files often use `if(` and `for(`. That was a slip, not the style. Do not replicate it. `if` and `for` are keywords, not methods. Method calls, constructor calls, and declarations stay tight: `readInt()`, `new MemBuf()`, `void save()`.
+
+The Eclipse profile inserts the keyword space and leaves call parentheses alone. Spotless applies that profile to a Java file the next time the file changes relative to `origin/main`. This repository is not being reformatted up front, so an old `if(` can still be sitting in a file you did not touch. When you do touch that file, let the formatter fix it.
+
+## Braces
+
+Allman braces for named types, constructors, methods, and `if` / `for` / `while` / `switch` blocks. The `{` is alone on the next line. `else`, `catch`, and `finally` each start their own line.
+
+```java
+public class Fnt
+{
+    public int getIdOf(String name)
+    {
+        if (requestedPath.length == 1)
+        {
+            return searchFolder.firstId;
+        }
+        else
+        {
+            return -1;
+        }
+    }
+}
+```
+
+Anonymous classes and array initializers keep `{` on the same line: `new FileProcessingData() {`, `{0, 0, 0, 0}`.
+
+End-of-line braces show up in a minority of files (`MemBuf`, `Buffer`, `BinaryWriter`, parts of PokEditor). Do not spread that shape.
+
+## Control-flow bodies
+
+A single-statement `if` or `else` may be unbraced. The statement goes on the next line, indented one level. Never `if (x) return;`.
+
+`for` and `while` are braced even when the body is one statement. Brace new loops.
+
+After a `for` or `while`, leave a blank line before the next statement. That applies to a one-line body and to a braced body. Skip the blank line when the loop is the last thing in the method: the closing brace of the method comes next.
+
+```java
+for (String filename : files)
+    list.add(filename);
+
+for (String folderName : folders.keySet())
+{
+    list.add(folderName + "/");
+    list.addAll(folder.toStringList());
+}
+```
+
+## Methods, signatures, tests
+
+Leave one blank line between methods. The formatter preserves a blank line that is already there and will not insert one you forgot.
+
+Keep a method signature on one line, including the long ones.
+
+Break every chained `assertThat` onto its own indented line:
+
+```java
+assertThat(folder.getIdOf("Alpha"))
+        .isEqualTo(0);
+```
+
+## Comments and binary I/O
+
+A javadoc is one summary line, plus `@param`, `@return`, or `@throws` only when they add something the signature does not. Most methods have no javadoc. Inline notes stay short.
+
+Structured bytes go through `MemBuf`. `Buffer` and `BinaryWriter` are the older Nds4j exceptions.
+
+## Layout that already holds
+
+Four spaces, no tabs. UTF-8, LF, newline at end of file. One space around operators and after commas. A cast has a space after it: `(int) value`. `Type[]`, not `Type []`. Lambdas are `x -> expr` with spaces around `->`. A ternary stays on one line.
+
+Imports are not reordered by the tools. When you write them, group project (`io.github.turtleisaac`), then other libraries, then `java` / `javax`, then static, with a blank line between groups. Wildcards are allowed. Hand-written Swing (`HexadecimalSpinner`, PokEditor cell editors) often leads with `javax` instead; that disagrees with Nds4j library code, so follow the file you are in.
+
+Nds4j switches are `case` / `break` with an Allman brace (the sources are Java 8). PokEditor and PokEditor-Core are Java 20 and mostly use arrow switches. Do not introduce arrow switches in Nds4j.
+
+## Tooling
+
+`mvn verify` runs Spotless in check mode and Checkstyle. Spotless uses `config/eclipse-formatter.xml` (Eclipse JDT 4.41) and only looks at Java files that differ from `origin/main`, so existing sources are not rewritten by this setup. Checkstyle (`config/checkstyle.xml`) checks every file for LF, a trailing newline, and no tab characters.
+
+`mvn spotless:apply` formats those changed files. It does not reorder imports, rewrap comments, or wrap long lines.
+
+## NitroViewer
+
+`nitroviewer-core` is its own Maven module (`com.nitroviewer.core`). Copy this rule, `config/eclipse-formatter.xml`, `config/checkstyle.xml`, and `.editorconfig` into that repo and add the same two plugins to `nitroviewer-core/pom.xml`, again with `ratchetFrom` set to `origin/main`.

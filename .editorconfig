@@ -1,0 +1,17 @@
+root = true
+
+# Java and the text files around it. Property bundles are left alone:
+# some of them are ISO-8859-1, and a charset rule would rewrite them.
+[*.{java,xml,yml,yaml,md}]
+charset = utf-8
+end_of_line = lf
+insert_final_newline = true
+trim_trailing_whitespace = true
+indent_style = space
+indent_size = 4
+
+[*.java]
+indent_style = space
+indent_size = 4
+# Signatures and a few data tables run well past 120 columns on purpose.
+max_line_length = off

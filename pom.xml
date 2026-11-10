@@ -147,6 +147,86 @@
                     <argLine>-Djava.awt.headless=true --add-opens java.desktop/java.awt=ALL-UNNAMED</argLine>
                 </configuration>
             </plugin>
+            <!--
+              Eclipse profile in config/eclipse-formatter.xml.
+              ratchetFrom checks only Java files that differ from origin/main,
+              so existing sources are not rewritten. CI must fetch that ref
+              (fetch-depth: 0). JFormDesigner files and generated ANTLR are
+              excluded: they are generated, not the style.
+              Checkstyle suppresses four files that already lack a final newline.
+            -->
+            <plugin>
+                <groupId>com.diffplug.spotless</groupId>
+                <artifactId>spotless-maven-plugin</artifactId>
+                <version>3.11.0</version>
+                <configuration>
+                    <ratchetFrom>origin/main</ratchetFrom>
+                    <java>
+                        <excludes>
+                            <exclude>src/main/java/io/github/turtleisaac/pokeditor/gui_old/tutorial/TutorialFrame.java</exclude>
+                            <exclude>src/main/java/io/github/turtleisaac/pokeditor/gui_old/editors/encounters/SearchResultsFrame.java</exclude>
+                            <exclude>src/main/java/io/github/turtleisaac/pokeditor/gui_old/editors/trainers/SmogonFrame.java</exclude>
+                            <exclude>src/main/java/io/github/turtleisaac/pokeditor/gui_old/editors/trainers/text/TrainerTextEntryPanel.java</exclude>
+                            <exclude>src/main/java/io/github/turtleisaac/pokeditor/gui_old/editors/trainers/text/TrainerTextFrame.java</exclude>
+                            <exclude>src/main/java/io/github/turtleisaac/pokeditor/gui_old/editors/trainers/classes/ClassPanel.java</exclude>
+                            <exclude>src/main/java/io/github/turtleisaac/pokeditor/gui/ConsoleWindow.java</exclude>
+                            <exclude>src/main/java/io/github/turtleisaac/pokeditor/gui/sheets/FindDialog.java</exclude>
+                            <exclude>src/main/java/io/github/turtleisaac/pokeditor/gui/sheets/DefaultSheetPanel.java</exclude>
+                            <exclude>src/main/java/io/github/turtleisaac/pokeditor/gui/editors/data/DefaultDataEditorPanel.java</exclude>
+                            <exclude>src/main/java/io/github/turtleisaac/pokeditor/gui/editors/data/formats/scripts/field/FieldScriptEditor.java</exclude>
+                            <exclude>src/main/java/io/github/turtleisaac/pokeditor/gui/editors/data/formats/pokemon_sprite/PokemonSpriteEditor.java</exclude>
+                            <exclude>src/main/java/io/github/turtleisaac/pokeditor/gui/editors/data/formats/trainer_sprite/TrainerSpriteEditor.java</exclude>
+                            <exclude>src/main/java/io/github/turtleisaac/pokeditor/gui/editors/general/GeneralEditorPanel.java</exclude>
+                            <exclude>src/main/java/io/github/turtleisaac/pokeditor/gui/editors/general/starters/StarterEditor.java</exclude>
+                            <exclude>src/main/java/io/github/turtleisaac/variabletracker/gui/variables/VariableTracker.java</exclude>
+                            <exclude>src/main/java/io/github/turtleisaac/variabletracker/gui/flags/FlagTracker.java</exclude>
+                        </excludes>
+                        <eclipse>
+                            <version>4.41</version>
+                            <file>${project.basedir}/config/eclipse-formatter.xml</file>
+                        </eclipse>
+                    </java>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>spotless-check</id>
+                        <phase>verify</phase>
+                        <goals>
+                            <goal>check</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-checkstyle-plugin</artifactId>
+                <version>3.6.0</version>
+                <dependencies>
+                    <dependency>
+                        <groupId>com.puppycrawl.tools</groupId>
+                        <artifactId>checkstyle</artifactId>
+                        <version>12.3.1</version>
+                    </dependency>
+                </dependencies>
+                <configuration>
+                    <configLocation>config/checkstyle.xml</configLocation>
+                    <includeTestSourceDirectory>true</includeTestSourceDirectory>
+                    <includeResources>false</includeResources>
+                    <includeTestResources>false</includeTestResources>
+                    <consoleOutput>true</consoleOutput>
+                    <failsOnError>true</failsOnError>
+                    <linkXRef>false</linkXRef>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>checkstyle-verify</id>
+                        <phase>verify</phase>
+                        <goals>
+                            <goal>check</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
         </plugins>
     </build>
 
