@@ -44,7 +44,10 @@ jobs:
             echo "::group::$repo @ $target"
             git clone --quiet --depth 1 --branch "$target" \
               "https://github.com/turtleisaac/$repo.git" ".upstream/$repo"
-            mvn -B -ntp -q install -DskipTests -f ".upstream/$repo/pom.xml"
+            # Each library is style-checked in its own CI. A depth-1 clone of a
+            # same-named branch has no origin/main, so Spotless ratchetFrom fails
+            # if these checks run here.
+            mvn -B -ntp -q install -DskipTests -Dspotless.check.skip=true -Dcheckstyle.skip=true -f ".upstream/$repo/pom.xml"
             echo "::endgroup::"
           done
 
