@@ -37,7 +37,7 @@ public class Main
         try (InputStream jokesStream = Main.class.getResourceAsStream(jokesPath))
         {
             mainMenuJokes = jokesStream == null
-                    ? new String[] {""}
+                    ? new String[] { "" }
                     : new String(jokesStream.readAllBytes(), StandardCharsets.UTF_8).split("\n");
         }
 
@@ -47,17 +47,20 @@ public class Main
                 .setName("PokEditor")
                 .setVersion("3.2.0")
 //                .setFlavorText("Did you know that Jay likes Moemon?")
-                .setFlavorText(mainMenuJokes[(int) (Math.random()*(mainMenuJokes.length))])
+                .setFlavorText(mainMenuJokes[(int) (Math.random() * (mainMenuJokes.length))])
                 .setAuthor("Developed by Turtleisaac")
                 .setGitEnabled(true)
                 .addLookAndFeel(new FlatArcOrangeIJTheme())
                 .addLookAndFeel(new FlatDarkPurpleIJTheme())
 //                .addLookAndFeel(new javax.swing.plaf.metal.MetalLookAndFeel())
                 .addGame("Pokémon Platinum", "CPU")
-                .addGame("Pokémon HeartGold","IPK")
-                .addGame("Pokémon SoulSilver","IPG")
-                .addPanelManager(() -> new PokeditorManager(tool))
-                .init();
+                .addGame("Pokémon HeartGold", "IPK")
+                .addGame("Pokémon SoulSilver", "IPG")
+                .addPanelManager(() -> new PokeditorManager(tool));
+
+        // PokeHub stays open when it launches PokEditor, so a process check covers both cases.
+        showDonationNoticeIfPokeHubIsRunning();
+        tool.init();
     }
 
     /**
@@ -90,5 +93,45 @@ public class Main
                     "An unexpected error occurred:\n" + finalMessage + where,
                     "PokEditor", JOptionPane.ERROR_MESSAGE));
         });
+    }
+
+    /** Base name of a process command, ignoring a Windows {@code .exe} and letter case. */
+    static boolean isPokeHub(String command)
+    {
+        if (command == null || command.isEmpty())
+            return false;
+
+        int cut = Math.max(command.lastIndexOf('/'), command.lastIndexOf('\\'));
+        String name = cut < 0 ? command : command.substring(cut + 1);
+        if (name.length() > 4 && name.regionMatches(true, name.length() - 4, ".exe", 0, 4))
+            name = name.substring(0, name.length() - 4);
+
+        return name.equalsIgnoreCase("PokeHub")
+                || name.equalsIgnoreCase("PokeHub.App")
+                || name.equalsIgnoreCase("PokeHub.Mcp");
+    }
+
+    private static void showDonationNoticeIfPokeHubIsRunning()
+    {
+        boolean running;
+        try
+        {
+            running = ProcessHandle.allProcesses()
+                    .anyMatch(handle -> isPokeHub(handle.info().command().orElse(null)));
+        }
+        catch (Exception ignored)
+        {
+            return;
+        }
+
+        if (!running)
+            return;
+
+        JOptionPane.showMessageDialog(null,
+                "We do not ask for donations, and we do not support them.\n\n"
+                        + "Do not donate to any program that launches PokEditor or that takes code from PokEditor. "
+                        + "Any such program that asks for donations does so against our expressed wishes.",
+                "PokEditor",
+                JOptionPane.INFORMATION_MESSAGE);
     }
 }
