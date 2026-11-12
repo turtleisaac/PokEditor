@@ -1,0 +1,38 @@
+name: Quality gates
+
+# CRAP and dryer ratchet. Coverage is regenerated so a stale report cannot raise a score.
+on:
+  push:
+    branches: ['**']
+  pull_request:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  crap-and-dry:
+    name: CRAP and duplication
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          # This module compiles at source/target 20. The build workflow uses 21.
+          java-version: '21'
+          cache: maven
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Coverage, crapper, and dryer
+        env:
+          QUALITY_BASE: origin/${{ github.base_ref || 'main' }}
+        run: |
+          scripts/quality/coverage.sh
+          scripts/quality/check-quality.sh --base "$QUALITY_BASE"

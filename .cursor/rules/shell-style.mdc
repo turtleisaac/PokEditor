@@ -1,0 +1,13 @@
+---
+description: Shell style for the quality scripts and the pre-commit hook
+globs: "**/*.sh,.githooks/pre-commit"
+alwaysApply: false
+---
+
+# Shell style
+
+`#!/usr/bin/env bash`, then `set -euo pipefail`. A file-level note is one `#` line under the shebang. Two-space indent.
+
+Group the lines that do one step, and put one blank line between steps. A long run of assignments is not one step just because the lines look alike; split where later lines are built from the results above. Leave one blank line after `if`/`fi`, `for`/`done`, and `case`/`esac` before the next step. None when that block ends the function or the file. `else` and `elif` stay attached. A run of similar short blocks, such as back-to-back flag checks, stays together.
+
+A comment is `#` plus a space, one short line, above the step it explains.

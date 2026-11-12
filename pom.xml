@@ -12,6 +12,12 @@
         <maven.compiler.source>20</maven.compiler.source>
         <maven.compiler.target>20</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <!--
+            Empty until JaCoCo prepends its agent. Surefire reads it as @{argLine}.
+            PIT expands the same token, and an undefined property is left as a literal
+            that the JVM then tries to open as an argument file.
+        -->
+        <argLine></argLine>
     </properties>
 
     <dependencies>
@@ -138,13 +144,73 @@
                 <version>3.2.5</version>
                 <configuration>
                     <!--
+                        @{argLine} is JaCoCo's agent when the quality scripts run coverage,
+                        and empty when they do not, so these flags stay in effect either way.
                         headless: the whole UI layer under test is Swing, and there is no display.
                         add-opens: the paste action reads the system clipboard straight off the
                         default Toolkit, which a headless toolkit refuses to provide; the test
                         lends it a working one for the duration of the action instead of a seam
                         being cut into production code for the tests' benefit.
                     -->
-                    <argLine>-Djava.awt.headless=true --add-opens java.desktop/java.awt=ALL-UNNAMED</argLine>
+                    <argLine>@{argLine} -Djava.awt.headless=true --add-opens java.desktop/java.awt=ALL-UNNAMED</argLine>
+                </configuration>
+            </plugin>
+            <!-- JaCoCo instruction coverage. crapper reads target/site/jacoco/jacoco.xml. -->
+            <plugin>
+                <groupId>org.jacoco</groupId>
+                <artifactId>jacoco-maven-plugin</artifactId>
+                <version>0.8.12</version>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>prepare-agent</goal>
+                        </goals>
+                    </execution>
+                    <execution>
+                        <id>report</id>
+                        <phase>test</phase>
+                        <goals>
+                            <goal>report</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <!-- PIT stays off the default build. CI runs pitest:mutationCoverage. -->
+            <plugin>
+                <groupId>org.pitest</groupId>
+                <artifactId>pitest-maven</artifactId>
+                <version>1.30.2</version>
+                <dependencies>
+                    <dependency>
+                        <groupId>org.pitest</groupId>
+                        <artifactId>pitest-junit5-plugin</artifactId>
+                        <version>1.2.3</version>
+                    </dependency>
+                </dependencies>
+                <configuration>
+                    <targetClasses>
+                        <param>io.github.turtleisaac.pokeditor.*</param>
+                        <param>io.github.turtleisaac.variabletracker.*</param>
+                    </targetClasses>
+                    <targetTests>
+                        <param>io.github.turtleisaac.pokeditor.*</param>
+                    </targetTests>
+                    <excludedMethods>
+                        <param>initComponents</param>
+                    </excludedMethods>
+                    <excludedGroups>
+                        <param>dead-code</param>
+                    </excludedGroups>
+                    <jvmArgs>
+                        <value>-Djava.awt.headless=true</value>
+                        <value>--add-opens</value>
+                        <value>java.desktop/java.awt=ALL-UNNAMED</value>
+                    </jvmArgs>
+                    <outputFormats>
+                        <outputFormat>XML</outputFormat>
+                    </outputFormats>
+                    <timestampedReports>false</timestampedReports>
+                    <failWhenNoMutations>false</failWhenNoMutations>
                 </configuration>
             </plugin>
             <!--

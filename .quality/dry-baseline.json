@@ -1,0 +1,4447 @@
+{
+  "version": 1,
+  "dryer": "66ff6d21a42c04afcad89c78a80066176d1294b0",
+  "threshold": 0.82,
+  "pairs": [
+    {
+      "language": "java",
+      "score": 1.0,
+      "left": {
+        "path": "src/main/java/io/github/turtleisaac/pokeditor/DataManager.java",
+        "namespace": "io.github.turtleisaac.pokeditor.DataManager.PersonalModule",
+        "name": "configure",
+        "body": "d437156eda641773",
+        "start": 371,
+        "end": 377
+      },
+      "right": {
+        "path": "src/main/java/io/github/turtleisaac/pokeditor/DataManager.java",
+        "namespace": "io.github.turtleisaac.pokeditor.DataManager.LearnsetsModule",
+        "name": "configure",
+        "body": "4b3577fb2f72c473",
+        "start": 381,
+        "end": 387
+      }
+    },
+    {
+      "language": "java",
+      "score": 1.0,
+      "left": {
+        "path": "src/main/java/io/github/turtleisaac/pokeditor/DataManager.java",
+        "namespace": "io.github.turtleisaac.pokeditor.DataManager.PersonalModule",
+        "name": "configure",
+        "body": "d437156eda641773",
+        "start": 371,
+        "end": 377
+      },
+      "right": {
+        "path": "src/main/java/io/github/turtleisaac/pokeditor/DataManager.java",
+        "namespace": "io.github.turtleisaac.pokeditor.DataManager.EvolutionsModule",
+        "name": "configure",
+        "body": "1851f91622e5d452",
+        "start": 391,
+        "end": 397
+      }
+    },
+    {
+      "language": "java",
+      "score": 1.0,
+      "left": {
+        "path": "src/main/java/io/github/turtleisaac/pokeditor/DataManager.java",
+        "namespace": "io.github.turtleisaac.pokeditor.DataManager.PersonalModule",
+        "name": "configure",
+        "body": "d437156eda641773",
+        "start": 371,
+        "end": 377
+      },
+      "right": {
+        "path": "src/main/java/io/github/turtleisaac/pokeditor/DataManager.java",
+        "namespace": "io.github.turtleisaac.pokeditor.DataManager.TrainersModule",
+        "name": "configure",
+        "body": "4314d7548ee81fd4",
+        "start": 401,
+        "end": 407
+      }
+    },
+    {
+      "language": "java",
+      "score": 1.0,
+      "left": {
+        "path": "src/main/java/io/github/turtleisaac/pokeditor/DataManager.java",
+        "namespace": "io.github.turtleisaac.pokeditor.DataManager.PersonalModule",
+        "name": "configure",
+        "body": "d437156eda641773",
+        "start": 371,
+        "end": 377
+      },
+      "right": {
+        "path": "src/main/java/io/github/turtleisaac/pokeditor/DataManager.java",
+        "namespace": "io.github.turtleisaac.pokeditor.DataManager.MovesModule",
+        "name": "configure",
+        "body": "e1fb8029e44bc141",
+        "start": 411,
+        "end": 417
+      }
+    },
+    {
+      "language": "java",
+      "score": 1.0,
+      "left": {
+        "path": "src/main/java/io/github/turtleisaac/pokeditor/DataManager.java",
+        "namespace": "io.github.turtleisaac.pokeditor.DataManager.PersonalModule",
+        "name": "configure",
+        "body": "d437156eda641773",
+        "start": 371,
+        "end": 377
+      },
+      "right": {
+        "path": "src/main/java/io/github/turtleisaac/pokeditor/DataManager.java",
+        "namespace": "io.github.turtleisaac.pokeditor.DataManager.SinnohEncountersModule",
+        "name": "configure",
+        "body": "ef2770088b280016",
+        "start": 421,
+        "end": 427
+      }
+    },
+    {
+      "language": "java",
+      "score": 1.0,
+      "left": {
+        "path": "src/main/java/io/github/turtleisaac/pokeditor/DataManager.java",
+        "namespace": "io.github.turtleisaac.pokeditor.DataManager.PersonalModule",
+        "name": "configure",
+        "body": "d437156eda641773",
+        "start": 371,
+        "end": 377
+      },
+      "right": {
+        "path": "src/main/java/io/github/turtleisaac/pokeditor/DataManager.java",
+        "namespace": "io.github.turtleisaac.pokeditor.DataManager.JohtoEncountersModule",
+        "name": "configure",
+        "body": "3561848e6c4892ba",
+        "start": 431,
+        "end": 437
+      }
+    },
+    {
+      "language": "java",
+      "score": 1.0,
+      "left": {
+        "path": "src/main/java/io/github/turtleisaac/pokeditor/DataManager.java",
+        "namespace": "io.github.turtleisaac.pokeditor.DataManager.PersonalModule",
+        "name": "configure",
+        "body": "d437156eda641773",
+        "start": 371,
+        "end": 377
+      },
+      "right": {
+        "path": "src/main/java/io/github/turtleisaac/pokeditor/DataManager.java",
+        "namespace": "io.github.turtleisaac.pokeditor.DataManager.ItemsModule",
+        "name": "configure",
+        "body": "b994415c9dfab8fe",
+        "start": 441,
+        "end": 447
+      }
+    },
+    {
+      "language": "java",
+      "score": 1.0,
+      "left": {
+        "path": "src/main/java/io/github/turtleisaac/pokeditor/DataManager.java",
+        "namespace": "io.github.turtleisaac.pokeditor.DataManager.PersonalModule",
+        "name": "configure",
+        "body": "d437156eda641773",
+        "start": 371,
+        "end": 377
+      },
+      "right": {
+        "path": "src/main/java/io/github/turtleisaac/pokeditor/DataManager.java",
+        "namespace": "io.github.turtleisaac.pokeditor.DataManager.TextBankModule",
+        "name": "configure",
+        "body": "a207f18cfaa2c5b8",
+        "start": 451,
+        "end": 457
+      }
+    },
+    {
+      "language": "java",
+      "score": 1.0,
+      "left": {
+        "path": "src/main/java/io/github/turtleisaac/pokeditor/DataManager.java",
+        "namespace": "io.github.turtleisaac.pokeditor.DataManager.PersonalModule",
+        "name": "configure",
+        "body": "d437156eda641773",
+        "start": 371,
+        "end": 377
+      },
+      "right": {
+        "path": "src/main/java/io/github/turtleisaac/pokeditor/DataManager.java",
+        "namespace": "io.github.turtleisaac.pokeditor.DataManager.PokemonSpriteModule",
+        "name": "configure",
+        "body": "22a5a03fa53db9a3",
+        "start": 461,
+        "end": 467
+      }
+    },
+    {
+      "language": "java",
+      "score": 1.0,
+      "left": {
+        "path": "src/main/java/io/github/turtleisaac/pokeditor/DataManager.java",
+        "namespace": "io.github.turtleisaac.pokeditor.DataManager.LearnsetsModule",
+        "name": "configure",
+        "body": "4b3577fb2f72c473",
+        "start": 381,
+        "end": 387
+      },
+      "right": {
+        "path": "src/main/java/io/github/turtleisaac/pokeditor/DataManager.java",
+        "namespace": "io.github.turtleisaac.pokeditor.DataManager.EvolutionsModule",
+        "name": "configure",
+        "body": "1851f91622e5d452",
+        "start": 391,
+        "end": 397
+      }
+    },
+    {
+      "language": "java",
+      "score": 1.0,
+      "left": {
+        "path": "src/main/java/io/github/turtleisaac/pokeditor/DataManager.java",
+        "namespace": "io.github.turtleisaac.pokeditor.DataManager.LearnsetsModule",
+        "name": "configure",
+        "body": "4b3577fb2f72c473",
+        "start": 381,
+        "end": 387
+      },
+      "right": {
+        "path": "src/main/java/io/github/turtleisaac/pokeditor/DataManager.java",
+        "namespace": "io.github.turtleisaac.pokeditor.DataManager.TrainersModule",
+        "name": "configure",
+        "body": "4314d7548ee81fd4",
+        "start": 401,
+        "end": 407
+      }
+    },
+    {
+      "language": "java",
+      "score": 1.0,
+      "left": {
+        "path": "src/main/java/io/github/turtleisaac/pokeditor/DataManager.java",
+        "namespace": "io.github.turtleisaac.pokeditor.DataManager.LearnsetsModule",
+        "name": "configure",
+        "body": "4b3577fb2f72c473",
+        "start": 381,
+        "end": 387
+      },
+      "right": {
+        "path": "src/main/java/io/github/turtleisaac/pokeditor/DataManager.java",
+        "namespace": "io.github.turtleisaac.pokeditor.DataManager.MovesModule",
+        "name": "configure",
+        "body": "e1fb8029e44bc141",
+        "start": 411,
+        "end": 417
+      }
+    },
+    {
+      "language": "java",
+      "score": 1.0,
+      "left": {
+        "path": "src/main/java/io/github/turtleisaac/pokeditor/DataManager.java",
+        "namespace": "io.github.turtleisaac.pokeditor.DataManager.LearnsetsModule",
+        "name": "configure",
+        "body": "4b3577fb2f72c473",
+        "start": 381,
+        "end": 387
+      },
+      "right": {
+        "path": "src/main/java/io/github/turtleisaac/pokeditor/DataManager.java",
+        "namespace": "io.github.turtleisaac.pokeditor.DataManager.SinnohEncountersModule",
+        "name": "configure",
+        "body": "ef2770088b280016",
+        "start": 421,
+        "end": 427
+      }
+    },
+    {
+      "language": "java",
+      "score": 1.0,
+      "left": {
+        "path": "src/main/java/io/github/turtleisaac/pokeditor/DataManager.java",
+        "namespace": "io.github.turtleisaac.pokeditor.DataManager.LearnsetsModule",
+        "name": "configure",
+        "body": "4b3577fb2f72c473",
+        "start": 381,
+        "end": 387
+      },
+      "right": {
+        "path": "src/main/java/io/github/turtleisaac/pokeditor/DataManager.java",
+        "namespace": "io.github.turtleisaac.pokeditor.DataManager.JohtoEncountersModule",
+        "name": "configure",
+        "body": "3561848e6c4892ba",
+        "start": 431,
+        "end": 437
+      }
+    },
+    {
+      "language": "java",
+      "score": 1.0,
+      "left": {
+        "path": "src/main/java/io/github/turtleisaac/pokeditor/DataManager.java",
+        "namespace": "io.github.turtleisaac.pokeditor.DataManager.LearnsetsModule",
+        "name": "configure",
+        "body": "4b3577fb2f72c473",
+        "start": 381,
+        "end": 387
+      },
+      "right": {
+        "path": "src/main/java/io/github/turtleisaac/pokeditor/DataManager.java",
+        "namespace": "io.github.turtleisaac.pokeditor.DataManager.ItemsModule",
+        "name": "configure",
+        "body": "b994415c9dfab8fe",
+        "start": 441,
+        "end": 447
+      }
+    },
+    {
+      "language": "java",
+      "score": 1.0,
+      "left": {
+        "path": "src/main/java/io/github/turtleisaac/pokeditor/DataManager.java",
+        "namespace": "io.github.turtleisaac.pokeditor.DataManager.LearnsetsModule",
+        "name": "configure",
+        "body": "4b3577fb2f72c473",
+        "start": 381,
+        "end": 387
+      },
+      "right": {
+        "path": "src/main/java/io/github/turtleisaac/pokeditor/DataManager.java",
+        "namespace": "io.github.turtleisaac.pokeditor.DataManager.TextBankModule",
+        "name": "configure",
+        "body": "a207f18cfaa2c5b8",
+        "start": 451,
+        "end": 457
+      }
+    },
+    {
+      "language": "java",
+      "score": 1.0,
+      "left": {
+        "path": "src/main/java/io/github/turtleisaac/pokeditor/DataManager.java",
+        "namespace": "io.github.turtleisaac.pokeditor.DataManager.LearnsetsModule",
+        "name": "configure",
+        "body": "4b3577fb2f72c473",
+        "start": 381,
+        "end": 387
+      },
+      "right": {
+        "path": "src/main/java/io/github/turtleisaac/pokeditor/DataManager.java",
+        "namespace": "io.github.turtleisaac.pokeditor.DataManager.PokemonSpriteModule",
+        "name": "configure",
+        "body": "22a5a03fa53db9a3",
+        "start": 461,
+        "end": 467
+      }
+    },
+    {
+      "language": "java",
+      "score": 1.0,
+      "left": {
+        "path": "src/main/java/io/github/turtleisaac/pokeditor/DataManager.java",
+        "namespace": "io.github.turtleisaac.pokeditor.DataManager.EvolutionsModule",
+        "name": "configure",
+        "body": "1851f91622e5d452",
+        "start": 391,
+        "end": 397
+      },
+      "right": {
+        "path": "src/main/java/io/github/turtleisaac/pokeditor/DataManager.java",
+        "namespace": "io.github.turtleisaac.pokeditor.DataManager.TrainersModule",
+        "name": "configure",
+        "body": "4314d7548ee81fd4",
+        "start": 401,
+        "end": 407
+      }
+    },
+    {
+      "language": "java",
+      "score": 1.0,
+      "left": {
+        "path": "src/main/java/io/github/turtleisaac/pokeditor/DataManager.java",
+        "namespace": "io.github.turtleisaac.pokeditor.DataManager.EvolutionsModule",
+        "name": "configure",
+        "body": "1851f91622e5d452",
+        "start": 391,
+        "end": 397
+      },
+      "right": {
+        "path": "src/main/java/io/github/turtleisaac/pokeditor/DataManager.java",
+        "namespace": "io.github.turtleisaac.pokeditor.DataManager.MovesModule",
+        "name": "configure",
+        "body": "e1fb8029e44bc141",
+        "start": 411,
+        "end": 417
+      }
+    },
+    {
+      "language": "java",
+      "score": 1.0,
+      "left": {
+        "path": "src/main/java/io/github/turtleisaac/pokeditor/DataManager.java",
+        "namespace": "io.github.turtleisaac.pokeditor.DataManager.EvolutionsModule",
+        "name": "configure",
+        "body": "1851f91622e5d452",
+        "start": 391,
+        "end": 397
+      },
+      "right": {
+        "path": "src/main/java/io/github/turtleisaac/pokeditor/DataManager.java",
+        "namespace": "io.github.turtleisaac.pokeditor.DataManager.SinnohEncountersModule",
+        "name": "configure",
+        "body": "ef2770088b280016",
+        "start": 421,
+        "end": 427
+      }
+    },
+    {
+      "language": "java",
+      "score": 1.0,
+      "left": {
+        "path": "src/main/java/io/github/turtleisaac/pokeditor/DataManager.java",
+        "namespace": "io.github.turtleisaac.pokeditor.DataManager.EvolutionsModule",
+        "name": "configure",
+        "body": "1851f91622e5d452",
+        "start": 391,
+        "end": 397
+      },
+      "right": {
+        "path": "src/main/java/io/github/turtleisaac/pokeditor/DataManager.java",
+        "namespace": "io.github.turtleisaac.pokeditor.DataManager.JohtoEncountersModule",
+        "name": "configure",
+        "body": "3561848e6c4892ba",
+        "start": 431,
+        "end": 437
+      }
+    },
+    {
+      "language": "java",
+      "score": 1.0,
+      "left": {
+        "path": "src/main/java/io/github/turtleisaac/pokeditor/DataManager.java",
+        "namespace": "io.github.turtleisaac.pokeditor.DataManager.EvolutionsModule",
+        "name": "configure",
+        "body": "1851f91622e5d452",
+        "start": 391,
+        "end": 397
+      },
+      "right": {
+        "path": "src/main/java/io/github/turtleisaac/pokeditor/DataManager.java",
+        "namespace": "io.github.turtleisaac.pokeditor.DataManager.ItemsModule",
+        "name": "configure",
+        "body": "b994415c9dfab8fe",
+        "start": 441,
+        "end": 447
+      }
+    },
+    {
+      "language": "java",
+      "score": 1.0,
+      "left": {
+        "path": "src/main/java/io/github/turtleisaac/pokeditor/DataManager.java",
+        "namespace": "io.github.turtleisaac.pokeditor.DataManager.EvolutionsModule",
+        "name": "configure",
+        "body": "1851f91622e5d452",
+        "start": 391,
+        "end": 397
+      },
+      "right": {
+        "path": "src/main/java/io/github/turtleisaac/pokeditor/DataManager.java",
+        "namespace": "io.github.turtleisaac.pokeditor.DataManager.TextBankModule",
+        "name": "configure",
+        "body": "a207f18cfaa2c5b8",
+        "start": 451,
+        "end": 457
+      }
+    },
+    {
+      "language": "java",
+      "score": 1.0,
+      "left": {
+        "path": "src/main/java/io/github/turtleisaac/pokeditor/DataManager.java",
+        "namespace": "io.github.turtleisaac.pokeditor.DataManager.EvolutionsModule",
+        "name": "configure",
+        "body": "1851f91622e5d452",
+        "start": 391,
+        "end": 397
+      },
+      "right": {
+        "path": "src/main/java/io/github/turtleisaac/pokeditor/DataManager.java",
+        "namespace": "io.github.turtleisaac.pokeditor.DataManager.PokemonSpriteModule",
+        "name": "configure",
+        "body": "22a5a03fa53db9a3",
+        "start": 461,
+        "end": 467
+      }
+    },
+    {
+      "language": "java",
+      "score": 1.0,
+      "left": {
+        "path": "src/main/java/io/github/turtleisaac/pokeditor/DataManager.java",
+        "namespace": "io.github.turtleisaac.pokeditor.DataManager.TrainersModule",
+        "name": "configure",
+        "body": "4314d7548ee81fd4",
+        "start": 401,
+        "end": 407
+      },
+      "right": {
+        "path": "src/main/java/io/github/turtleisaac/pokeditor/DataManager.java",
+        "namespace": "io.github.turtleisaac.pokeditor.DataManager.MovesModule",
+        "name": "configure",
+        "body": "e1fb8029e44bc141",
+        "start": 411,
+        "end": 417
+      }
+    },
+    {
+      "language": "java",
+      "score": 1.0,
+      "left": {
+        "path": "src/main/java/io/github/turtleisaac/pokeditor/DataManager.java",
+        "namespace": "io.github.turtleisaac.pokeditor.DataManager.TrainersModule",
+        "name": "configure",
+        "body": "4314d7548ee81fd4",
+        "start": 401,
+        "end": 407
+      },
+      "right": {
+        "path": "src/main/java/io/github/turtleisaac/pokeditor/DataManager.java",
+        "namespace": "io.github.turtleisaac.pokeditor.DataManager.SinnohEncountersModule",
+        "name": "configure",
+        "body": "ef2770088b280016",
+        "start": 421,
+        "end": 427
+      }
+    },
+    {
+      "language": "java",
+      "score": 1.0,
+      "left": {
+        "path": "src/main/java/io/github/turtleisaac/pokeditor/DataManager.java",
+        "namespace": "io.github.turtleisaac.pokeditor.DataManager.TrainersModule",
+        "name": "configure",
+        "body": "4314d7548ee81fd4",
+        "start": 401,
+        "end": 407
+      },
+      "right": {
+        "path": "src/main/java/io/github/turtleisaac/pokeditor/DataManager.java",
+        "namespace": "io.github.turtleisaac.pokeditor.DataManager.JohtoEncountersModule",
+        "name": "configure",
+        "body": "3561848e6c4892ba",
+        "start": 431,
+        "end": 437
+      }
+    },
+    {
+      "language": "java",
+      "score": 1.0,
+      "left": {
+        "path": "src/main/java/io/github/turtleisaac/pokeditor/DataManager.java",
+        "namespace": "io.github.turtleisaac.pokeditor.DataManager.TrainersModule",
+        "name": "configure",
+        "body": "4314d7548ee81fd4",
+        "start": 401,
+        "end": 407
+      },
+      "right": {
+        "path": "src/main/java/io/github/turtleisaac/pokeditor/DataManager.java",
+        "namespace": "io.github.turtleisaac.pokeditor.DataManager.ItemsModule",
+        "name": "configure",
+        "body": "b994415c9dfab8fe",
+        "start": 441,
+        "end": 447
+      }
+    },
+    {
+      "language": "java",
+      "score": 1.0,
+      "left": {
+        "path": "src/main/java/io/github/turtleisaac/pokeditor/DataManager.java",
+        "namespace": "io.github.turtleisaac.pokeditor.DataManager.TrainersModule",
+        "name": "configure",
+        "body": "4314d7548ee81fd4",
+        "start": 401,
+        "end": 407
+      },
+      "right": {
+        "path": "src/main/java/io/github/turtleisaac/pokeditor/DataManager.java",
+        "namespace": "io.github.turtleisaac.pokeditor.DataManager.TextBankModule",
+        "name": "configure",
+        "body": "a207f18cfaa2c5b8",
+        "start": 451,
+        "end": 457
+      }
+    },
+    {
+      "language": "java",
+      "score": 1.0,
+      "left": {
+        "path": "src/main/java/io/github/turtleisaac/pokeditor/DataManager.java",
+        "namespace": "io.github.turtleisaac.pokeditor.DataManager.TrainersModule",
+        "name": "configure",
+        "body": "4314d7548ee81fd4",
+        "start": 401,
+        "end": 407
+      },
+      "right": {
+        "path": "src/main/java/io/github/turtleisaac/pokeditor/DataManager.java",
+        "namespace": "io.github.turtleisaac.pokeditor.DataManager.PokemonSpriteModule",
+        "name": "configure",
+        "body": "22a5a03fa53db9a3",
+        "start": 461,
+        "end": 467
+      }
+    },
+    {
+      "language": "java",
+      "score": 1.0,
+      "left": {
+        "path": "src/main/java/io/github/turtleisaac/pokeditor/DataManager.java",
+        "namespace": "io.github.turtleisaac.pokeditor.DataManager.MovesModule",
+        "name": "configure",
+        "body": "e1fb8029e44bc141",
+        "start": 411,
+        "end": 417
+      },
+      "right": {
+        "path": "src/main/java/io/github/turtleisaac/pokeditor/DataManager.java",
+        "namespace": "io.github.turtleisaac.pokeditor.DataManager.SinnohEncountersModule",
+        "name": "configure",
+        "body": "ef2770088b280016",
+        "start": 421,
+        "end": 427
+      }
+    },
+    {
+      "language": "java",
+      "score": 1.0,
+      "left": {
+        "path": "src/main/java/io/github/turtleisaac/pokeditor/DataManager.java",
+        "namespace": "io.github.turtleisaac.pokeditor.DataManager.MovesModule",
+        "name": "configure",
+        "body": "e1fb8029e44bc141",
+        "start": 411,
+        "end": 417
+      },
+      "right": {
+        "path": "src/main/java/io/github/turtleisaac/pokeditor/DataManager.java",
+        "namespace": "io.github.turtleisaac.pokeditor.DataManager.JohtoEncountersModule",
+        "name": "configure",
+        "body": "3561848e6c4892ba",
+        "start": 431,
+        "end": 437
+      }
+    },
+    {
+      "language": "java",
+      "score": 1.0,
+      "left": {
+        "path": "src/main/java/io/github/turtleisaac/pokeditor/DataManager.java",
+        "namespace": "io.github.turtleisaac.pokeditor.DataManager.MovesModule",
+        "name": "configure",
+        "body": "e1fb8029e44bc141",
+        "start": 411,
+        "end": 417
+      },
+      "right": {
+        "path": "src/main/java/io/github/turtleisaac/pokeditor/DataManager.java",
+        "namespace": "io.github.turtleisaac.pokeditor.DataManager.ItemsModule",
+        "name": "configure",
+        "body": "b994415c9dfab8fe",
+        "start": 441,
+        "end": 447
+      }
+    },
+    {
+      "language": "java",
+      "score": 1.0,
+      "left": {
+        "path": "src/main/java/io/github/turtleisaac/pokeditor/DataManager.java",
+        "namespace": "io.github.turtleisaac.pokeditor.DataManager.MovesModule",
+        "name": "configure",
+        "body": "e1fb8029e44bc141",
+        "start": 411,
+        "end": 417
+      },
+      "right": {
+        "path": "src/main/java/io/github/turtleisaac/pokeditor/DataManager.java",
+        "namespace": "io.github.turtleisaac.pokeditor.DataManager.TextBankModule",
+        "name": "configure",
+        "body": "a207f18cfaa2c5b8",
+        "start": 451,
+        "end": 457
+      }
+    },
+    {
+      "language": "java",
+      "score": 1.0,
+      "left": {
+        "path": "src/main/java/io/github/turtleisaac/pokeditor/DataManager.java",
+        "namespace": "io.github.turtleisaac.pokeditor.DataManager.MovesModule",
+        "name": "configure",
+        "body": "e1fb8029e44bc141",
+        "start": 411,
+        "end": 417
+      },
+      "right": {
+        "path": "src/main/java/io/github/turtleisaac/pokeditor/DataManager.java",
+        "namespace": "io.github.turtleisaac.pokeditor.DataManager.PokemonSpriteModule",
+        "name": "configure",
+        "body": "22a5a03fa53db9a3",
+        "start": 461,
+        "end": 467
+      }
+    },
+    {
+      "language": "java",
+      "score": 1.0,
+      "left": {
+        "path": "src/main/java/io/github/turtleisaac/pokeditor/DataManager.java",
+        "namespace": "io.github.turtleisaac.pokeditor.DataManager.SinnohEncountersModule",
+        "name": "configure",
+        "body": "ef2770088b280016",
+        "start": 421,
+        "end": 427
+      },
+      "right": {
+        "path": "src/main/java/io/github/turtleisaac/pokeditor/DataManager.java",
+        "namespace": "io.github.turtleisaac.pokeditor.DataManager.JohtoEncountersModule",
+        "name": "configure",
+        "body": "3561848e6c4892ba",
+        "start": 431,
+        "end": 437
+      }
+    },
+    {
+      "language": "java",
+      "score": 1.0,
+      "left": {
+        "path": "src/main/java/io/github/turtleisaac/pokeditor/DataManager.java",
+        "namespace": "io.github.turtleisaac.pokeditor.DataManager.SinnohEncountersModule",
+        "name": "configure",
+        "body": "ef2770088b280016",
+        "start": 421,
+        "end": 427
+      },
+      "right": {
+        "path": "src/main/java/io/github/turtleisaac/pokeditor/DataManager.java",
+        "namespace": "io.github.turtleisaac.pokeditor.DataManager.ItemsModule",
+        "name": "configure",
+        "body": "b994415c9dfab8fe",
+        "start": 441,
+        "end": 447
+      }
+    },
+    {
+      "language": "java",
+      "score": 1.0,
+      "left": {
+        "path": "src/main/java/io/github/turtleisaac/pokeditor/DataManager.java",
+        "namespace": "io.github.turtleisaac.pokeditor.DataManager.SinnohEncountersModule",
+        "name": "configure",
+        "body": "ef2770088b280016",
+        "start": 421,
+        "end": 427
+      },
+      "right": {
+        "path": "src/main/java/io/github/turtleisaac/pokeditor/DataManager.java",
+        "namespace": "io.github.turtleisaac.pokeditor.DataManager.TextBankModule",
+        "name": "configure",
+        "body": "a207f18cfaa2c5b8",
+        "start": 451,
+        "end": 457
+      }
+    },
+    {
+      "language": "java",
+      "score": 1.0,
+      "left": {
+        "path": "src/main/java/io/github/turtleisaac/pokeditor/DataManager.java",
+        "namespace": "io.github.turtleisaac.pokeditor.DataManager.SinnohEncountersModule",
+        "name": "configure",
+        "body": "ef2770088b280016",
+        "start": 421,
+        "end": 427
+      },
+      "right": {
+        "path": "src/main/java/io/github/turtleisaac/pokeditor/DataManager.java",
+        "namespace": "io.github.turtleisaac.pokeditor.DataManager.PokemonSpriteModule",
+        "name": "configure",
+        "body": "22a5a03fa53db9a3",
+        "start": 461,
+        "end": 467
+      }
+    },
+    {
+      "language": "java",
+      "score": 1.0,
+      "left": {
+        "path": "src/main/java/io/github/turtleisaac/pokeditor/DataManager.java",
+        "namespace": "io.github.turtleisaac.pokeditor.DataManager.JohtoEncountersModule",
+        "name": "configure",
+        "body": "3561848e6c4892ba",
+        "start": 431,
+        "end": 437
+      },
+      "right": {
+        "path": "src/main/java/io/github/turtleisaac/pokeditor/DataManager.java",
+        "namespace": "io.github.turtleisaac.pokeditor.DataManager.ItemsModule",
+        "name": "configure",
+        "body": "b994415c9dfab8fe",
+        "start": 441,
+        "end": 447
+      }
+    },
+    {
+      "language": "java",
+      "score": 1.0,
+      "left": {
+        "path": "src/main/java/io/github/turtleisaac/pokeditor/DataManager.java",
+        "namespace": "io.github.turtleisaac.pokeditor.DataManager.JohtoEncountersModule",
+        "name": "configure",
+        "body": "3561848e6c4892ba",
+        "start": 431,
+        "end": 437
+      },
+      "right": {
+        "path": "src/main/java/io/github/turtleisaac/pokeditor/DataManager.java",
+        "namespace": "io.github.turtleisaac.pokeditor.DataManager.TextBankModule",
+        "name": "configure",
+        "body": "a207f18cfaa2c5b8",
+        "start": 451,
+        "end": 457
+      }
+    },
+    {
+      "language": "java",
+      "score": 1.0,
+      "left": {
+        "path": "src/main/java/io/github/turtleisaac/pokeditor/DataManager.java",
+        "namespace": "io.github.turtleisaac.pokeditor.DataManager.JohtoEncountersModule",
+        "name": "configure",
+        "body": "3561848e6c4892ba",
+        "start": 431,
+        "end": 437
+      },
+      "right": {
+        "path": "src/main/java/io/github/turtleisaac/pokeditor/DataManager.java",
+        "namespace": "io.github.turtleisaac.pokeditor.DataManager.PokemonSpriteModule",
+        "name": "configure",
+        "body": "22a5a03fa53db9a3",
+        "start": 461,
+        "end": 467
+      }
+    },
+    {
+      "language": "java",
+      "score": 1.0,
+      "left": {
+        "path": "src/main/java/io/github/turtleisaac/pokeditor/DataManager.java",
+        "namespace": "io.github.turtleisaac.pokeditor.DataManager.ItemsModule",
+        "name": "configure",
+        "body": "b994415c9dfab8fe",
+        "start": 441,
+        "end": 447
+      },
+      "right": {
+        "path": "src/main/java/io/github/turtleisaac/pokeditor/DataManager.java",
+        "namespace": "io.github.turtleisaac.pokeditor.DataManager.TextBankModule",
+        "name": "configure",
+        "body": "a207f18cfaa2c5b8",
+        "start": 451,
+        "end": 457
+      }
+    },
+    {
+      "language": "java",
+      "score": 1.0,
+      "left": {
+        "path": "src/main/java/io/github/turtleisaac/pokeditor/DataManager.java",
+        "namespace": "io.github.turtleisaac.pokeditor.DataManager.ItemsModule",
+        "name": "configure",
+        "body": "b994415c9dfab8fe",
+        "start": 441,
+        "end": 447
+      },
+      "right": {
+        "path": "src/main/java/io/github/turtleisaac/pokeditor/DataManager.java",
+        "namespace": "io.github.turtleisaac.pokeditor.DataManager.PokemonSpriteModule",
+        "name": "configure",
+        "body": "22a5a03fa53db9a3",
+        "start": 461,
+        "end": 467
+      }
+    },
+    {
+      "language": "java",
+      "score": 1.0,
+      "left": {
+        "path": "src/main/java/io/github/turtleisaac/pokeditor/DataManager.java",
+        "namespace": "io.github.turtleisaac.pokeditor.DataManager.TextBankModule",
+        "name": "configure",
+        "body": "a207f18cfaa2c5b8",
+        "start": 451,
+        "end": 457
+      },
+      "right": {
+        "path": "src/main/java/io/github/turtleisaac/pokeditor/DataManager.java",
+        "namespace": "io.github.turtleisaac.pokeditor.DataManager.PokemonSpriteModule",
+        "name": "configure",
+        "body": "22a5a03fa53db9a3",
+        "start": 461,
+        "end": 467
+      }
+    },
+    {
+      "language": "java",
+      "score": 1.0,
+      "left": {
+        "path": "src/main/java/io/github/turtleisaac/pokeditor/gui/PokeditorManager.java",
+        "namespace": "io.github.turtleisaac.pokeditor.gui.PokeditorManager",
+        "name": "accept",
+        "body": "0132665b274cea26",
+        "start": 579,
+        "end": 583
+      },
+      "right": {
+        "path": "src/main/java/io/github/turtleisaac/pokeditor/gui/PokeditorManager.java",
+        "namespace": "io.github.turtleisaac.pokeditor.gui.PokeditorManager",
+        "name": "accept",
+        "body": "d3a4021c2517f56b",
+        "start": 594,
+        "end": 598
+      }
+    },
+    {
+      "language": "java",
+      "score": 1.0,
+      "left": {
+        "path": "src/main/java/io/github/turtleisaac/pokeditor/gui/PokeditorManager.java",
+        "namespace": "io.github.turtleisaac.pokeditor.gui.PokeditorManager",
+        "name": "accept",
+        "body": "0132665b274cea26",
+        "start": 579,
+        "end": 583
+      },
+      "right": {
+        "path": "src/main/java/io/github/turtleisaac/pokeditor/gui/PokeditorManager.java",
+        "namespace": "io.github.turtleisaac.pokeditor.gui.PokeditorManager",
+        "name": "accept",
+        "body": "735bc833518cc6fd",
+        "start": 609,
+        "end": 613
+      }
+    },
+    {
+      "language": "java",
+      "score": 1.0,
+      "left": {
+        "path": "src/main/java/io/github/turtleisaac/pokeditor/gui/PokeditorManager.java",
+        "namespace": "io.github.turtleisaac.pokeditor.gui.PokeditorManager",
+        "name": "accept",
+        "body": "d3a4021c2517f56b",
+        "start": 594,
+        "end": 598
+      },
+      "right": {
+        "path": "src/main/java/io/github/turtleisaac/pokeditor/gui/PokeditorManager.java",
+        "namespace": "io.github.turtleisaac.pokeditor.gui.PokeditorManager",
+        "name": "accept",
+        "body": "735bc833518cc6fd",
+        "start": 609,
+        "end": 613
+      }
+    },
+    {
+      "language": "java",
+      "score": 1.0,
+      "left": {
+        "path": "src/main/java/io/github/turtleisaac/pokeditor/gui/editors/data/DefaultDataEditor.java",
+        "namespace": "io.github.turtleisaac.pokeditor.gui.editors.data.DefaultDataEditor",
+        "name": "getPanel",
+        "body": "39e249c01f653c57",
+        "start": 33,
+        "end": 36
+      },
+      "right": {
+        "path": "src/main/java/io/github/turtleisaac/pokeditor/gui/sheets/DefaultSheetPanel.java",
+        "namespace": "io.github.turtleisaac.pokeditor.gui.sheets.DefaultSheetPanel",
+        "name": "getTable",
+        "body": "f30e4716009d3f0f",
+        "start": 93,
+        "end": 96
+      }
+    },
+    {
+      "language": "java",
+      "score": 1.0,
+      "left": {
+        "path": "src/main/java/io/github/turtleisaac/pokeditor/gui/editors/data/DefaultDataEditor.java",
+        "namespace": "io.github.turtleisaac.pokeditor.gui.editors.data.DefaultDataEditor",
+        "name": "getPanel",
+        "body": "39e249c01f653c57",
+        "start": 33,
+        "end": 36
+      },
+      "right": {
+        "path": "src/main/java/io/github/turtleisaac/pokeditor/gui/sheets/tables/DefaultTable.java",
+        "namespace": "io.github.turtleisaac.pokeditor.gui.sheets.tables.DefaultTable",
+        "name": "getFormatModel",
+        "body": "2737e1e1e15ee832",
+        "start": 134,
+        "end": 137
+      }
+    },
+    {
+      "language": "java",
+      "score": 1.0,
+      "left": {
+        "path": "src/main/java/io/github/turtleisaac/pokeditor/gui/editors/data/DefaultDataEditor.java",
+        "namespace": "io.github.turtleisaac.pokeditor.gui.editors.data.DefaultDataEditor",
+        "name": "getModel",
+        "body": "cfb4c2e495d053da",
+        "start": 38,
+        "end": 41
+      },
+      "right": {
+        "path": "src/main/java/io/github/turtleisaac/pokeditor/gui/sheets/DefaultSheetPanel.java",
+        "namespace": "io.github.turtleisaac.pokeditor.gui.sheets.DefaultSheetPanel",
+        "name": "getFrozenColumns",
+        "body": "9d70ae7395e7ee91",
+        "start": 341,
+        "end": 344
+      }
+    },
+    {
+      "language": "java",
+      "score": 1.0,
+      "left": {
+        "path": "src/main/java/io/github/turtleisaac/pokeditor/gui/editors/data/DefaultDataEditor.java",
+        "namespace": "io.github.turtleisaac.pokeditor.gui.editors.data.DefaultDataEditor",
+        "name": "getModel",
+        "body": "cfb4c2e495d053da",
+        "start": 38,
+        "end": 41
+      },
+      "right": {
+        "path": "src/main/java/io/github/turtleisaac/pokeditor/gui/sheets/tables/FormatModel.java",
+        "namespace": "io.github.turtleisaac.pokeditor.gui.sheets.tables.FormatModel",
+        "name": "getData",
+        "body": "901a44362151ea21",
+        "start": 91,
+        "end": 94
+      }
+    },
+    {
+      "language": "java",
+      "score": 1.0,
+      "left": {
+        "path": "src/main/java/io/github/turtleisaac/pokeditor/gui/editors/data/DefaultDataEditor.java",
+        "namespace": "io.github.turtleisaac.pokeditor.gui.editors.data.DefaultDataEditor",
+        "name": "getModel",
+        "body": "cfb4c2e495d053da",
+        "start": 38,
+        "end": 41
+      },
+      "right": {
+        "path": "src/main/java/io/github/turtleisaac/pokeditor/gui/sheets/tables/FormatModel.java",
+        "namespace": "io.github.turtleisaac.pokeditor.gui.sheets.tables.FormatModel",
+        "name": "getTextBankData",
+        "body": "286d2716805033d8",
+        "start": 96,
+        "end": 99
+      }
+    },
+    {
+      "language": "java",
+      "score": 1.0,
+      "left": {
+        "path": "src/main/java/io/github/turtleisaac/pokeditor/gui/editors/data/DefaultDataEditor.java",
+        "namespace": "io.github.turtleisaac.pokeditor.gui.editors.data.DefaultDataEditor",
+        "name": "getModel",
+        "body": "cfb4c2e495d053da",
+        "start": 38,
+        "end": 41
+      },
+      "right": {
+        "path": "src/main/java/io/github/turtleisaac/variabletracker/ScriptVariable.java",
+        "namespace": "io.github.turtleisaac.variabletracker.ScriptVariable",
+        "name": "getVariableValues",
+        "body": "a1a644580771ab72",
+        "start": 68,
+        "end": 71
+      }
+    },
+    {
+      "language": "java",
+      "score": 1.0,
+      "left": {
+        "path": "src/main/java/io/github/turtleisaac/pokeditor/gui/editors/data/DefaultDataEditor.java",
+        "namespace": "io.github.turtleisaac.pokeditor.gui.editors.data.DefaultDataEditor",
+        "name": "getModel",
+        "body": "cfb4c2e495d053da",
+        "start": 38,
+        "end": 41
+      },
+      "right": {
+        "path": "src/main/java/io/github/turtleisaac/variabletracker/gui/variables/VariableTracker.java",
+        "namespace": "io.github.turtleisaac.variabletracker.gui.variables.VariableTracker",
+        "name": "getVariableList",
+        "body": "dd3e4906fe38d496",
+        "start": 207,
+        "end": 210
+      }
+    },
+    {
+      "language": "java",
+      "score": 1.0,
+      "left": {
+        "path": "src/main/java/io/github/turtleisaac/pokeditor/gui/editors/data/DefaultDataEditor.java",
+        "namespace": "io.github.turtleisaac.pokeditor.gui.editors.data.DefaultDataEditor",
+        "name": "setModel",
+        "body": "6fb875fd235ae2d4",
+        "start": 43,
+        "end": 46
+      },
+      "right": {
+        "path": "src/main/java/io/github/turtleisaac/pokeditor/gui/editors/data/formats/scripts/ScriptDocument.java",
+        "namespace": "io.github.turtleisaac.pokeditor.gui.editors.data.formats.scripts.ScriptDocument",
+        "name": "setVariableList",
+        "body": "45074a47a8af4449",
+        "start": 78,
+        "end": 81
+      }
+    },
+    {
+      "language": "java",
+      "score": 1.0,
+      "left": {
+        "path": "src/main/java/io/github/turtleisaac/pokeditor/gui/editors/data/DefaultDataEditor.java",
+        "namespace": "io.github.turtleisaac.pokeditor.gui.editors.data.DefaultDataEditor",
+        "name": "setModel",
+        "body": "6fb875fd235ae2d4",
+        "start": 43,
+        "end": 46
+      },
+      "right": {
+        "path": "src/main/java/io/github/turtleisaac/variabletracker/ScriptVariable.java",
+        "namespace": "io.github.turtleisaac.variabletracker.ScriptVariable",
+        "name": "setVariableValues",
+        "body": "cf7ebfdc0cfc73c6",
+        "start": 73,
+        "end": 76
+      }
+    },
+    {
+      "language": "java",
+      "score": 1.0,
+      "left": {
+        "path": "src/main/java/io/github/turtleisaac/pokeditor/gui/editors/data/DefaultDataEditor.java",
+        "namespace": "io.github.turtleisaac.pokeditor.gui.editors.data.DefaultDataEditor",
+        "name": "addNewEntry",
+        "body": "81feacce66262829",
+        "start": 58,
+        "end": 61
+      },
+      "right": {
+        "path": "src/main/java/io/github/turtleisaac/pokeditor/gui/editors/data/DefaultDataEditor.java",
+        "namespace": "io.github.turtleisaac.pokeditor.gui.editors.data.DefaultDataEditor",
+        "name": "deleteCurrentEntry",
+        "body": "a75e5ddbd7c65c52",
+        "start": 63,
+        "end": 66
+      }
+    },
+    {
+      "language": "java",
+      "score": 1.0,
+      "left": {
+        "path": "src/main/java/io/github/turtleisaac/pokeditor/gui/editors/data/formats/pokemon_sprite/PokemonSpriteEditor.java",
+        "namespace": "io.github.turtleisaac.pokeditor.gui.editors.data.formats.pokemon_sprite.PokemonSpriteEditor",
+        "name": "getDataClass",
+        "body": "bb695cda9ee3f630",
+        "start": 107,
+        "end": 111
+      },
+      "right": {
+        "path": "src/main/java/io/github/turtleisaac/pokeditor/gui/editors/data/formats/scripts/field/FieldScriptEditor.java",
+        "namespace": "io.github.turtleisaac.pokeditor.gui.editors.data.formats.scripts.field.FieldScriptEditor",
+        "name": "getDataClass",
+        "body": "db5703666f5c7bb5",
+        "start": 1156,
+        "end": 1160
+      }
+    },
+    {
+      "language": "java",
+      "score": 1.0,
+      "left": {
+        "path": "src/main/java/io/github/turtleisaac/pokeditor/gui/editors/data/formats/pokemon_sprite/PokemonSpriteEditor.java",
+        "namespace": "io.github.turtleisaac.pokeditor.gui.editors.data.formats.pokemon_sprite.PokemonSpriteEditor",
+        "name": "getDataClass",
+        "body": "bb695cda9ee3f630",
+        "start": 107,
+        "end": 111
+      },
+      "right": {
+        "path": "src/main/java/io/github/turtleisaac/pokeditor/gui/sheets/tables/formats/EvolutionsTable.java",
+        "namespace": "io.github.turtleisaac.pokeditor.gui.sheets.tables.formats.EvolutionsTable",
+        "name": "getDataClass",
+        "body": "3b3a0a8f32715a11",
+        "start": 57,
+        "end": 61
+      }
+    },
+    {
+      "language": "java",
+      "score": 1.0,
+      "left": {
+        "path": "src/main/java/io/github/turtleisaac/pokeditor/gui/editors/data/formats/pokemon_sprite/PokemonSpriteEditor.java",
+        "namespace": "io.github.turtleisaac.pokeditor.gui.editors.data.formats.pokemon_sprite.PokemonSpriteEditor",
+        "name": "getDataClass",
+        "body": "bb695cda9ee3f630",
+        "start": 107,
+        "end": 111
+      },
+      "right": {
+        "path": "src/main/java/io/github/turtleisaac/pokeditor/gui/sheets/tables/formats/LearnsetsTable.java",
+        "namespace": "io.github.turtleisaac.pokeditor.gui.sheets.tables.formats.LearnsetsTable",
+        "name": "getDataClass",
+        "body": "685c176e20bec2a5",
+        "start": 38,
+        "end": 42
+      }
+    },
+    {
+      "language": "java",
+      "score": 1.0,
+      "left": {
+        "path": "src/main/java/io/github/turtleisaac/pokeditor/gui/editors/data/formats/pokemon_sprite/PokemonSpriteEditor.java",
+        "namespace": "io.github.turtleisaac.pokeditor.gui.editors.data.formats.pokemon_sprite.PokemonSpriteEditor",
+        "name": "getDataClass",
+        "body": "bb695cda9ee3f630",
+        "start": 107,
+        "end": 111
+      },
+      "right": {
+        "path": "src/main/java/io/github/turtleisaac/pokeditor/gui/sheets/tables/formats/MovesTable.java",
+        "namespace": "io.github.turtleisaac.pokeditor.gui.sheets.tables.formats.MovesTable",
+        "name": "getDataClass",
+        "body": "70a4b5fb209c1be4",
+        "start": 47,
+        "end": 51
+      }
+    },
+    {
+      "language": "java",
+      "score": 1.0,
+      "left": {
+        "path": "src/main/java/io/github/turtleisaac/pokeditor/gui/editors/data/formats/pokemon_sprite/PokemonSpriteEditor.java",
+        "namespace": "io.github.turtleisaac.pokeditor.gui.editors.data.formats.pokemon_sprite.PokemonSpriteEditor",
+        "name": "getDataClass",
+        "body": "bb695cda9ee3f630",
+        "start": 107,
+        "end": 111
+      },
+      "right": {
+        "path": "src/main/java/io/github/turtleisaac/pokeditor/gui/sheets/tables/formats/PersonalTable.java",
+        "namespace": "io.github.turtleisaac.pokeditor.gui.sheets.tables.formats.PersonalTable",
+        "name": "getDataClass",
+        "body": "2c52d1149ae67b66",
+        "start": 50,
+        "end": 54
+      }
+    },
+    {
+      "language": "java",
+      "score": 1.0,
+      "left": {
+        "path": "src/main/java/io/github/turtleisaac/pokeditor/gui/editors/data/formats/pokemon_sprite/PokemonSpriteEditor.java",
+        "namespace": "io.github.turtleisaac.pokeditor.gui.editors.data.formats.pokemon_sprite.PokemonSpriteEditor",
+        "name": "getDataClass",
+        "body": "bb695cda9ee3f630",
+        "start": 107,
+        "end": 111
+      },
+      "right": {
+        "path": "src/main/java/io/github/turtleisaac/pokeditor/gui/sheets/tables/formats/TmCompatibilityTable.java",
+        "namespace": "io.github.turtleisaac.pokeditor.gui.sheets.tables.formats.TmCompatibilityTable",
+        "name": "getDataClass",
+        "body": "2c52d1149ae67b66",
+        "start": 100,
+        "end": 104
+      }
+    },
+    {
+      "language": "java",
+      "score": 1.0,
+      "left": {
+        "path": "src/main/java/io/github/turtleisaac/pokeditor/gui/editors/data/formats/pokemon_sprite/PokemonSpriteEditor.java",
+        "namespace": "io.github.turtleisaac.pokeditor.gui.editors.data.formats.pokemon_sprite.PokemonSpriteEditor",
+        "name": "getEnabledToolbarButtons",
+        "body": "90d69f3dcd1a6348",
+        "start": 113,
+        "end": 121
+      },
+      "right": {
+        "path": "src/main/java/io/github/turtleisaac/pokeditor/gui/editors/data/formats/scripts/field/FieldScriptEditor.java",
+        "namespace": "io.github.turtleisaac.pokeditor.gui.editors.data.formats.scripts.field.FieldScriptEditor",
+        "name": "getEnabledToolbarButtons",
+        "body": "eac6f1c440ee56ad",
+        "start": 1162,
+        "end": 1170
+      }
+    },
+    {
+      "language": "java",
+      "score": 1.0,
+      "left": {
+        "path": "src/main/java/io/github/turtleisaac/pokeditor/gui/editors/data/formats/pokemon_sprite/PokemonSpriteEditor.java",
+        "namespace": "io.github.turtleisaac.pokeditor.gui.editors.data.formats.pokemon_sprite.PokemonSpriteEditor.PokemonSpriteDisplayPanel",
+        "name": "setContents",
+        "body": "29cb9877980e6fb5",
+        "start": 770,
+        "end": 773
+      },
+      "right": {
+        "path": "src/main/java/io/github/turtleisaac/pokeditor/gui/editors/data/formats/scripts/ScriptPane.java",
+        "namespace": "io.github.turtleisaac.pokeditor.gui.editors.data.formats.scripts.ScriptPane",
+        "name": "setScrollPane",
+        "body": "840618c17b85c0b0",
+        "start": 176,
+        "end": 179
+      }
+    },
+    {
+      "language": "java",
+      "score": 1.0,
+      "left": {
+        "path": "src/main/java/io/github/turtleisaac/pokeditor/gui/editors/data/formats/pokemon_sprite/PokemonSpriteEditor.java",
+        "namespace": "io.github.turtleisaac.pokeditor.gui.editors.data.formats.pokemon_sprite.PokemonSpriteEditor.PokemonSpriteDisplayPanel",
+        "name": "setContents",
+        "body": "29cb9877980e6fb5",
+        "start": 770,
+        "end": 773
+      },
+      "right": {
+        "path": "src/main/java/io/github/turtleisaac/variabletracker/ScriptFlag.java",
+        "namespace": "io.github.turtleisaac.variabletracker.ScriptFlag",
+        "name": "setFlagName",
+        "body": "ccf2f6bf32c98271",
+        "start": 35,
+        "end": 38
+      }
+    },
+    {
+      "language": "java",
+      "score": 1.0,
+      "left": {
+        "path": "src/main/java/io/github/turtleisaac/pokeditor/gui/editors/data/formats/pokemon_sprite/PokemonSpriteEditor.java",
+        "namespace": "io.github.turtleisaac.pokeditor.gui.editors.data.formats.pokemon_sprite.PokemonSpriteEditor.PokemonSpriteDisplayPanel",
+        "name": "setContents",
+        "body": "29cb9877980e6fb5",
+        "start": 770,
+        "end": 773
+      },
+      "right": {
+        "path": "src/main/java/io/github/turtleisaac/variabletracker/ScriptFlag.java",
+        "namespace": "io.github.turtleisaac.variabletracker.ScriptFlag",
+        "name": "setFlagDescription",
+        "body": "042fabcd474107ff",
+        "start": 45,
+        "end": 48
+      }
+    },
+    {
+      "language": "java",
+      "score": 1.0,
+      "left": {
+        "path": "src/main/java/io/github/turtleisaac/pokeditor/gui/editors/data/formats/pokemon_sprite/PokemonSpriteEditor.java",
+        "namespace": "io.github.turtleisaac.pokeditor.gui.editors.data.formats.pokemon_sprite.PokemonSpriteEditor.PokemonSpriteDisplayPanel",
+        "name": "setContents",
+        "body": "29cb9877980e6fb5",
+        "start": 770,
+        "end": 773
+      },
+      "right": {
+        "path": "src/main/java/io/github/turtleisaac/variabletracker/ScriptVariable.java",
+        "namespace": "io.github.turtleisaac.variabletracker.ScriptVariable",
+        "name": "setVariableName",
+        "body": "fd72549784312063",
+        "start": 43,
+        "end": 46
+      }
+    },
+    {
+      "language": "java",
+      "score": 1.0,
+      "left": {
+        "path": "src/main/java/io/github/turtleisaac/pokeditor/gui/editors/data/formats/pokemon_sprite/PokemonSpriteEditor.java",
+        "namespace": "io.github.turtleisaac.pokeditor.gui.editors.data.formats.pokemon_sprite.PokemonSpriteEditor.PokemonSpriteDisplayPanel",
+        "name": "setContents",
+        "body": "29cb9877980e6fb5",
+        "start": 770,
+        "end": 773
+      },
+      "right": {
+        "path": "src/main/java/io/github/turtleisaac/variabletracker/ScriptVariable.java",
+        "namespace": "io.github.turtleisaac.variabletracker.ScriptVariable",
+        "name": "setVariableDescription",
+        "body": "0809f8a97d5c5175",
+        "start": 53,
+        "end": 56
+      }
+    },
+    {
+      "language": "java",
+      "score": 1.0,
+      "left": {
+        "path": "src/main/java/io/github/turtleisaac/pokeditor/gui/editors/data/formats/pokemon_sprite/PokemonSpriteEditor.java",
+        "namespace": "io.github.turtleisaac.pokeditor.gui.editors.data.formats.pokemon_sprite.PokemonSpriteEditor.PokemonSpriteDisplayPanel",
+        "name": "setContents",
+        "body": "29cb9877980e6fb5",
+        "start": 770,
+        "end": 773
+      },
+      "right": {
+        "path": "src/main/java/io/github/turtleisaac/variabletracker/ScriptVariable.java",
+        "namespace": "io.github.turtleisaac.variabletracker.ScriptVariable.VariableValue",
+        "name": "setValueName",
+        "body": "241562f14e3a19b7",
+        "start": 126,
+        "end": 129
+      }
+    },
+    {
+      "language": "java",
+      "score": 1.0,
+      "left": {
+        "path": "src/main/java/io/github/turtleisaac/pokeditor/gui/editors/data/formats/pokemon_sprite/PokemonSpriteEditor.java",
+        "namespace": "io.github.turtleisaac.pokeditor.gui.editors.data.formats.pokemon_sprite.PokemonSpriteEditor.PokemonSpriteDisplayPanel",
+        "name": "setContents",
+        "body": "29cb9877980e6fb5",
+        "start": 770,
+        "end": 773
+      },
+      "right": {
+        "path": "src/main/java/io/github/turtleisaac/variabletracker/ScriptVariable.java",
+        "namespace": "io.github.turtleisaac.variabletracker.ScriptVariable.VariableValue",
+        "name": "setValueDescription",
+        "body": "d3463bc08f03f762",
+        "start": 136,
+        "end": 139
+      }
+    },
+    {
+      "language": "java",
+      "score": 1.0,
+      "left": {
+        "path": "src/main/java/io/github/turtleisaac/pokeditor/gui/editors/data/formats/pokemon_sprite/PokemonSpriteEditor.java",
+        "namespace": "io.github.turtleisaac.pokeditor.gui.editors.data.formats.pokemon_sprite.PokemonSpriteEditor.PalettePanel.PaletteEditingSpritePanel",
+        "name": "setFrontImage",
+        "body": "76fb7717cd6ef3a1",
+        "start": 1109,
+        "end": 1113
+      },
+      "right": {
+        "path": "src/main/java/io/github/turtleisaac/pokeditor/gui/editors/data/formats/pokemon_sprite/PokemonSpriteEditor.java",
+        "namespace": "io.github.turtleisaac.pokeditor.gui.editors.data.formats.pokemon_sprite.PokemonSpriteEditor.PalettePanel.PaletteEditingSpritePanel",
+        "name": "setBackImage",
+        "body": "2cd41e59cc533f74",
+        "start": 1115,
+        "end": 1119
+      }
+    },
+    {
+      "language": "java",
+      "score": 1.0,
+      "left": {
+        "path": "src/main/java/io/github/turtleisaac/pokeditor/gui/editors/data/formats/pokemon_sprite/PokemonSpriteEditor.java",
+        "namespace": "io.github.turtleisaac.pokeditor.gui.editors.data.formats.pokemon_sprite.PokemonSpriteEditor.SpriteModel",
+        "name": "getColumnNameKey",
+        "body": "0e1be615bfede557",
+        "start": 1216,
+        "end": 1220
+      },
+      "right": {
+        "path": "src/main/java/io/github/turtleisaac/pokeditor/gui/editors/data/formats/scripts/field/FieldScriptEditor.java",
+        "namespace": "io.github.turtleisaac.pokeditor.gui.editors.data.formats.scripts.field.FieldScriptEditor.FieldScriptModel",
+        "name": "getColumnNameKey",
+        "body": "0e1be615bfede557",
+        "start": 1309,
+        "end": 1313
+      }
+    },
+    {
+      "language": "java",
+      "score": 1.0,
+      "left": {
+        "path": "src/main/java/io/github/turtleisaac/pokeditor/gui/editors/data/formats/pokemon_sprite/PokemonSpriteEditor.java",
+        "namespace": "io.github.turtleisaac.pokeditor.gui.editors.data.formats.pokemon_sprite.PokemonSpriteEditor.SpriteModel",
+        "name": "getFrozenColumnModel",
+        "body": "50718a83fa1f3049",
+        "start": 1231,
+        "end": 1235
+      },
+      "right": {
+        "path": "src/main/java/io/github/turtleisaac/pokeditor/gui/editors/data/formats/scripts/field/FieldScriptEditor.java",
+        "namespace": "io.github.turtleisaac.pokeditor.gui.editors.data.formats.scripts.field.FieldScriptEditor.FieldScriptModel",
+        "name": "getFrozenColumnModel",
+        "body": "359c26d40f2b3388",
+        "start": 1324,
+        "end": 1328
+      }
+    },
+    {
+      "language": "java",
+      "score": 1.0,
+      "left": {
+        "path": "src/main/java/io/github/turtleisaac/pokeditor/gui/editors/data/formats/pokemon_sprite/PokemonSpriteEditor.java",
+        "namespace": "io.github.turtleisaac.pokeditor.gui.editors.data.formats.pokemon_sprite.PokemonSpriteEditor.SpriteModel",
+        "name": "getValueAt",
+        "body": "4613a5dfc4cddb0e",
+        "start": 1243,
+        "end": 1247
+      },
+      "right": {
+        "path": "src/main/java/io/github/turtleisaac/pokeditor/gui/editors/data/formats/scripts/field/FieldScriptEditor.java",
+        "namespace": "io.github.turtleisaac.pokeditor.gui.editors.data.formats.scripts.field.FieldScriptEditor.FieldScriptModel",
+        "name": "getValueAt",
+        "body": "4613a5dfc4cddb0e",
+        "start": 1336,
+        "end": 1340
+      }
+    },
+    {
+      "language": "java",
+      "score": 1.0,
+      "left": {
+        "path": "src/main/java/io/github/turtleisaac/pokeditor/gui/editors/data/formats/pokemon_sprite/PokemonSpriteEditor.java",
+        "namespace": "io.github.turtleisaac.pokeditor.gui.editors.data.formats.pokemon_sprite.PokemonSpriteEditor.SpriteContents",
+        "name": "getColumn",
+        "body": "b28d1c569e732af5",
+        "start": 1281,
+        "end": 1290
+      },
+      "right": {
+        "path": "src/main/java/io/github/turtleisaac/pokeditor/gui/sheets/tables/formats/EvolutionsTable.java",
+        "namespace": "io.github.turtleisaac.pokeditor.gui.sheets.tables.formats.EvolutionsTable.EvolutionsColumn",
+        "name": "getColumn",
+        "body": "e467b0a2af4b26c5",
+        "start": 432,
+        "end": 441
+      }
+    },
+    {
+      "language": "java",
+      "score": 1.0,
+      "left": {
+        "path": "src/main/java/io/github/turtleisaac/pokeditor/gui/editors/data/formats/pokemon_sprite/PokemonSpriteEditor.java",
+        "namespace": "io.github.turtleisaac.pokeditor.gui.editors.data.formats.pokemon_sprite.PokemonSpriteEditor.SpriteContents",
+        "name": "getColumn",
+        "body": "b28d1c569e732af5",
+        "start": 1281,
+        "end": 1290
+      },
+      "right": {
+        "path": "src/main/java/io/github/turtleisaac/pokeditor/gui/sheets/tables/formats/LearnsetsTable.java",
+        "namespace": "io.github.turtleisaac.pokeditor.gui.sheets.tables.formats.LearnsetsTable.LearnsetsColumn",
+        "name": "getColumn",
+        "body": "b9707b324110f0d8",
+        "start": 267,
+        "end": 276
+      }
+    },
+    {
+      "language": "java",
+      "score": 1.0,
+      "left": {
+        "path": "src/main/java/io/github/turtleisaac/pokeditor/gui/editors/data/formats/pokemon_sprite/PokemonSpriteEditor.java",
+        "namespace": "io.github.turtleisaac.pokeditor.gui.editors.data.formats.pokemon_sprite.PokemonSpriteEditor.SpriteContents",
+        "name": "getColumn",
+        "body": "b28d1c569e732af5",
+        "start": 1281,
+        "end": 1290
+      },
+      "right": {
+        "path": "src/main/java/io/github/turtleisaac/pokeditor/gui/sheets/tables/formats/MovesTable.java",
+        "namespace": "io.github.turtleisaac.pokeditor.gui.sheets.tables.formats.MovesTable.MovesColumn",
+        "name": "getColumn",
+        "body": "8a1dc87a9eef70f5",
+        "start": 293,
+        "end": 302
+      }
+    },
+    {
+      "language": "java",
+      "score": 1.0,
+      "left": {
+        "path": "src/main/java/io/github/turtleisaac/pokeditor/gui/editors/data/formats/pokemon_sprite/PokemonSpriteEditor.java",
+        "namespace": "io.github.turtleisaac.pokeditor.gui.editors.data.formats.pokemon_sprite.PokemonSpriteEditor.SpriteContents",
+        "name": "getColumn",
+        "body": "b28d1c569e732af5",
+        "start": 1281,
+        "end": 1290
+      },
+      "right": {
+        "path": "src/main/java/io/github/turtleisaac/pokeditor/gui/sheets/tables/formats/PersonalTable.java",
+        "namespace": "io.github.turtleisaac.pokeditor.gui.sheets.tables.formats.PersonalTable.PersonalColumns",
+        "name": "getColumn",
+        "body": "d357f0fe6e01354e",
+        "start": 378,
+        "end": 387
+      }
+    },
+    {
+      "language": "java",
+      "score": 1.0,
+      "left": {
+        "path": "src/main/java/io/github/turtleisaac/pokeditor/gui/editors/data/formats/pokemon_sprite/PokemonSpriteEditor.java",
+        "namespace": "io.github.turtleisaac.pokeditor.gui.editors.data.formats.pokemon_sprite.PokemonSpriteEditor.SpriteContents",
+        "name": "getColumn",
+        "body": "b28d1c569e732af5",
+        "start": 1281,
+        "end": 1290
+      },
+      "right": {
+        "path": "src/main/java/io/github/turtleisaac/pokeditor/gui/sheets/tables/formats/TmCompatibilityTable.java",
+        "namespace": "io.github.turtleisaac.pokeditor.gui.sheets.tables.formats.TmCompatibilityTable.TmCompatibilityColumns",
+        "name": "getColumn",
+        "body": "53d09ca2661e7886",
+        "start": 271,
+        "end": 280
+      }
+    },
+    {
+      "language": "java",
+      "score": 1.0,
+      "left": {
+        "path": "src/main/java/io/github/turtleisaac/pokeditor/gui/editors/data/formats/scripts/ScriptDocument.java",
+        "namespace": "io.github.turtleisaac.pokeditor.gui.editors.data.formats.scripts.ScriptDocument",
+        "name": "setVariableList",
+        "body": "45074a47a8af4449",
+        "start": 78,
+        "end": 81
+      },
+      "right": {
+        "path": "src/main/java/io/github/turtleisaac/variabletracker/ScriptVariable.java",
+        "namespace": "io.github.turtleisaac.variabletracker.ScriptVariable",
+        "name": "setVariableValues",
+        "body": "cf7ebfdc0cfc73c6",
+        "start": 73,
+        "end": 76
+      }
+    },
+    {
+      "language": "java",
+      "score": 1.0,
+      "left": {
+        "path": "src/main/java/io/github/turtleisaac/pokeditor/gui/editors/data/formats/scripts/ScriptPane.java",
+        "namespace": "io.github.turtleisaac.pokeditor.gui.editors.data.formats.scripts.ScriptPane",
+        "name": "setScrollPane",
+        "body": "840618c17b85c0b0",
+        "start": 176,
+        "end": 179
+      },
+      "right": {
+        "path": "src/main/java/io/github/turtleisaac/variabletracker/ScriptFlag.java",
+        "namespace": "io.github.turtleisaac.variabletracker.ScriptFlag",
+        "name": "setFlagName",
+        "body": "ccf2f6bf32c98271",
+        "start": 35,
+        "end": 38
+      }
+    },
+    {
+      "language": "java",
+      "score": 1.0,
+      "left": {
+        "path": "src/main/java/io/github/turtleisaac/pokeditor/gui/editors/data/formats/scripts/ScriptPane.java",
+        "namespace": "io.github.turtleisaac.pokeditor.gui.editors.data.formats.scripts.ScriptPane",
+        "name": "setScrollPane",
+        "body": "840618c17b85c0b0",
+        "start": 176,
+        "end": 179
+      },
+      "right": {
+        "path": "src/main/java/io/github/turtleisaac/variabletracker/ScriptFlag.java",
+        "namespace": "io.github.turtleisaac.variabletracker.ScriptFlag",
+        "name": "setFlagDescription",
+        "body": "042fabcd474107ff",
+        "start": 45,
+        "end": 48
+      }
+    },
+    {
+      "language": "java",
+      "score": 1.0,
+      "left": {
+        "path": "src/main/java/io/github/turtleisaac/pokeditor/gui/editors/data/formats/scripts/ScriptPane.java",
+        "namespace": "io.github.turtleisaac.pokeditor.gui.editors.data.formats.scripts.ScriptPane",
+        "name": "setScrollPane",
+        "body": "840618c17b85c0b0",
+        "start": 176,
+        "end": 179
+      },
+      "right": {
+        "path": "src/main/java/io/github/turtleisaac/variabletracker/ScriptVariable.java",
+        "namespace": "io.github.turtleisaac.variabletracker.ScriptVariable",
+        "name": "setVariableName",
+        "body": "fd72549784312063",
+        "start": 43,
+        "end": 46
+      }
+    },
+    {
+      "language": "java",
+      "score": 1.0,
+      "left": {
+        "path": "src/main/java/io/github/turtleisaac/pokeditor/gui/editors/data/formats/scripts/ScriptPane.java",
+        "namespace": "io.github.turtleisaac.pokeditor.gui.editors.data.formats.scripts.ScriptPane",
+        "name": "setScrollPane",
+        "body": "840618c17b85c0b0",
+        "start": 176,
+        "end": 179
+      },
+      "right": {
+        "path": "src/main/java/io/github/turtleisaac/variabletracker/ScriptVariable.java",
+        "namespace": "io.github.turtleisaac.variabletracker.ScriptVariable",
+        "name": "setVariableDescription",
+        "body": "0809f8a97d5c5175",
+        "start": 53,
+        "end": 56
+      }
+    },
+    {
+      "language": "java",
+      "score": 1.0,
+      "left": {
+        "path": "src/main/java/io/github/turtleisaac/pokeditor/gui/editors/data/formats/scripts/ScriptPane.java",
+        "namespace": "io.github.turtleisaac.pokeditor.gui.editors.data.formats.scripts.ScriptPane",
+        "name": "setScrollPane",
+        "body": "840618c17b85c0b0",
+        "start": 176,
+        "end": 179
+      },
+      "right": {
+        "path": "src/main/java/io/github/turtleisaac/variabletracker/ScriptVariable.java",
+        "namespace": "io.github.turtleisaac.variabletracker.ScriptVariable.VariableValue",
+        "name": "setValueName",
+        "body": "241562f14e3a19b7",
+        "start": 126,
+        "end": 129
+      }
+    },
+    {
+      "language": "java",
+      "score": 1.0,
+      "left": {
+        "path": "src/main/java/io/github/turtleisaac/pokeditor/gui/editors/data/formats/scripts/ScriptPane.java",
+        "namespace": "io.github.turtleisaac.pokeditor.gui.editors.data.formats.scripts.ScriptPane",
+        "name": "setScrollPane",
+        "body": "840618c17b85c0b0",
+        "start": 176,
+        "end": 179
+      },
+      "right": {
+        "path": "src/main/java/io/github/turtleisaac/variabletracker/ScriptVariable.java",
+        "namespace": "io.github.turtleisaac.variabletracker.ScriptVariable.VariableValue",
+        "name": "setValueDescription",
+        "body": "d3463bc08f03f762",
+        "start": 136,
+        "end": 139
+      }
+    },
+    {
+      "language": "java",
+      "score": 1.0,
+      "left": {
+        "path": "src/main/java/io/github/turtleisaac/pokeditor/gui/editors/data/formats/scripts/field/FieldScriptEditor.java",
+        "namespace": "io.github.turtleisaac.pokeditor.gui.editors.data.formats.scripts.field.FieldScriptEditor",
+        "name": "variableTrackerButtonPressed",
+        "body": "ae80c48ea87d9be9",
+        "start": 860,
+        "end": 863
+      },
+      "right": {
+        "path": "src/main/java/io/github/turtleisaac/pokeditor/gui/editors/data/formats/scripts/field/FieldScriptEditor.java",
+        "namespace": "io.github.turtleisaac.pokeditor.gui.editors.data.formats.scripts.field.FieldScriptEditor",
+        "name": "flagTrackerButtonPressed",
+        "body": "34c19779b2ee4ebd",
+        "start": 865,
+        "end": 868
+      }
+    },
+    {
+      "language": "java",
+      "score": 1.0,
+      "left": {
+        "path": "src/main/java/io/github/turtleisaac/pokeditor/gui/editors/data/formats/scripts/field/FieldScriptEditor.java",
+        "namespace": "io.github.turtleisaac.pokeditor.gui.editors.data.formats.scripts.field.FieldScriptEditor",
+        "name": "getDataClass",
+        "body": "db5703666f5c7bb5",
+        "start": 1156,
+        "end": 1160
+      },
+      "right": {
+        "path": "src/main/java/io/github/turtleisaac/pokeditor/gui/sheets/tables/formats/EvolutionsTable.java",
+        "namespace": "io.github.turtleisaac.pokeditor.gui.sheets.tables.formats.EvolutionsTable",
+        "name": "getDataClass",
+        "body": "3b3a0a8f32715a11",
+        "start": 57,
+        "end": 61
+      }
+    },
+    {
+      "language": "java",
+      "score": 1.0,
+      "left": {
+        "path": "src/main/java/io/github/turtleisaac/pokeditor/gui/editors/data/formats/scripts/field/FieldScriptEditor.java",
+        "namespace": "io.github.turtleisaac.pokeditor.gui.editors.data.formats.scripts.field.FieldScriptEditor",
+        "name": "getDataClass",
+        "body": "db5703666f5c7bb5",
+        "start": 1156,
+        "end": 1160
+      },
+      "right": {
+        "path": "src/main/java/io/github/turtleisaac/pokeditor/gui/sheets/tables/formats/LearnsetsTable.java",
+        "namespace": "io.github.turtleisaac.pokeditor.gui.sheets.tables.formats.LearnsetsTable",
+        "name": "getDataClass",
+        "body": "685c176e20bec2a5",
+        "start": 38,
+        "end": 42
+      }
+    },
+    {
+      "language": "java",
+      "score": 1.0,
+      "left": {
+        "path": "src/main/java/io/github/turtleisaac/pokeditor/gui/editors/data/formats/scripts/field/FieldScriptEditor.java",
+        "namespace": "io.github.turtleisaac.pokeditor.gui.editors.data.formats.scripts.field.FieldScriptEditor",
+        "name": "getDataClass",
+        "body": "db5703666f5c7bb5",
+        "start": 1156,
+        "end": 1160
+      },
+      "right": {
+        "path": "src/main/java/io/github/turtleisaac/pokeditor/gui/sheets/tables/formats/MovesTable.java",
+        "namespace": "io.github.turtleisaac.pokeditor.gui.sheets.tables.formats.MovesTable",
+        "name": "getDataClass",
+        "body": "70a4b5fb209c1be4",
+        "start": 47,
+        "end": 51
+      }
+    },
+    {
+      "language": "java",
+      "score": 1.0,
+      "left": {
+        "path": "src/main/java/io/github/turtleisaac/pokeditor/gui/editors/data/formats/scripts/field/FieldScriptEditor.java",
+        "namespace": "io.github.turtleisaac.pokeditor.gui.editors.data.formats.scripts.field.FieldScriptEditor",
+        "name": "getDataClass",
+        "body": "db5703666f5c7bb5",
+        "start": 1156,
+        "end": 1160
+      },
+      "right": {
+        "path": "src/main/java/io/github/turtleisaac/pokeditor/gui/sheets/tables/formats/PersonalTable.java",
+        "namespace": "io.github.turtleisaac.pokeditor.gui.sheets.tables.formats.PersonalTable",
+        "name": "getDataClass",
+        "body": "2c52d1149ae67b66",
+        "start": 50,
+        "end": 54
+      }
+    },
+    {
+      "language": "java",
+      "score": 1.0,
+      "left": {
+        "path": "src/main/java/io/github/turtleisaac/pokeditor/gui/editors/data/formats/scripts/field/FieldScriptEditor.java",
+        "namespace": "io.github.turtleisaac.pokeditor.gui.editors.data.formats.scripts.field.FieldScriptEditor",
+        "name": "getDataClass",
+        "body": "db5703666f5c7bb5",
+        "start": 1156,
+        "end": 1160
+      },
+      "right": {
+        "path": "src/main/java/io/github/turtleisaac/pokeditor/gui/sheets/tables/formats/TmCompatibilityTable.java",
+        "namespace": "io.github.turtleisaac.pokeditor.gui.sheets.tables.formats.TmCompatibilityTable",
+        "name": "getDataClass",
+        "body": "2c52d1149ae67b66",
+        "start": 100,
+        "end": 104
+      }
+    },
+    {
+      "language": "java",
+      "score": 1.0,
+      "left": {
+        "path": "src/main/java/io/github/turtleisaac/pokeditor/gui/sheets/DefaultSheetPanel.java",
+        "namespace": "io.github.turtleisaac.pokeditor.gui.sheets.DefaultSheetPanel",
+        "name": "getTable",
+        "body": "f30e4716009d3f0f",
+        "start": 93,
+        "end": 96
+      },
+      "right": {
+        "path": "src/main/java/io/github/turtleisaac/pokeditor/gui/sheets/tables/DefaultTable.java",
+        "namespace": "io.github.turtleisaac.pokeditor.gui.sheets.tables.DefaultTable",
+        "name": "getFormatModel",
+        "body": "2737e1e1e15ee832",
+        "start": 134,
+        "end": 137
+      }
+    },
+    {
+      "language": "java",
+      "score": 1.0,
+      "left": {
+        "path": "src/main/java/io/github/turtleisaac/pokeditor/gui/sheets/DefaultSheetPanel.java",
+        "namespace": "io.github.turtleisaac.pokeditor.gui.sheets.DefaultSheetPanel",
+        "name": "getFrozenColumns",
+        "body": "9d70ae7395e7ee91",
+        "start": 341,
+        "end": 344
+      },
+      "right": {
+        "path": "src/main/java/io/github/turtleisaac/pokeditor/gui/sheets/tables/FormatModel.java",
+        "namespace": "io.github.turtleisaac.pokeditor.gui.sheets.tables.FormatModel",
+        "name": "getData",
+        "body": "901a44362151ea21",
+        "start": 91,
+        "end": 94
+      }
+    },
+    {
+      "language": "java",
+      "score": 1.0,
+      "left": {
+        "path": "src/main/java/io/github/turtleisaac/pokeditor/gui/sheets/DefaultSheetPanel.java",
+        "namespace": "io.github.turtleisaac.pokeditor.gui.sheets.DefaultSheetPanel",
+        "name": "getFrozenColumns",
+        "body": "9d70ae7395e7ee91",
+        "start": 341,
+        "end": 344
+      },
+      "right": {
+        "path": "src/main/java/io/github/turtleisaac/pokeditor/gui/sheets/tables/FormatModel.java",
+        "namespace": "io.github.turtleisaac.pokeditor.gui.sheets.tables.FormatModel",
+        "name": "getTextBankData",
+        "body": "286d2716805033d8",
+        "start": 96,
+        "end": 99
+      }
+    },
+    {
+      "language": "java",
+      "score": 1.0,
+      "left": {
+        "path": "src/main/java/io/github/turtleisaac/pokeditor/gui/sheets/DefaultSheetPanel.java",
+        "namespace": "io.github.turtleisaac.pokeditor.gui.sheets.DefaultSheetPanel",
+        "name": "getFrozenColumns",
+        "body": "9d70ae7395e7ee91",
+        "start": 341,
+        "end": 344
+      },
+      "right": {
+        "path": "src/main/java/io/github/turtleisaac/variabletracker/ScriptVariable.java",
+        "namespace": "io.github.turtleisaac.variabletracker.ScriptVariable",
+        "name": "getVariableValues",
+        "body": "a1a644580771ab72",
+        "start": 68,
+        "end": 71
+      }
+    },
+    {
+      "language": "java",
+      "score": 1.0,
+      "left": {
+        "path": "src/main/java/io/github/turtleisaac/pokeditor/gui/sheets/DefaultSheetPanel.java",
+        "namespace": "io.github.turtleisaac.pokeditor.gui.sheets.DefaultSheetPanel",
+        "name": "getFrozenColumns",
+        "body": "9d70ae7395e7ee91",
+        "start": 341,
+        "end": 344
+      },
+      "right": {
+        "path": "src/main/java/io/github/turtleisaac/variabletracker/gui/variables/VariableTracker.java",
+        "namespace": "io.github.turtleisaac.variabletracker.gui.variables.VariableTracker",
+        "name": "getVariableList",
+        "body": "dd3e4906fe38d496",
+        "start": 207,
+        "end": 210
+      }
+    },
+    {
+      "language": "java",
+      "score": 1.0,
+      "left": {
+        "path": "src/main/java/io/github/turtleisaac/pokeditor/gui/sheets/tables/FormatModel.java",
+        "namespace": "io.github.turtleisaac.pokeditor.gui.sheets.tables.FormatModel",
+        "name": "toggleCopyPasteMode",
+        "body": "680db3276197bce0",
+        "start": 62,
+        "end": 65
+      },
+      "right": {
+        "path": "src/main/java/io/github/turtleisaac/pokeditor/gui_old/JCheckboxTree.java",
+        "namespace": "io.github.turtleisaac.pokeditor.gui_old.JCheckboxTree.CheckedNode",
+        "name": "setSelected",
+        "body": "ae4e593ebb4aabc2",
+        "start": 55,
+        "end": 58
+      }
+    },
+    {
+      "language": "java",
+      "score": 1.0,
+      "left": {
+        "path": "src/main/java/io/github/turtleisaac/pokeditor/gui/sheets/tables/FormatModel.java",
+        "namespace": "io.github.turtleisaac.pokeditor.gui.sheets.tables.FormatModel",
+        "name": "getEntryCount",
+        "body": "a3a1cff0ab0a94d0",
+        "start": 79,
+        "end": 83
+      },
+      "right": {
+        "path": "src/main/java/io/github/turtleisaac/variabletracker/gui/variables/VariableTracker.java",
+        "namespace": "io.github.turtleisaac.variabletracker.gui.variables.VariableTracker.VariableTableModel",
+        "name": "getRowCount",
+        "body": "280c86d1f24eaebd",
+        "start": 727,
+        "end": 731
+      }
+    },
+    {
+      "language": "java",
+      "score": 1.0,
+      "left": {
+        "path": "src/main/java/io/github/turtleisaac/pokeditor/gui/sheets/tables/FormatModel.java",
+        "namespace": "io.github.turtleisaac.pokeditor.gui.sheets.tables.FormatModel",
+        "name": "getData",
+        "body": "901a44362151ea21",
+        "start": 91,
+        "end": 94
+      },
+      "right": {
+        "path": "src/main/java/io/github/turtleisaac/pokeditor/gui/sheets/tables/FormatModel.java",
+        "namespace": "io.github.turtleisaac.pokeditor.gui.sheets.tables.FormatModel",
+        "name": "getTextBankData",
+        "body": "286d2716805033d8",
+        "start": 96,
+        "end": 99
+      }
+    },
+    {
+      "language": "java",
+      "score": 1.0,
+      "left": {
+        "path": "src/main/java/io/github/turtleisaac/pokeditor/gui/sheets/tables/FormatModel.java",
+        "namespace": "io.github.turtleisaac.pokeditor.gui.sheets.tables.FormatModel",
+        "name": "getData",
+        "body": "901a44362151ea21",
+        "start": 91,
+        "end": 94
+      },
+      "right": {
+        "path": "src/main/java/io/github/turtleisaac/variabletracker/ScriptVariable.java",
+        "namespace": "io.github.turtleisaac.variabletracker.ScriptVariable",
+        "name": "getVariableValues",
+        "body": "a1a644580771ab72",
+        "start": 68,
+        "end": 71
+      }
+    },
+    {
+      "language": "java",
+      "score": 1.0,
+      "left": {
+        "path": "src/main/java/io/github/turtleisaac/pokeditor/gui/sheets/tables/FormatModel.java",
+        "namespace": "io.github.turtleisaac.pokeditor.gui.sheets.tables.FormatModel",
+        "name": "getData",
+        "body": "901a44362151ea21",
+        "start": 91,
+        "end": 94
+      },
+      "right": {
+        "path": "src/main/java/io/github/turtleisaac/variabletracker/gui/variables/VariableTracker.java",
+        "namespace": "io.github.turtleisaac.variabletracker.gui.variables.VariableTracker",
+        "name": "getVariableList",
+        "body": "dd3e4906fe38d496",
+        "start": 207,
+        "end": 210
+      }
+    },
+    {
+      "language": "java",
+      "score": 1.0,
+      "left": {
+        "path": "src/main/java/io/github/turtleisaac/pokeditor/gui/sheets/tables/FormatModel.java",
+        "namespace": "io.github.turtleisaac.pokeditor.gui.sheets.tables.FormatModel",
+        "name": "getTextBankData",
+        "body": "286d2716805033d8",
+        "start": 96,
+        "end": 99
+      },
+      "right": {
+        "path": "src/main/java/io/github/turtleisaac/variabletracker/ScriptVariable.java",
+        "namespace": "io.github.turtleisaac.variabletracker.ScriptVariable",
+        "name": "getVariableValues",
+        "body": "a1a644580771ab72",
+        "start": 68,
+        "end": 71
+      }
+    },
+    {
+      "language": "java",
+      "score": 1.0,
+      "left": {
+        "path": "src/main/java/io/github/turtleisaac/pokeditor/gui/sheets/tables/FormatModel.java",
+        "namespace": "io.github.turtleisaac.pokeditor.gui.sheets.tables.FormatModel",
+        "name": "getTextBankData",
+        "body": "286d2716805033d8",
+        "start": 96,
+        "end": 99
+      },
+      "right": {
+        "path": "src/main/java/io/github/turtleisaac/variabletracker/gui/variables/VariableTracker.java",
+        "namespace": "io.github.turtleisaac.variabletracker.gui.variables.VariableTracker",
+        "name": "getVariableList",
+        "body": "dd3e4906fe38d496",
+        "start": 207,
+        "end": 210
+      }
+    },
+    {
+      "language": "java",
+      "score": 1.0,
+      "left": {
+        "path": "src/main/java/io/github/turtleisaac/pokeditor/gui/sheets/tables/formats/EvolutionsTable.java",
+        "namespace": "io.github.turtleisaac.pokeditor.gui.sheets.tables.formats.EvolutionsTable",
+        "name": "getDataClass",
+        "body": "3b3a0a8f32715a11",
+        "start": 57,
+        "end": 61
+      },
+      "right": {
+        "path": "src/main/java/io/github/turtleisaac/pokeditor/gui/sheets/tables/formats/LearnsetsTable.java",
+        "namespace": "io.github.turtleisaac.pokeditor.gui.sheets.tables.formats.LearnsetsTable",
+        "name": "getDataClass",
+        "body": "685c176e20bec2a5",
+        "start": 38,
+        "end": 42
+      }
+    },
+    {
+      "language": "java",
+      "score": 1.0,
+      "left": {
+        "path": "src/main/java/io/github/turtleisaac/pokeditor/gui/sheets/tables/formats/EvolutionsTable.java",
+        "namespace": "io.github.turtleisaac.pokeditor.gui.sheets.tables.formats.EvolutionsTable",
+        "name": "getDataClass",
+        "body": "3b3a0a8f32715a11",
+        "start": 57,
+        "end": 61
+      },
+      "right": {
+        "path": "src/main/java/io/github/turtleisaac/pokeditor/gui/sheets/tables/formats/MovesTable.java",
+        "namespace": "io.github.turtleisaac.pokeditor.gui.sheets.tables.formats.MovesTable",
+        "name": "getDataClass",
+        "body": "70a4b5fb209c1be4",
+        "start": 47,
+        "end": 51
+      }
+    },
+    {
+      "language": "java",
+      "score": 1.0,
+      "left": {
+        "path": "src/main/java/io/github/turtleisaac/pokeditor/gui/sheets/tables/formats/EvolutionsTable.java",
+        "namespace": "io.github.turtleisaac.pokeditor.gui.sheets.tables.formats.EvolutionsTable",
+        "name": "getDataClass",
+        "body": "3b3a0a8f32715a11",
+        "start": 57,
+        "end": 61
+      },
+      "right": {
+        "path": "src/main/java/io/github/turtleisaac/pokeditor/gui/sheets/tables/formats/PersonalTable.java",
+        "namespace": "io.github.turtleisaac.pokeditor.gui.sheets.tables.formats.PersonalTable",
+        "name": "getDataClass",
+        "body": "2c52d1149ae67b66",
+        "start": 50,
+        "end": 54
+      }
+    },
+    {
+      "language": "java",
+      "score": 1.0,
+      "left": {
+        "path": "src/main/java/io/github/turtleisaac/pokeditor/gui/sheets/tables/formats/EvolutionsTable.java",
+        "namespace": "io.github.turtleisaac.pokeditor.gui.sheets.tables.formats.EvolutionsTable",
+        "name": "getDataClass",
+        "body": "3b3a0a8f32715a11",
+        "start": 57,
+        "end": 61
+      },
+      "right": {
+        "path": "src/main/java/io/github/turtleisaac/pokeditor/gui/sheets/tables/formats/TmCompatibilityTable.java",
+        "namespace": "io.github.turtleisaac.pokeditor.gui.sheets.tables.formats.TmCompatibilityTable",
+        "name": "getDataClass",
+        "body": "2c52d1149ae67b66",
+        "start": 100,
+        "end": 104
+      }
+    },
+    {
+      "language": "java",
+      "score": 1.0,
+      "left": {
+        "path": "src/main/java/io/github/turtleisaac/pokeditor/gui/sheets/tables/formats/EvolutionsTable.java",
+        "namespace": "io.github.turtleisaac.pokeditor.gui.sheets.tables.formats.EvolutionsTable.EvolutionsModel",
+        "name": "getColumnNameKey",
+        "body": "c8389a50b0ebc9b9",
+        "start": 76,
+        "end": 80
+      },
+      "right": {
+        "path": "src/main/java/io/github/turtleisaac/pokeditor/gui/sheets/tables/formats/LearnsetsTable.java",
+        "namespace": "io.github.turtleisaac.pokeditor.gui.sheets.tables.formats.LearnsetsTable.LearnsetsModel",
+        "name": "getColumnNameKey",
+        "body": "b60c9ccfbdf8bc67",
+        "start": 58,
+        "end": 62
+      }
+    },
+    {
+      "language": "java",
+      "score": 1.0,
+      "left": {
+        "path": "src/main/java/io/github/turtleisaac/pokeditor/gui/sheets/tables/formats/EvolutionsTable.java",
+        "namespace": "io.github.turtleisaac.pokeditor.gui.sheets.tables.formats.EvolutionsTable.EvolutionsModel",
+        "name": "getColumnNameKey",
+        "body": "c8389a50b0ebc9b9",
+        "start": 76,
+        "end": 80
+      },
+      "right": {
+        "path": "src/main/java/io/github/turtleisaac/pokeditor/gui/sheets/tables/formats/MovesTable.java",
+        "namespace": "io.github.turtleisaac.pokeditor.gui.sheets.tables.formats.MovesTable.MovesModel",
+        "name": "getColumnNameKey",
+        "body": "657781f23940bae4",
+        "start": 67,
+        "end": 71
+      }
+    },
+    {
+      "language": "java",
+      "score": 1.0,
+      "left": {
+        "path": "src/main/java/io/github/turtleisaac/pokeditor/gui/sheets/tables/formats/EvolutionsTable.java",
+        "namespace": "io.github.turtleisaac.pokeditor.gui.sheets.tables.formats.EvolutionsTable.EvolutionsModel",
+        "name": "getColumnNameKey",
+        "body": "c8389a50b0ebc9b9",
+        "start": 76,
+        "end": 80
+      },
+      "right": {
+        "path": "src/main/java/io/github/turtleisaac/pokeditor/gui/sheets/tables/formats/MovesTable.java",
+        "namespace": "io.github.turtleisaac.pokeditor.gui.sheets.tables.formats.MovesTable.MovesModel",
+        "name": "getCellType",
+        "body": "7dd08ae9fdec00be",
+        "start": 177,
+        "end": 181
+      }
+    },
+    {
+      "language": "java",
+      "score": 1.0,
+      "left": {
+        "path": "src/main/java/io/github/turtleisaac/pokeditor/gui/sheets/tables/formats/EvolutionsTable.java",
+        "namespace": "io.github.turtleisaac.pokeditor.gui.sheets.tables.formats.EvolutionsTable.EvolutionsModel",
+        "name": "getColumnNameKey",
+        "body": "c8389a50b0ebc9b9",
+        "start": 76,
+        "end": 80
+      },
+      "right": {
+        "path": "src/main/java/io/github/turtleisaac/pokeditor/gui/sheets/tables/formats/PersonalTable.java",
+        "namespace": "io.github.turtleisaac.pokeditor.gui.sheets.tables.formats.PersonalTable.PersonalModel",
+        "name": "getColumnNameKey",
+        "body": "af8ea7055205d281",
+        "start": 70,
+        "end": 74
+      }
+    },
+    {
+      "language": "java",
+      "score": 1.0,
+      "left": {
+        "path": "src/main/java/io/github/turtleisaac/pokeditor/gui/sheets/tables/formats/EvolutionsTable.java",
+        "namespace": "io.github.turtleisaac.pokeditor.gui.sheets.tables.formats.EvolutionsTable.EvolutionsModel",
+        "name": "getColumnNameKey",
+        "body": "c8389a50b0ebc9b9",
+        "start": 76,
+        "end": 80
+      },
+      "right": {
+        "path": "src/main/java/io/github/turtleisaac/pokeditor/gui/sheets/tables/formats/PersonalTable.java",
+        "namespace": "io.github.turtleisaac.pokeditor.gui.sheets.tables.formats.PersonalTable.PersonalModel",
+        "name": "getCellType",
+        "body": "615db8dfa96439ba",
+        "start": 248,
+        "end": 252
+      }
+    },
+    {
+      "language": "java",
+      "score": 1.0,
+      "left": {
+        "path": "src/main/java/io/github/turtleisaac/pokeditor/gui/sheets/tables/formats/EvolutionsTable.java",
+        "namespace": "io.github.turtleisaac.pokeditor.gui.sheets.tables.formats.EvolutionsTable.EvolutionsModel",
+        "name": "getColumnNameKey",
+        "body": "c8389a50b0ebc9b9",
+        "start": 76,
+        "end": 80
+      },
+      "right": {
+        "path": "src/main/java/io/github/turtleisaac/pokeditor/gui/sheets/tables/formats/TmCompatibilityTable.java",
+        "namespace": "io.github.turtleisaac.pokeditor.gui.sheets.tables.formats.TmCompatibilityTable.TmCompatibilityModel",
+        "name": "getColumnNameKey",
+        "body": "76582ec9ac9b010a",
+        "start": 120,
+        "end": 124
+      }
+    },
+    {
+      "language": "java",
+      "score": 1.0,
+      "left": {
+        "path": "src/main/java/io/github/turtleisaac/pokeditor/gui/sheets/tables/formats/EvolutionsTable.java",
+        "namespace": "io.github.turtleisaac.pokeditor.gui.sheets.tables.formats.EvolutionsTable.EvolutionsModel",
+        "name": "setValueAt",
+        "body": "492045765b429f08",
+        "start": 82,
+        "end": 94
+      },
+      "right": {
+        "path": "src/main/java/io/github/turtleisaac/pokeditor/gui/sheets/tables/formats/LearnsetsTable.java",
+        "namespace": "io.github.turtleisaac.pokeditor.gui.sheets.tables.formats.LearnsetsTable.LearnsetsModel",
+        "name": "setValueAt",
+        "body": "00f40c84f6f67bce",
+        "start": 64,
+        "end": 78
+      }
+    },
+    {
+      "language": "java",
+      "score": 1.0,
+      "left": {
+        "path": "src/main/java/io/github/turtleisaac/pokeditor/gui/sheets/tables/formats/EvolutionsTable.java",
+        "namespace": "io.github.turtleisaac.pokeditor.gui.sheets.tables.formats.EvolutionsTable.EvolutionsModel",
+        "name": "getColumnCount",
+        "body": "a8d0b0610b7cd12a",
+        "start": 120,
+        "end": 124
+      },
+      "right": {
+        "path": "src/main/java/io/github/turtleisaac/pokeditor/gui/sheets/tables/formats/LearnsetsTable.java",
+        "namespace": "io.github.turtleisaac.pokeditor.gui.sheets.tables.formats.LearnsetsTable.LearnsetsModel",
+        "name": "getColumnCount",
+        "body": "b6f93ba19ff38c36",
+        "start": 103,
+        "end": 107
+      }
+    },
+    {
+      "language": "java",
+      "score": 1.0,
+      "left": {
+        "path": "src/main/java/io/github/turtleisaac/pokeditor/gui/sheets/tables/formats/EvolutionsTable.java",
+        "namespace": "io.github.turtleisaac.pokeditor.gui.sheets.tables.formats.EvolutionsTable.EvolutionsModel",
+        "name": "getValueAt",
+        "body": "f03243dd0e1b3b3c",
+        "start": 126,
+        "end": 135
+      },
+      "right": {
+        "path": "src/main/java/io/github/turtleisaac/pokeditor/gui/sheets/tables/formats/LearnsetsTable.java",
+        "namespace": "io.github.turtleisaac.pokeditor.gui.sheets.tables.formats.LearnsetsTable.LearnsetsModel",
+        "name": "getValueAt",
+        "body": "546adc4d158c860f",
+        "start": 109,
+        "end": 118
+      }
+    },
+    {
+      "language": "java",
+      "score": 1.0,
+      "left": {
+        "path": "src/main/java/io/github/turtleisaac/pokeditor/gui/sheets/tables/formats/EvolutionsTable.java",
+        "namespace": "io.github.turtleisaac.pokeditor.gui.sheets.tables.formats.EvolutionsTable.EvolutionsModel",
+        "name": "getCellType",
+        "body": "bb40a3111da09513",
+        "start": 182,
+        "end": 191
+      },
+      "right": {
+        "path": "src/main/java/io/github/turtleisaac/pokeditor/gui/sheets/tables/formats/LearnsetsTable.java",
+        "namespace": "io.github.turtleisaac.pokeditor.gui.sheets.tables.formats.LearnsetsTable.LearnsetsModel",
+        "name": "getCellType",
+        "body": "e34b2d1b7bbd6ccb",
+        "start": 163,
+        "end": 172
+      }
+    },
+    {
+      "language": "java",
+      "score": 1.0,
+      "left": {
+        "path": "src/main/java/io/github/turtleisaac/pokeditor/gui/sheets/tables/formats/EvolutionsTable.java",
+        "namespace": "io.github.turtleisaac.pokeditor.gui.sheets.tables.formats.EvolutionsTable.EvolutionsModel",
+        "name": "getNameTextBank",
+        "body": "fecaf0c4329aaada",
+        "start": 200,
+        "end": 204
+      },
+      "right": {
+        "path": "src/main/java/io/github/turtleisaac/pokeditor/gui/sheets/tables/formats/LearnsetsTable.java",
+        "namespace": "io.github.turtleisaac.pokeditor.gui.sheets.tables.formats.LearnsetsTable.LearnsetsModel",
+        "name": "getNameTextBank",
+        "body": "fecaf0c4329aaada",
+        "start": 186,
+        "end": 190
+      }
+    },
+    {
+      "language": "java",
+      "score": 1.0,
+      "left": {
+        "path": "src/main/java/io/github/turtleisaac/pokeditor/gui/sheets/tables/formats/EvolutionsTable.java",
+        "namespace": "io.github.turtleisaac.pokeditor.gui.sheets.tables.formats.EvolutionsTable.EvolutionsModel",
+        "name": "getNameTextBank",
+        "body": "fecaf0c4329aaada",
+        "start": 200,
+        "end": 204
+      },
+      "right": {
+        "path": "src/main/java/io/github/turtleisaac/pokeditor/gui/sheets/tables/formats/MovesTable.java",
+        "namespace": "io.github.turtleisaac.pokeditor.gui.sheets.tables.formats.MovesTable.MovesModel",
+        "name": "getNameTextBank",
+        "body": "cce175323bd3e260",
+        "start": 190,
+        "end": 194
+      }
+    },
+    {
+      "language": "java",
+      "score": 1.0,
+      "left": {
+        "path": "src/main/java/io/github/turtleisaac/pokeditor/gui/sheets/tables/formats/EvolutionsTable.java",
+        "namespace": "io.github.turtleisaac.pokeditor.gui.sheets.tables.formats.EvolutionsTable.EvolutionsModel",
+        "name": "getNameTextBank",
+        "body": "fecaf0c4329aaada",
+        "start": 200,
+        "end": 204
+      },
+      "right": {
+        "path": "src/main/java/io/github/turtleisaac/pokeditor/gui/sheets/tables/formats/PersonalTable.java",
+        "namespace": "io.github.turtleisaac.pokeditor.gui.sheets.tables.formats.PersonalTable.PersonalModel",
+        "name": "getNameTextBank",
+        "body": "fecaf0c4329aaada",
+        "start": 261,
+        "end": 265
+      }
+    },
+    {
+      "language": "java",
+      "score": 1.0,
+      "left": {
+        "path": "src/main/java/io/github/turtleisaac/pokeditor/gui/sheets/tables/formats/EvolutionsTable.java",
+        "namespace": "io.github.turtleisaac.pokeditor.gui.sheets.tables.formats.EvolutionsTable.EvolutionsModel",
+        "name": "getNameTextBank",
+        "body": "fecaf0c4329aaada",
+        "start": 200,
+        "end": 204
+      },
+      "right": {
+        "path": "src/main/java/io/github/turtleisaac/pokeditor/gui/sheets/tables/formats/TmCompatibilityTable.java",
+        "namespace": "io.github.turtleisaac.pokeditor.gui.sheets.tables.formats.TmCompatibilityTable.TmCompatibilityModel",
+        "name": "getNameTextBank",
+        "body": "fecaf0c4329aaada",
+        "start": 204,
+        "end": 208
+      }
+    },
+    {
+      "language": "java",
+      "score": 1.0,
+      "left": {
+        "path": "src/main/java/io/github/turtleisaac/pokeditor/gui/sheets/tables/formats/EvolutionsTable.java",
+        "namespace": "io.github.turtleisaac.pokeditor.gui.sheets.tables.formats.EvolutionsTable.EvolutionsColumn",
+        "name": "getColumn",
+        "body": "e467b0a2af4b26c5",
+        "start": 432,
+        "end": 441
+      },
+      "right": {
+        "path": "src/main/java/io/github/turtleisaac/pokeditor/gui/sheets/tables/formats/LearnsetsTable.java",
+        "namespace": "io.github.turtleisaac.pokeditor.gui.sheets.tables.formats.LearnsetsTable.LearnsetsColumn",
+        "name": "getColumn",
+        "body": "b9707b324110f0d8",
+        "start": 267,
+        "end": 276
+      }
+    },
+    {
+      "language": "java",
+      "score": 1.0,
+      "left": {
+        "path": "src/main/java/io/github/turtleisaac/pokeditor/gui/sheets/tables/formats/EvolutionsTable.java",
+        "namespace": "io.github.turtleisaac.pokeditor.gui.sheets.tables.formats.EvolutionsTable.EvolutionsColumn",
+        "name": "getColumn",
+        "body": "e467b0a2af4b26c5",
+        "start": 432,
+        "end": 441
+      },
+      "right": {
+        "path": "src/main/java/io/github/turtleisaac/pokeditor/gui/sheets/tables/formats/MovesTable.java",
+        "namespace": "io.github.turtleisaac.pokeditor.gui.sheets.tables.formats.MovesTable.MovesColumn",
+        "name": "getColumn",
+        "body": "8a1dc87a9eef70f5",
+        "start": 293,
+        "end": 302
+      }
+    },
+    {
+      "language": "java",
+      "score": 1.0,
+      "left": {
+        "path": "src/main/java/io/github/turtleisaac/pokeditor/gui/sheets/tables/formats/EvolutionsTable.java",
+        "namespace": "io.github.turtleisaac.pokeditor.gui.sheets.tables.formats.EvolutionsTable.EvolutionsColumn",
+        "name": "getColumn",
+        "body": "e467b0a2af4b26c5",
+        "start": 432,
+        "end": 441
+      },
+      "right": {
+        "path": "src/main/java/io/github/turtleisaac/pokeditor/gui/sheets/tables/formats/PersonalTable.java",
+        "namespace": "io.github.turtleisaac.pokeditor.gui.sheets.tables.formats.PersonalTable.PersonalColumns",
+        "name": "getColumn",
+        "body": "d357f0fe6e01354e",
+        "start": 378,
+        "end": 387
+      }
+    },
+    {
+      "language": "java",
+      "score": 1.0,
+      "left": {
+        "path": "src/main/java/io/github/turtleisaac/pokeditor/gui/sheets/tables/formats/EvolutionsTable.java",
+        "namespace": "io.github.turtleisaac.pokeditor.gui.sheets.tables.formats.EvolutionsTable.EvolutionsColumn",
+        "name": "getColumn",
+        "body": "e467b0a2af4b26c5",
+        "start": 432,
+        "end": 441
+      },
+      "right": {
+        "path": "src/main/java/io/github/turtleisaac/pokeditor/gui/sheets/tables/formats/TmCompatibilityTable.java",
+        "namespace": "io.github.turtleisaac.pokeditor.gui.sheets.tables.formats.TmCompatibilityTable.TmCompatibilityColumns",
+        "name": "getColumn",
+        "body": "53d09ca2661e7886",
+        "start": 271,
+        "end": 280
+      }
+    },
+    {
+      "language": "java",
+      "score": 1.0,
+      "left": {
+        "path": "src/main/java/io/github/turtleisaac/pokeditor/gui/sheets/tables/formats/LearnsetsTable.java",
+        "namespace": "io.github.turtleisaac.pokeditor.gui.sheets.tables.formats.LearnsetsTable",
+        "name": "getDataClass",
+        "body": "685c176e20bec2a5",
+        "start": 38,
+        "end": 42
+      },
+      "right": {
+        "path": "src/main/java/io/github/turtleisaac/pokeditor/gui/sheets/tables/formats/MovesTable.java",
+        "namespace": "io.github.turtleisaac.pokeditor.gui.sheets.tables.formats.MovesTable",
+        "name": "getDataClass",
+        "body": "70a4b5fb209c1be4",
+        "start": 47,
+        "end": 51
+      }
+    },
+    {
+      "language": "java",
+      "score": 1.0,
+      "left": {
+        "path": "src/main/java/io/github/turtleisaac/pokeditor/gui/sheets/tables/formats/LearnsetsTable.java",
+        "namespace": "io.github.turtleisaac.pokeditor.gui.sheets.tables.formats.LearnsetsTable",
+        "name": "getDataClass",
+        "body": "685c176e20bec2a5",
+        "start": 38,
+        "end": 42
+      },
+      "right": {
+        "path": "src/main/java/io/github/turtleisaac/pokeditor/gui/sheets/tables/formats/PersonalTable.java",
+        "namespace": "io.github.turtleisaac.pokeditor.gui.sheets.tables.formats.PersonalTable",
+        "name": "getDataClass",
+        "body": "2c52d1149ae67b66",
+        "start": 50,
+        "end": 54
+      }
+    },
+    {
+      "language": "java",
+      "score": 1.0,
+      "left": {
+        "path": "src/main/java/io/github/turtleisaac/pokeditor/gui/sheets/tables/formats/LearnsetsTable.java",
+        "namespace": "io.github.turtleisaac.pokeditor.gui.sheets.tables.formats.LearnsetsTable",
+        "name": "getDataClass",
+        "body": "685c176e20bec2a5",
+        "start": 38,
+        "end": 42
+      },
+      "right": {
+        "path": "src/main/java/io/github/turtleisaac/pokeditor/gui/sheets/tables/formats/TmCompatibilityTable.java",
+        "namespace": "io.github.turtleisaac.pokeditor.gui.sheets.tables.formats.TmCompatibilityTable",
+        "name": "getDataClass",
+        "body": "2c52d1149ae67b66",
+        "start": 100,
+        "end": 104
+      }
+    },
+    {
+      "language": "java",
+      "score": 1.0,
+      "left": {
+        "path": "src/main/java/io/github/turtleisaac/pokeditor/gui/sheets/tables/formats/LearnsetsTable.java",
+        "namespace": "io.github.turtleisaac.pokeditor.gui.sheets.tables.formats.LearnsetsTable.LearnsetsModel",
+        "name": "getColumnNameKey",
+        "body": "b60c9ccfbdf8bc67",
+        "start": 58,
+        "end": 62
+      },
+      "right": {
+        "path": "src/main/java/io/github/turtleisaac/pokeditor/gui/sheets/tables/formats/MovesTable.java",
+        "namespace": "io.github.turtleisaac.pokeditor.gui.sheets.tables.formats.MovesTable.MovesModel",
+        "name": "getColumnNameKey",
+        "body": "657781f23940bae4",
+        "start": 67,
+        "end": 71
+      }
+    },
+    {
+      "language": "java",
+      "score": 1.0,
+      "left": {
+        "path": "src/main/java/io/github/turtleisaac/pokeditor/gui/sheets/tables/formats/LearnsetsTable.java",
+        "namespace": "io.github.turtleisaac.pokeditor.gui.sheets.tables.formats.LearnsetsTable.LearnsetsModel",
+        "name": "getColumnNameKey",
+        "body": "b60c9ccfbdf8bc67",
+        "start": 58,
+        "end": 62
+      },
+      "right": {
+        "path": "src/main/java/io/github/turtleisaac/pokeditor/gui/sheets/tables/formats/MovesTable.java",
+        "namespace": "io.github.turtleisaac.pokeditor.gui.sheets.tables.formats.MovesTable.MovesModel",
+        "name": "getCellType",
+        "body": "7dd08ae9fdec00be",
+        "start": 177,
+        "end": 181
+      }
+    },
+    {
+      "language": "java",
+      "score": 1.0,
+      "left": {
+        "path": "src/main/java/io/github/turtleisaac/pokeditor/gui/sheets/tables/formats/LearnsetsTable.java",
+        "namespace": "io.github.turtleisaac.pokeditor.gui.sheets.tables.formats.LearnsetsTable.LearnsetsModel",
+        "name": "getColumnNameKey",
+        "body": "b60c9ccfbdf8bc67",
+        "start": 58,
+        "end": 62
+      },
+      "right": {
+        "path": "src/main/java/io/github/turtleisaac/pokeditor/gui/sheets/tables/formats/PersonalTable.java",
+        "namespace": "io.github.turtleisaac.pokeditor.gui.sheets.tables.formats.PersonalTable.PersonalModel",
+        "name": "getColumnNameKey",
+        "body": "af8ea7055205d281",
+        "start": 70,
+        "end": 74
+      }
+    },
+    {
+      "language": "java",
+      "score": 1.0,
+      "left": {
+        "path": "src/main/java/io/github/turtleisaac/pokeditor/gui/sheets/tables/formats/LearnsetsTable.java",
+        "namespace": "io.github.turtleisaac.pokeditor.gui.sheets.tables.formats.LearnsetsTable.LearnsetsModel",
+        "name": "getColumnNameKey",
+        "body": "b60c9ccfbdf8bc67",
+        "start": 58,
+        "end": 62
+      },
+      "right": {
+        "path": "src/main/java/io/github/turtleisaac/pokeditor/gui/sheets/tables/formats/PersonalTable.java",
+        "namespace": "io.github.turtleisaac.pokeditor.gui.sheets.tables.formats.PersonalTable.PersonalModel",
+        "name": "getCellType",
+        "body": "615db8dfa96439ba",
+        "start": 248,
+        "end": 252
+      }
+    },
+    {
+      "language": "java",
+      "score": 1.0,
+      "left": {
+        "path": "src/main/java/io/github/turtleisaac/pokeditor/gui/sheets/tables/formats/LearnsetsTable.java",
+        "namespace": "io.github.turtleisaac.pokeditor.gui.sheets.tables.formats.LearnsetsTable.LearnsetsModel",
+        "name": "getColumnNameKey",
+        "body": "b60c9ccfbdf8bc67",
+        "start": 58,
+        "end": 62
+      },
+      "right": {
+        "path": "src/main/java/io/github/turtleisaac/pokeditor/gui/sheets/tables/formats/TmCompatibilityTable.java",
+        "namespace": "io.github.turtleisaac.pokeditor.gui.sheets.tables.formats.TmCompatibilityTable.TmCompatibilityModel",
+        "name": "getColumnNameKey",
+        "body": "76582ec9ac9b010a",
+        "start": 120,
+        "end": 124
+      }
+    },
+    {
+      "language": "java",
+      "score": 1.0,
+      "left": {
+        "path": "src/main/java/io/github/turtleisaac/pokeditor/gui/sheets/tables/formats/LearnsetsTable.java",
+        "namespace": "io.github.turtleisaac.pokeditor.gui.sheets.tables.formats.LearnsetsTable.LearnsetsModel",
+        "name": "getNameTextBank",
+        "body": "fecaf0c4329aaada",
+        "start": 186,
+        "end": 190
+      },
+      "right": {
+        "path": "src/main/java/io/github/turtleisaac/pokeditor/gui/sheets/tables/formats/MovesTable.java",
+        "namespace": "io.github.turtleisaac.pokeditor.gui.sheets.tables.formats.MovesTable.MovesModel",
+        "name": "getNameTextBank",
+        "body": "cce175323bd3e260",
+        "start": 190,
+        "end": 194
+      }
+    },
+    {
+      "language": "java",
+      "score": 1.0,
+      "left": {
+        "path": "src/main/java/io/github/turtleisaac/pokeditor/gui/sheets/tables/formats/LearnsetsTable.java",
+        "namespace": "io.github.turtleisaac.pokeditor.gui.sheets.tables.formats.LearnsetsTable.LearnsetsModel",
+        "name": "getNameTextBank",
+        "body": "fecaf0c4329aaada",
+        "start": 186,
+        "end": 190
+      },
+      "right": {
+        "path": "src/main/java/io/github/turtleisaac/pokeditor/gui/sheets/tables/formats/PersonalTable.java",
+        "namespace": "io.github.turtleisaac.pokeditor.gui.sheets.tables.formats.PersonalTable.PersonalModel",
+        "name": "getNameTextBank",
+        "body": "fecaf0c4329aaada",
+        "start": 261,
+        "end": 265
+      }
+    },
+    {
+      "language": "java",
+      "score": 1.0,
+      "left": {
+        "path": "src/main/java/io/github/turtleisaac/pokeditor/gui/sheets/tables/formats/LearnsetsTable.java",
+        "namespace": "io.github.turtleisaac.pokeditor.gui.sheets.tables.formats.LearnsetsTable.LearnsetsModel",
+        "name": "getNameTextBank",
+        "body": "fecaf0c4329aaada",
+        "start": 186,
+        "end": 190
+      },
+      "right": {
+        "path": "src/main/java/io/github/turtleisaac/pokeditor/gui/sheets/tables/formats/TmCompatibilityTable.java",
+        "namespace": "io.github.turtleisaac.pokeditor.gui.sheets.tables.formats.TmCompatibilityTable.TmCompatibilityModel",
+        "name": "getNameTextBank",
+        "body": "fecaf0c4329aaada",
+        "start": 204,
+        "end": 208
+      }
+    },
+    {
+      "language": "java",
+      "score": 1.0,
+      "left": {
+        "path": "src/main/java/io/github/turtleisaac/pokeditor/gui/sheets/tables/formats/LearnsetsTable.java",
+        "namespace": "io.github.turtleisaac.pokeditor.gui.sheets.tables.formats.LearnsetsTable.LearnsetsColumn",
+        "name": "getColumn",
+        "body": "b9707b324110f0d8",
+        "start": 267,
+        "end": 276
+      },
+      "right": {
+        "path": "src/main/java/io/github/turtleisaac/pokeditor/gui/sheets/tables/formats/MovesTable.java",
+        "namespace": "io.github.turtleisaac.pokeditor.gui.sheets.tables.formats.MovesTable.MovesColumn",
+        "name": "getColumn",
+        "body": "8a1dc87a9eef70f5",
+        "start": 293,
+        "end": 302
+      }
+    },
+    {
+      "language": "java",
+      "score": 1.0,
+      "left": {
+        "path": "src/main/java/io/github/turtleisaac/pokeditor/gui/sheets/tables/formats/LearnsetsTable.java",
+        "namespace": "io.github.turtleisaac.pokeditor.gui.sheets.tables.formats.LearnsetsTable.LearnsetsColumn",
+        "name": "getColumn",
+        "body": "b9707b324110f0d8",
+        "start": 267,
+        "end": 276
+      },
+      "right": {
+        "path": "src/main/java/io/github/turtleisaac/pokeditor/gui/sheets/tables/formats/PersonalTable.java",
+        "namespace": "io.github.turtleisaac.pokeditor.gui.sheets.tables.formats.PersonalTable.PersonalColumns",
+        "name": "getColumn",
+        "body": "d357f0fe6e01354e",
+        "start": 378,
+        "end": 387
+      }
+    },
+    {
+      "language": "java",
+      "score": 1.0,
+      "left": {
+        "path": "src/main/java/io/github/turtleisaac/pokeditor/gui/sheets/tables/formats/LearnsetsTable.java",
+        "namespace": "io.github.turtleisaac.pokeditor.gui.sheets.tables.formats.LearnsetsTable.LearnsetsColumn",
+        "name": "getColumn",
+        "body": "b9707b324110f0d8",
+        "start": 267,
+        "end": 276
+      },
+      "right": {
+        "path": "src/main/java/io/github/turtleisaac/pokeditor/gui/sheets/tables/formats/TmCompatibilityTable.java",
+        "namespace": "io.github.turtleisaac.pokeditor.gui.sheets.tables.formats.TmCompatibilityTable.TmCompatibilityColumns",
+        "name": "getColumn",
+        "body": "53d09ca2661e7886",
+        "start": 271,
+        "end": 280
+      }
+    },
+    {
+      "language": "java",
+      "score": 1.0,
+      "left": {
+        "path": "src/main/java/io/github/turtleisaac/pokeditor/gui/sheets/tables/formats/MovesTable.java",
+        "namespace": "io.github.turtleisaac.pokeditor.gui.sheets.tables.formats.MovesTable",
+        "name": "getDataClass",
+        "body": "70a4b5fb209c1be4",
+        "start": 47,
+        "end": 51
+      },
+      "right": {
+        "path": "src/main/java/io/github/turtleisaac/pokeditor/gui/sheets/tables/formats/PersonalTable.java",
+        "namespace": "io.github.turtleisaac.pokeditor.gui.sheets.tables.formats.PersonalTable",
+        "name": "getDataClass",
+        "body": "2c52d1149ae67b66",
+        "start": 50,
+        "end": 54
+      }
+    },
+    {
+      "language": "java",
+      "score": 1.0,
+      "left": {
+        "path": "src/main/java/io/github/turtleisaac/pokeditor/gui/sheets/tables/formats/MovesTable.java",
+        "namespace": "io.github.turtleisaac.pokeditor.gui.sheets.tables.formats.MovesTable",
+        "name": "getDataClass",
+        "body": "70a4b5fb209c1be4",
+        "start": 47,
+        "end": 51
+      },
+      "right": {
+        "path": "src/main/java/io/github/turtleisaac/pokeditor/gui/sheets/tables/formats/TmCompatibilityTable.java",
+        "namespace": "io.github.turtleisaac.pokeditor.gui.sheets.tables.formats.TmCompatibilityTable",
+        "name": "getDataClass",
+        "body": "2c52d1149ae67b66",
+        "start": 100,
+        "end": 104
+      }
+    },
+    {
+      "language": "java",
+      "score": 1.0,
+      "left": {
+        "path": "src/main/java/io/github/turtleisaac/pokeditor/gui/sheets/tables/formats/MovesTable.java",
+        "namespace": "io.github.turtleisaac.pokeditor.gui.sheets.tables.formats.MovesTable.MovesModel",
+        "name": "getColumnNameKey",
+        "body": "657781f23940bae4",
+        "start": 67,
+        "end": 71
+      },
+      "right": {
+        "path": "src/main/java/io/github/turtleisaac/pokeditor/gui/sheets/tables/formats/MovesTable.java",
+        "namespace": "io.github.turtleisaac.pokeditor.gui.sheets.tables.formats.MovesTable.MovesModel",
+        "name": "getCellType",
+        "body": "7dd08ae9fdec00be",
+        "start": 177,
+        "end": 181
+      }
+    },
+    {
+      "language": "java",
+      "score": 1.0,
+      "left": {
+        "path": "src/main/java/io/github/turtleisaac/pokeditor/gui/sheets/tables/formats/MovesTable.java",
+        "namespace": "io.github.turtleisaac.pokeditor.gui.sheets.tables.formats.MovesTable.MovesModel",
+        "name": "getColumnNameKey",
+        "body": "657781f23940bae4",
+        "start": 67,
+        "end": 71
+      },
+      "right": {
+        "path": "src/main/java/io/github/turtleisaac/pokeditor/gui/sheets/tables/formats/PersonalTable.java",
+        "namespace": "io.github.turtleisaac.pokeditor.gui.sheets.tables.formats.PersonalTable.PersonalModel",
+        "name": "getColumnNameKey",
+        "body": "af8ea7055205d281",
+        "start": 70,
+        "end": 74
+      }
+    },
+    {
+      "language": "java",
+      "score": 1.0,
+      "left": {
+        "path": "src/main/java/io/github/turtleisaac/pokeditor/gui/sheets/tables/formats/MovesTable.java",
+        "namespace": "io.github.turtleisaac.pokeditor.gui.sheets.tables.formats.MovesTable.MovesModel",
+        "name": "getColumnNameKey",
+        "body": "657781f23940bae4",
+        "start": 67,
+        "end": 71
+      },
+      "right": {
+        "path": "src/main/java/io/github/turtleisaac/pokeditor/gui/sheets/tables/formats/PersonalTable.java",
+        "namespace": "io.github.turtleisaac.pokeditor.gui.sheets.tables.formats.PersonalTable.PersonalModel",
+        "name": "getCellType",
+        "body": "615db8dfa96439ba",
+        "start": 248,
+        "end": 252
+      }
+    },
+    {
+      "language": "java",
+      "score": 1.0,
+      "left": {
+        "path": "src/main/java/io/github/turtleisaac/pokeditor/gui/sheets/tables/formats/MovesTable.java",
+        "namespace": "io.github.turtleisaac.pokeditor.gui.sheets.tables.formats.MovesTable.MovesModel",
+        "name": "getColumnNameKey",
+        "body": "657781f23940bae4",
+        "start": 67,
+        "end": 71
+      },
+      "right": {
+        "path": "src/main/java/io/github/turtleisaac/pokeditor/gui/sheets/tables/formats/TmCompatibilityTable.java",
+        "namespace": "io.github.turtleisaac.pokeditor.gui.sheets.tables.formats.TmCompatibilityTable.TmCompatibilityModel",
+        "name": "getColumnNameKey",
+        "body": "76582ec9ac9b010a",
+        "start": 120,
+        "end": 124
+      }
+    },
+    {
+      "language": "java",
+      "score": 1.0,
+      "left": {
+        "path": "src/main/java/io/github/turtleisaac/pokeditor/gui/sheets/tables/formats/MovesTable.java",
+        "namespace": "io.github.turtleisaac.pokeditor.gui.sheets.tables.formats.MovesTable.MovesModel",
+        "name": "setValueAt",
+        "body": "c752ff38e949c159",
+        "start": 73,
+        "end": 77
+      },
+      "right": {
+        "path": "src/main/java/io/github/turtleisaac/pokeditor/gui/sheets/tables/formats/PersonalTable.java",
+        "namespace": "io.github.turtleisaac.pokeditor.gui.sheets.tables.formats.PersonalTable.PersonalModel",
+        "name": "setValueAt",
+        "body": "1326ac3fa87e140f",
+        "start": 76,
+        "end": 80
+      }
+    },
+    {
+      "language": "java",
+      "score": 1.0,
+      "left": {
+        "path": "src/main/java/io/github/turtleisaac/pokeditor/gui/sheets/tables/formats/MovesTable.java",
+        "namespace": "io.github.turtleisaac.pokeditor.gui.sheets.tables.formats.MovesTable.MovesModel",
+        "name": "getColumnCount",
+        "body": "7a505b2d4d29cf2b",
+        "start": 108,
+        "end": 112
+      },
+      "right": {
+        "path": "src/main/java/io/github/turtleisaac/pokeditor/gui/sheets/tables/formats/PersonalTable.java",
+        "namespace": "io.github.turtleisaac.pokeditor.gui.sheets.tables.formats.PersonalTable.PersonalModel",
+        "name": "getColumnCount",
+        "body": "593f171d074eb4d9",
+        "start": 128,
+        "end": 132
+      }
+    },
+    {
+      "language": "java",
+      "score": 1.0,
+      "left": {
+        "path": "src/main/java/io/github/turtleisaac/pokeditor/gui/sheets/tables/formats/MovesTable.java",
+        "namespace": "io.github.turtleisaac.pokeditor.gui.sheets.tables.formats.MovesTable.MovesModel",
+        "name": "getValueAt",
+        "body": "ea15b86997b35974",
+        "start": 114,
+        "end": 118
+      },
+      "right": {
+        "path": "src/main/java/io/github/turtleisaac/pokeditor/gui/sheets/tables/formats/PersonalTable.java",
+        "namespace": "io.github.turtleisaac.pokeditor.gui.sheets.tables.formats.PersonalTable.PersonalModel",
+        "name": "getValueAt",
+        "body": "60c989137be011bc",
+        "start": 134,
+        "end": 138
+      }
+    },
+    {
+      "language": "java",
+      "score": 1.0,
+      "left": {
+        "path": "src/main/java/io/github/turtleisaac/pokeditor/gui/sheets/tables/formats/MovesTable.java",
+        "namespace": "io.github.turtleisaac.pokeditor.gui.sheets.tables.formats.MovesTable.MovesModel",
+        "name": "getCellType",
+        "body": "7dd08ae9fdec00be",
+        "start": 177,
+        "end": 181
+      },
+      "right": {
+        "path": "src/main/java/io/github/turtleisaac/pokeditor/gui/sheets/tables/formats/PersonalTable.java",
+        "namespace": "io.github.turtleisaac.pokeditor.gui.sheets.tables.formats.PersonalTable.PersonalModel",
+        "name": "getColumnNameKey",
+        "body": "af8ea7055205d281",
+        "start": 70,
+        "end": 74
+      }
+    },
+    {
+      "language": "java",
+      "score": 1.0,
+      "left": {
+        "path": "src/main/java/io/github/turtleisaac/pokeditor/gui/sheets/tables/formats/MovesTable.java",
+        "namespace": "io.github.turtleisaac.pokeditor.gui.sheets.tables.formats.MovesTable.MovesModel",
+        "name": "getCellType",
+        "body": "7dd08ae9fdec00be",
+        "start": 177,
+        "end": 181
+      },
+      "right": {
+        "path": "src/main/java/io/github/turtleisaac/pokeditor/gui/sheets/tables/formats/PersonalTable.java",
+        "namespace": "io.github.turtleisaac.pokeditor.gui.sheets.tables.formats.PersonalTable.PersonalModel",
+        "name": "getCellType",
+        "body": "615db8dfa96439ba",
+        "start": 248,
+        "end": 252
+      }
+    },
+    {
+      "language": "java",
+      "score": 1.0,
+      "left": {
+        "path": "src/main/java/io/github/turtleisaac/pokeditor/gui/sheets/tables/formats/MovesTable.java",
+        "namespace": "io.github.turtleisaac.pokeditor.gui.sheets.tables.formats.MovesTable.MovesModel",
+        "name": "getCellType",
+        "body": "7dd08ae9fdec00be",
+        "start": 177,
+        "end": 181
+      },
+      "right": {
+        "path": "src/main/java/io/github/turtleisaac/pokeditor/gui/sheets/tables/formats/TmCompatibilityTable.java",
+        "namespace": "io.github.turtleisaac.pokeditor.gui.sheets.tables.formats.TmCompatibilityTable.TmCompatibilityModel",
+        "name": "getColumnNameKey",
+        "body": "76582ec9ac9b010a",
+        "start": 120,
+        "end": 124
+      }
+    },
+    {
+      "language": "java",
+      "score": 1.0,
+      "left": {
+        "path": "src/main/java/io/github/turtleisaac/pokeditor/gui/sheets/tables/formats/MovesTable.java",
+        "namespace": "io.github.turtleisaac.pokeditor.gui.sheets.tables.formats.MovesTable.MovesModel",
+        "name": "getCellValueRange",
+        "body": "d37f3e8450feb579",
+        "start": 183,
+        "end": 187
+      },
+      "right": {
+        "path": "src/main/java/io/github/turtleisaac/pokeditor/gui/sheets/tables/formats/PersonalTable.java",
+        "namespace": "io.github.turtleisaac.pokeditor.gui.sheets.tables.formats.PersonalTable.PersonalModel",
+        "name": "getCellValueRange",
+        "body": "5c7750f0dceccb54",
+        "start": 254,
+        "end": 258
+      }
+    },
+    {
+      "language": "java",
+      "score": 1.0,
+      "left": {
+        "path": "src/main/java/io/github/turtleisaac/pokeditor/gui/sheets/tables/formats/MovesTable.java",
+        "namespace": "io.github.turtleisaac.pokeditor.gui.sheets.tables.formats.MovesTable.MovesModel",
+        "name": "getNameTextBank",
+        "body": "cce175323bd3e260",
+        "start": 190,
+        "end": 194
+      },
+      "right": {
+        "path": "src/main/java/io/github/turtleisaac/pokeditor/gui/sheets/tables/formats/PersonalTable.java",
+        "namespace": "io.github.turtleisaac.pokeditor.gui.sheets.tables.formats.PersonalTable.PersonalModel",
+        "name": "getNameTextBank",
+        "body": "fecaf0c4329aaada",
+        "start": 261,
+        "end": 265
+      }
+    },
+    {
+      "language": "java",
+      "score": 1.0,
+      "left": {
+        "path": "src/main/java/io/github/turtleisaac/pokeditor/gui/sheets/tables/formats/MovesTable.java",
+        "namespace": "io.github.turtleisaac.pokeditor.gui.sheets.tables.formats.MovesTable.MovesModel",
+        "name": "getNameTextBank",
+        "body": "cce175323bd3e260",
+        "start": 190,
+        "end": 194
+      },
+      "right": {
+        "path": "src/main/java/io/github/turtleisaac/pokeditor/gui/sheets/tables/formats/TmCompatibilityTable.java",
+        "namespace": "io.github.turtleisaac.pokeditor.gui.sheets.tables.formats.TmCompatibilityTable.TmCompatibilityModel",
+        "name": "getNameTextBank",
+        "body": "fecaf0c4329aaada",
+        "start": 204,
+        "end": 208
+      }
+    },
+    {
+      "language": "java",
+      "score": 1.0,
+      "left": {
+        "path": "src/main/java/io/github/turtleisaac/pokeditor/gui/sheets/tables/formats/MovesTable.java",
+        "namespace": "io.github.turtleisaac.pokeditor.gui.sheets.tables.formats.MovesTable.MovesColumn",
+        "name": "getColumn",
+        "body": "8a1dc87a9eef70f5",
+        "start": 293,
+        "end": 302
+      },
+      "right": {
+        "path": "src/main/java/io/github/turtleisaac/pokeditor/gui/sheets/tables/formats/PersonalTable.java",
+        "namespace": "io.github.turtleisaac.pokeditor.gui.sheets.tables.formats.PersonalTable.PersonalColumns",
+        "name": "getColumn",
+        "body": "d357f0fe6e01354e",
+        "start": 378,
+        "end": 387
+      }
+    },
+    {
+      "language": "java",
+      "score": 1.0,
+      "left": {
+        "path": "src/main/java/io/github/turtleisaac/pokeditor/gui/sheets/tables/formats/MovesTable.java",
+        "namespace": "io.github.turtleisaac.pokeditor.gui.sheets.tables.formats.MovesTable.MovesColumn",
+        "name": "getColumn",
+        "body": "8a1dc87a9eef70f5",
+        "start": 293,
+        "end": 302
+      },
+      "right": {
+        "path": "src/main/java/io/github/turtleisaac/pokeditor/gui/sheets/tables/formats/TmCompatibilityTable.java",
+        "namespace": "io.github.turtleisaac.pokeditor.gui.sheets.tables.formats.TmCompatibilityTable.TmCompatibilityColumns",
+        "name": "getColumn",
+        "body": "53d09ca2661e7886",
+        "start": 271,
+        "end": 280
+      }
+    },
+    {
+      "language": "java",
+      "score": 1.0,
+      "left": {
+        "path": "src/main/java/io/github/turtleisaac/pokeditor/gui/sheets/tables/formats/PersonalTable.java",
+        "namespace": "io.github.turtleisaac.pokeditor.gui.sheets.tables.formats.PersonalTable",
+        "name": "getDataClass",
+        "body": "2c52d1149ae67b66",
+        "start": 50,
+        "end": 54
+      },
+      "right": {
+        "path": "src/main/java/io/github/turtleisaac/pokeditor/gui/sheets/tables/formats/TmCompatibilityTable.java",
+        "namespace": "io.github.turtleisaac.pokeditor.gui.sheets.tables.formats.TmCompatibilityTable",
+        "name": "getDataClass",
+        "body": "2c52d1149ae67b66",
+        "start": 100,
+        "end": 104
+      }
+    },
+    {
+      "language": "java",
+      "score": 1.0,
+      "left": {
+        "path": "src/main/java/io/github/turtleisaac/pokeditor/gui/sheets/tables/formats/PersonalTable.java",
+        "namespace": "io.github.turtleisaac.pokeditor.gui.sheets.tables.formats.PersonalTable.PersonalModel",
+        "name": "getColumnNameKey",
+        "body": "af8ea7055205d281",
+        "start": 70,
+        "end": 74
+      },
+      "right": {
+        "path": "src/main/java/io/github/turtleisaac/pokeditor/gui/sheets/tables/formats/PersonalTable.java",
+        "namespace": "io.github.turtleisaac.pokeditor.gui.sheets.tables.formats.PersonalTable.PersonalModel",
+        "name": "getCellType",
+        "body": "615db8dfa96439ba",
+        "start": 248,
+        "end": 252
+      }
+    },
+    {
+      "language": "java",
+      "score": 1.0,
+      "left": {
+        "path": "src/main/java/io/github/turtleisaac/pokeditor/gui/sheets/tables/formats/PersonalTable.java",
+        "namespace": "io.github.turtleisaac.pokeditor.gui.sheets.tables.formats.PersonalTable.PersonalModel",
+        "name": "getColumnNameKey",
+        "body": "af8ea7055205d281",
+        "start": 70,
+        "end": 74
+      },
+      "right": {
+        "path": "src/main/java/io/github/turtleisaac/pokeditor/gui/sheets/tables/formats/TmCompatibilityTable.java",
+        "namespace": "io.github.turtleisaac.pokeditor.gui.sheets.tables.formats.TmCompatibilityTable.TmCompatibilityModel",
+        "name": "getColumnNameKey",
+        "body": "76582ec9ac9b010a",
+        "start": 120,
+        "end": 124
+      }
+    },
+    {
+      "language": "java",
+      "score": 1.0,
+      "left": {
+        "path": "src/main/java/io/github/turtleisaac/pokeditor/gui/sheets/tables/formats/PersonalTable.java",
+        "namespace": "io.github.turtleisaac.pokeditor.gui.sheets.tables.formats.PersonalTable.PersonalModel",
+        "name": "getCellType",
+        "body": "615db8dfa96439ba",
+        "start": 248,
+        "end": 252
+      },
+      "right": {
+        "path": "src/main/java/io/github/turtleisaac/pokeditor/gui/sheets/tables/formats/TmCompatibilityTable.java",
+        "namespace": "io.github.turtleisaac.pokeditor.gui.sheets.tables.formats.TmCompatibilityTable.TmCompatibilityModel",
+        "name": "getColumnNameKey",
+        "body": "76582ec9ac9b010a",
+        "start": 120,
+        "end": 124
+      }
+    },
+    {
+      "language": "java",
+      "score": 1.0,
+      "left": {
+        "path": "src/main/java/io/github/turtleisaac/pokeditor/gui/sheets/tables/formats/PersonalTable.java",
+        "namespace": "io.github.turtleisaac.pokeditor.gui.sheets.tables.formats.PersonalTable.PersonalModel",
+        "name": "getNameTextBank",
+        "body": "fecaf0c4329aaada",
+        "start": 261,
+        "end": 265
+      },
+      "right": {
+        "path": "src/main/java/io/github/turtleisaac/pokeditor/gui/sheets/tables/formats/TmCompatibilityTable.java",
+        "namespace": "io.github.turtleisaac.pokeditor.gui.sheets.tables.formats.TmCompatibilityTable.TmCompatibilityModel",
+        "name": "getNameTextBank",
+        "body": "fecaf0c4329aaada",
+        "start": 204,
+        "end": 208
+      }
+    },
+    {
+      "language": "java",
+      "score": 1.0,
+      "left": {
+        "path": "src/main/java/io/github/turtleisaac/pokeditor/gui/sheets/tables/formats/PersonalTable.java",
+        "namespace": "io.github.turtleisaac.pokeditor.gui.sheets.tables.formats.PersonalTable.PersonalColumns",
+        "name": "getColumn",
+        "body": "d357f0fe6e01354e",
+        "start": 378,
+        "end": 387
+      },
+      "right": {
+        "path": "src/main/java/io/github/turtleisaac/pokeditor/gui/sheets/tables/formats/TmCompatibilityTable.java",
+        "namespace": "io.github.turtleisaac.pokeditor.gui.sheets.tables.formats.TmCompatibilityTable.TmCompatibilityColumns",
+        "name": "getColumn",
+        "body": "53d09ca2661e7886",
+        "start": 271,
+        "end": 280
+      }
+    },
+    {
+      "language": "java",
+      "score": 1.0,
+      "left": {
+        "path": "src/main/java/io/github/turtleisaac/pokeditor/gui_old/JCheckboxTree.java",
+        "namespace": "io.github.turtleisaac.pokeditor.gui_old.JCheckboxTree.CheckedNode",
+        "name": "setAllChildrenSelected",
+        "body": "bb001c2f571900b2",
+        "start": 50,
+        "end": 53
+      },
+      "right": {
+        "path": "src/main/java/io/github/turtleisaac/pokeditor/gui_old/JCheckboxTree.java",
+        "namespace": "io.github.turtleisaac.pokeditor.gui_old.JCheckboxTree.CheckedNode",
+        "name": "setHasChildren",
+        "body": "3ee275e5c87b1450",
+        "start": 60,
+        "end": 63
+      }
+    },
+    {
+      "language": "java",
+      "score": 1.0,
+      "left": {
+        "path": "src/main/java/io/github/turtleisaac/pokeditor/gui_old/JCheckboxTree.java",
+        "namespace": "io.github.turtleisaac.pokeditor.gui_old.JCheckboxTree.CheckedNode",
+        "name": "setAllChildrenSelected",
+        "body": "bb001c2f571900b2",
+        "start": 50,
+        "end": 53
+      },
+      "right": {
+        "path": "src/main/java/io/github/turtleisaac/variabletracker/ScriptVariable.java",
+        "namespace": "io.github.turtleisaac.variabletracker.ScriptVariable",
+        "name": "setTemp",
+        "body": "74ac86693d0de684",
+        "start": 83,
+        "end": 86
+      }
+    },
+    {
+      "language": "java",
+      "score": 1.0,
+      "left": {
+        "path": "src/main/java/io/github/turtleisaac/pokeditor/gui_old/JCheckboxTree.java",
+        "namespace": "io.github.turtleisaac.pokeditor.gui_old.JCheckboxTree.CheckedNode",
+        "name": "setHasChildren",
+        "body": "3ee275e5c87b1450",
+        "start": 60,
+        "end": 63
+      },
+      "right": {
+        "path": "src/main/java/io/github/turtleisaac/variabletracker/ScriptVariable.java",
+        "namespace": "io.github.turtleisaac.variabletracker.ScriptVariable",
+        "name": "setTemp",
+        "body": "74ac86693d0de684",
+        "start": 83,
+        "end": 86
+      }
+    },
+    {
+      "language": "java",
+      "score": 1.0,
+      "left": {
+        "path": "src/main/java/io/github/turtleisaac/variabletracker/ScriptFlag.java",
+        "namespace": "io.github.turtleisaac.variabletracker.ScriptFlag",
+        "name": "setFlagID",
+        "body": "c58567a88ffaa43d",
+        "start": 25,
+        "end": 28
+      },
+      "right": {
+        "path": "src/main/java/io/github/turtleisaac/variabletracker/ScriptVariable.java",
+        "namespace": "io.github.turtleisaac.variabletracker.ScriptVariable",
+        "name": "setVariableID",
+        "body": "032b0f893e50a798",
+        "start": 33,
+        "end": 36
+      }
+    },
+    {
+      "language": "java",
+      "score": 1.0,
+      "left": {
+        "path": "src/main/java/io/github/turtleisaac/variabletracker/ScriptFlag.java",
+        "namespace": "io.github.turtleisaac.variabletracker.ScriptFlag",
+        "name": "setFlagID",
+        "body": "c58567a88ffaa43d",
+        "start": 25,
+        "end": 28
+      },
+      "right": {
+        "path": "src/main/java/io/github/turtleisaac/variabletracker/ScriptVariable.java",
+        "namespace": "io.github.turtleisaac.variabletracker.ScriptVariable.VariableValue",
+        "name": "setValue",
+        "body": "3b60df44739beba3",
+        "start": 116,
+        "end": 119
+      }
+    },
+    {
+      "language": "java",
+      "score": 1.0,
+      "left": {
+        "path": "src/main/java/io/github/turtleisaac/variabletracker/ScriptFlag.java",
+        "namespace": "io.github.turtleisaac.variabletracker.ScriptFlag",
+        "name": "setFlagName",
+        "body": "ccf2f6bf32c98271",
+        "start": 35,
+        "end": 38
+      },
+      "right": {
+        "path": "src/main/java/io/github/turtleisaac/variabletracker/ScriptFlag.java",
+        "namespace": "io.github.turtleisaac.variabletracker.ScriptFlag",
+        "name": "setFlagDescription",
+        "body": "042fabcd474107ff",
+        "start": 45,
+        "end": 48
+      }
+    },
+    {
+      "language": "java",
+      "score": 1.0,
+      "left": {
+        "path": "src/main/java/io/github/turtleisaac/variabletracker/ScriptFlag.java",
+        "namespace": "io.github.turtleisaac.variabletracker.ScriptFlag",
+        "name": "setFlagName",
+        "body": "ccf2f6bf32c98271",
+        "start": 35,
+        "end": 38
+      },
+      "right": {
+        "path": "src/main/java/io/github/turtleisaac/variabletracker/ScriptVariable.java",
+        "namespace": "io.github.turtleisaac.variabletracker.ScriptVariable",
+        "name": "setVariableName",
+        "body": "fd72549784312063",
+        "start": 43,
+        "end": 46
+      }
+    },
+    {
+      "language": "java",
+      "score": 1.0,
+      "left": {
+        "path": "src/main/java/io/github/turtleisaac/variabletracker/ScriptFlag.java",
+        "namespace": "io.github.turtleisaac.variabletracker.ScriptFlag",
+        "name": "setFlagName",
+        "body": "ccf2f6bf32c98271",
+        "start": 35,
+        "end": 38
+      },
+      "right": {
+        "path": "src/main/java/io/github/turtleisaac/variabletracker/ScriptVariable.java",
+        "namespace": "io.github.turtleisaac.variabletracker.ScriptVariable",
+        "name": "setVariableDescription",
+        "body": "0809f8a97d5c5175",
+        "start": 53,
+        "end": 56
+      }
+    },
+    {
+      "language": "java",
+      "score": 1.0,
+      "left": {
+        "path": "src/main/java/io/github/turtleisaac/variabletracker/ScriptFlag.java",
+        "namespace": "io.github.turtleisaac.variabletracker.ScriptFlag",
+        "name": "setFlagName",
+        "body": "ccf2f6bf32c98271",
+        "start": 35,
+        "end": 38
+      },
+      "right": {
+        "path": "src/main/java/io/github/turtleisaac/variabletracker/ScriptVariable.java",
+        "namespace": "io.github.turtleisaac.variabletracker.ScriptVariable.VariableValue",
+        "name": "setValueName",
+        "body": "241562f14e3a19b7",
+        "start": 126,
+        "end": 129
+      }
+    },
+    {
+      "language": "java",
+      "score": 1.0,
+      "left": {
+        "path": "src/main/java/io/github/turtleisaac/variabletracker/ScriptFlag.java",
+        "namespace": "io.github.turtleisaac.variabletracker.ScriptFlag",
+        "name": "setFlagName",
+        "body": "ccf2f6bf32c98271",
+        "start": 35,
+        "end": 38
+      },
+      "right": {
+        "path": "src/main/java/io/github/turtleisaac/variabletracker/ScriptVariable.java",
+        "namespace": "io.github.turtleisaac.variabletracker.ScriptVariable.VariableValue",
+        "name": "setValueDescription",
+        "body": "d3463bc08f03f762",
+        "start": 136,
+        "end": 139
+      }
+    },
+    {
+      "language": "java",
+      "score": 1.0,
+      "left": {
+        "path": "src/main/java/io/github/turtleisaac/variabletracker/ScriptFlag.java",
+        "namespace": "io.github.turtleisaac.variabletracker.ScriptFlag",
+        "name": "setFlagDescription",
+        "body": "042fabcd474107ff",
+        "start": 45,
+        "end": 48
+      },
+      "right": {
+        "path": "src/main/java/io/github/turtleisaac/variabletracker/ScriptVariable.java",
+        "namespace": "io.github.turtleisaac.variabletracker.ScriptVariable",
+        "name": "setVariableName",
+        "body": "fd72549784312063",
+        "start": 43,
+        "end": 46
+      }
+    },
+    {
+      "language": "java",
+      "score": 1.0,
+      "left": {
+        "path": "src/main/java/io/github/turtleisaac/variabletracker/ScriptFlag.java",
+        "namespace": "io.github.turtleisaac.variabletracker.ScriptFlag",
+        "name": "setFlagDescription",
+        "body": "042fabcd474107ff",
+        "start": 45,
+        "end": 48
+      },
+      "right": {
+        "path": "src/main/java/io/github/turtleisaac/variabletracker/ScriptVariable.java",
+        "namespace": "io.github.turtleisaac.variabletracker.ScriptVariable",
+        "name": "setVariableDescription",
+        "body": "0809f8a97d5c5175",
+        "start": 53,
+        "end": 56
+      }
+    },
+    {
+      "language": "java",
+      "score": 1.0,
+      "left": {
+        "path": "src/main/java/io/github/turtleisaac/variabletracker/ScriptFlag.java",
+        "namespace": "io.github.turtleisaac.variabletracker.ScriptFlag",
+        "name": "setFlagDescription",
+        "body": "042fabcd474107ff",
+        "start": 45,
+        "end": 48
+      },
+      "right": {
+        "path": "src/main/java/io/github/turtleisaac/variabletracker/ScriptVariable.java",
+        "namespace": "io.github.turtleisaac.variabletracker.ScriptVariable.VariableValue",
+        "name": "setValueName",
+        "body": "241562f14e3a19b7",
+        "start": 126,
+        "end": 129
+      }
+    },
+    {
+      "language": "java",
+      "score": 1.0,
+      "left": {
+        "path": "src/main/java/io/github/turtleisaac/variabletracker/ScriptFlag.java",
+        "namespace": "io.github.turtleisaac.variabletracker.ScriptFlag",
+        "name": "setFlagDescription",
+        "body": "042fabcd474107ff",
+        "start": 45,
+        "end": 48
+      },
+      "right": {
+        "path": "src/main/java/io/github/turtleisaac/variabletracker/ScriptVariable.java",
+        "namespace": "io.github.turtleisaac.variabletracker.ScriptVariable.VariableValue",
+        "name": "setValueDescription",
+        "body": "d3463bc08f03f762",
+        "start": 136,
+        "end": 139
+      }
+    },
+    {
+      "language": "java",
+      "score": 1.0,
+      "left": {
+        "path": "src/main/java/io/github/turtleisaac/variabletracker/ScriptVariable.java",
+        "namespace": "io.github.turtleisaac.variabletracker.ScriptVariable",
+        "name": "setVariableID",
+        "body": "032b0f893e50a798",
+        "start": 33,
+        "end": 36
+      },
+      "right": {
+        "path": "src/main/java/io/github/turtleisaac/variabletracker/ScriptVariable.java",
+        "namespace": "io.github.turtleisaac.variabletracker.ScriptVariable.VariableValue",
+        "name": "setValue",
+        "body": "3b60df44739beba3",
+        "start": 116,
+        "end": 119
+      }
+    },
+    {
+      "language": "java",
+      "score": 1.0,
+      "left": {
+        "path": "src/main/java/io/github/turtleisaac/variabletracker/ScriptVariable.java",
+        "namespace": "io.github.turtleisaac.variabletracker.ScriptVariable",
+        "name": "setVariableName",
+        "body": "fd72549784312063",
+        "start": 43,
+        "end": 46
+      },
+      "right": {
+        "path": "src/main/java/io/github/turtleisaac/variabletracker/ScriptVariable.java",
+        "namespace": "io.github.turtleisaac.variabletracker.ScriptVariable",
+        "name": "setVariableDescription",
+        "body": "0809f8a97d5c5175",
+        "start": 53,
+        "end": 56
+      }
+    },
+    {
+      "language": "java",
+      "score": 1.0,
+      "left": {
+        "path": "src/main/java/io/github/turtleisaac/variabletracker/ScriptVariable.java",
+        "namespace": "io.github.turtleisaac.variabletracker.ScriptVariable",
+        "name": "setVariableName",
+        "body": "fd72549784312063",
+        "start": 43,
+        "end": 46
+      },
+      "right": {
+        "path": "src/main/java/io/github/turtleisaac/variabletracker/ScriptVariable.java",
+        "namespace": "io.github.turtleisaac.variabletracker.ScriptVariable.VariableValue",
+        "name": "setValueName",
+        "body": "241562f14e3a19b7",
+        "start": 126,
+        "end": 129
+      }
+    },
+    {
+      "language": "java",
+      "score": 1.0,
+      "left": {
+        "path": "src/main/java/io/github/turtleisaac/variabletracker/ScriptVariable.java",
+        "namespace": "io.github.turtleisaac.variabletracker.ScriptVariable",
+        "name": "setVariableName",
+        "body": "fd72549784312063",
+        "start": 43,
+        "end": 46
+      },
+      "right": {
+        "path": "src/main/java/io/github/turtleisaac/variabletracker/ScriptVariable.java",
+        "namespace": "io.github.turtleisaac.variabletracker.ScriptVariable.VariableValue",
+        "name": "setValueDescription",
+        "body": "d3463bc08f03f762",
+        "start": 136,
+        "end": 139
+      }
+    },
+    {
+      "language": "java",
+      "score": 1.0,
+      "left": {
+        "path": "src/main/java/io/github/turtleisaac/variabletracker/ScriptVariable.java",
+        "namespace": "io.github.turtleisaac.variabletracker.ScriptVariable",
+        "name": "setVariableDescription",
+        "body": "0809f8a97d5c5175",
+        "start": 53,
+        "end": 56
+      },
+      "right": {
+        "path": "src/main/java/io/github/turtleisaac/variabletracker/ScriptVariable.java",
+        "namespace": "io.github.turtleisaac.variabletracker.ScriptVariable.VariableValue",
+        "name": "setValueName",
+        "body": "241562f14e3a19b7",
+        "start": 126,
+        "end": 129
+      }
+    },
+    {
+      "language": "java",
+      "score": 1.0,
+      "left": {
+        "path": "src/main/java/io/github/turtleisaac/variabletracker/ScriptVariable.java",
+        "namespace": "io.github.turtleisaac.variabletracker.ScriptVariable",
+        "name": "setVariableDescription",
+        "body": "0809f8a97d5c5175",
+        "start": 53,
+        "end": 56
+      },
+      "right": {
+        "path": "src/main/java/io/github/turtleisaac/variabletracker/ScriptVariable.java",
+        "namespace": "io.github.turtleisaac.variabletracker.ScriptVariable.VariableValue",
+        "name": "setValueDescription",
+        "body": "d3463bc08f03f762",
+        "start": 136,
+        "end": 139
+      }
+    },
+    {
+      "language": "java",
+      "score": 1.0,
+      "left": {
+        "path": "src/main/java/io/github/turtleisaac/variabletracker/ScriptVariable.java",
+        "namespace": "io.github.turtleisaac.variabletracker.ScriptVariable",
+        "name": "getVariableValues",
+        "body": "a1a644580771ab72",
+        "start": 68,
+        "end": 71
+      },
+      "right": {
+        "path": "src/main/java/io/github/turtleisaac/variabletracker/gui/variables/VariableTracker.java",
+        "namespace": "io.github.turtleisaac.variabletracker.gui.variables.VariableTracker",
+        "name": "getVariableList",
+        "body": "dd3e4906fe38d496",
+        "start": 207,
+        "end": 210
+      }
+    },
+    {
+      "language": "java",
+      "score": 1.0,
+      "left": {
+        "path": "src/main/java/io/github/turtleisaac/variabletracker/ScriptVariable.java",
+        "namespace": "io.github.turtleisaac.variabletracker.ScriptVariable.VariableValue",
+        "name": "setValueName",
+        "body": "241562f14e3a19b7",
+        "start": 126,
+        "end": 129
+      },
+      "right": {
+        "path": "src/main/java/io/github/turtleisaac/variabletracker/ScriptVariable.java",
+        "namespace": "io.github.turtleisaac.variabletracker.ScriptVariable.VariableValue",
+        "name": "setValueDescription",
+        "body": "d3463bc08f03f762",
+        "start": 136,
+        "end": 139
+      }
+    },
+    {
+      "language": "java",
+      "score": 1.0,
+      "left": {
+        "path": "src/main/java/io/github/turtleisaac/variabletracker/gui/variables/VariableTracker.java",
+        "namespace": "io.github.turtleisaac.variabletracker.gui.variables.VariableTracker.VariableTableModel",
+        "name": "getColumnName",
+        "body": "c5434155d149d3a3",
+        "start": 821,
+        "end": 825
+      },
+      "right": {
+        "path": "src/main/java/io/github/turtleisaac/variabletracker/gui/variables/VariableTracker.java",
+        "namespace": "io.github.turtleisaac.variabletracker.gui.variables.VariableTracker.VariableValueTableModel",
+        "name": "getColumnName",
+        "body": "c5434155d149d3a3",
+        "start": 925,
+        "end": 929
+      }
+    },
+    {
+      "language": "java",
+      "score": 0.901099,
+      "left": {
+        "path": "src/main/java/io/github/turtleisaac/pokeditor/gui/sheets/tables/formats/EvolutionsTable.java",
+        "namespace": "io.github.turtleisaac.pokeditor.gui.sheets.tables.formats.EvolutionsTable",
+        "name": "obtainTextSources",
+        "body": "907d9c1ae3a2cfae",
+        "start": 33,
+        "end": 55
+      },
+      "right": {
+        "path": "src/main/java/io/github/turtleisaac/pokeditor/gui/sheets/tables/formats/LearnsetsTable.java",
+        "namespace": "io.github.turtleisaac.pokeditor.gui.sheets.tables.formats.LearnsetsTable",
+        "name": "obtainTextSources",
+        "body": "1e5db7b3aff6a7e5",
+        "start": 23,
+        "end": 36
+      }
+    },
+    {
+      "language": "java",
+      "score": 0.891892,
+      "left": {
+        "path": "src/main/java/io/github/turtleisaac/pokeditor/gui/editors/data/formats/scripts/ScriptDocument.java",
+        "namespace": "io.github.turtleisaac.pokeditor.gui.editors.data.formats.scripts.ScriptDocument.ScriptFileSyntaxVisitor",
+        "name": "visitLabel",
+        "body": "1db0fff4c99fdc47",
+        "start": 353,
+        "end": 377
+      },
+      "right": {
+        "path": "src/main/java/io/github/turtleisaac/pokeditor/gui/editors/data/formats/scripts/ScriptDocument.java",
+        "namespace": "io.github.turtleisaac.pokeditor.gui.editors.data.formats.scripts.ScriptDocument.ScriptFileSyntaxVisitor",
+        "name": "visitAction",
+        "body": "ea4d9c397562cb0f",
+        "start": 419,
+        "end": 443
+      }
+    },
+    {
+      "language": "java",
+      "score": 0.835294,
+      "left": {
+        "path": "src/main/java/io/github/turtleisaac/pokeditor/gui/sheets/tables/formats/MovesTable.java",
+        "namespace": "io.github.turtleisaac.pokeditor.gui.sheets.tables.formats.MovesTable",
+        "name": "obtainTextSources",
+        "body": "bd41a066d62c53fb",
+        "start": 25,
+        "end": 45
+      },
+      "right": {
+        "path": "src/main/java/io/github/turtleisaac/pokeditor/gui/sheets/tables/formats/PersonalTable.java",
+        "namespace": "io.github.turtleisaac.pokeditor.gui.sheets.tables.formats.PersonalTable",
+        "name": "obtainTextSources",
+        "body": "36ed1f0e663fd59f",
+        "start": 24,
+        "end": 48
+      }
+    },
+    {
+      "language": "java",
+      "score": 0.826087,
+      "left": {
+        "path": "src/main/java/io/github/turtleisaac/pokeditor/gui/editors/data/DefaultDataEditorPanel.java",
+        "namespace": "io.github.turtleisaac.pokeditor.gui.editors.data.DefaultDataEditorPanel",
+        "name": "setIcons",
+        "body": "162ab39885cee75a",
+        "start": 137,
+        "end": 147
+      },
+      "right": {
+        "path": "src/main/java/io/github/turtleisaac/pokeditor/gui/editors/data/formats/scripts/field/FieldScriptEditor.java",
+        "namespace": "io.github.turtleisaac.pokeditor.gui.editors.data.formats.scripts.field.FieldScriptEditor",
+        "name": "setIcons",
+        "body": "5fe5a2e3b446b53e",
+        "start": 267,
+        "end": 273
+      }
+    },
+    {
+      "language": "java",
+      "score": 0.826087,
+      "left": {
+        "path": "src/main/java/io/github/turtleisaac/pokeditor/gui/editors/data/DefaultDataEditorPanel.java",
+        "namespace": "io.github.turtleisaac.pokeditor.gui.editors.data.DefaultDataEditorPanel",
+        "name": "setIcons",
+        "body": "162ab39885cee75a",
+        "start": 137,
+        "end": 147
+      },
+      "right": {
+        "path": "src/main/java/io/github/turtleisaac/pokeditor/gui/sheets/DefaultSheetPanel.java",
+        "namespace": "io.github.turtleisaac.pokeditor.gui.sheets.DefaultSheetPanel",
+        "name": "setIcons",
+        "body": "dfef054c0f2e5827",
+        "start": 79,
+        "end": 91
+      }
+    },
+    {
+      "language": "java",
+      "score": 0.826087,
+      "left": {
+        "path": "src/main/java/io/github/turtleisaac/pokeditor/gui/editors/data/formats/scripts/field/FieldScriptEditor.java",
+        "namespace": "io.github.turtleisaac.pokeditor.gui.editors.data.formats.scripts.field.FieldScriptEditor",
+        "name": "setIcons",
+        "body": "5fe5a2e3b446b53e",
+        "start": 267,
+        "end": 273
+      },
+      "right": {
+        "path": "src/main/java/io/github/turtleisaac/pokeditor/gui/sheets/DefaultSheetPanel.java",
+        "namespace": "io.github.turtleisaac.pokeditor.gui.sheets.DefaultSheetPanel",
+        "name": "setIcons",
+        "body": "dfef054c0f2e5827",
+        "start": 79,
+        "end": 91
+      }
+    },
+    {
+      "language": "java",
+      "score": 0.820896,
+      "left": {
+        "path": "src/main/java/io/github/turtleisaac/pokeditor/gui/editors/data/formats/scripts/ScriptDocument.java",
+        "namespace": "io.github.turtleisaac.pokeditor.gui.editors.data.formats.scripts.ScriptDocument.ScriptFileSyntaxVisitor",
+        "name": "visitLabel_definition",
+        "body": "a38e4fb35f17b448",
+        "start": 343,
+        "end": 351
+      },
+      "right": {
+        "path": "src/main/java/io/github/turtleisaac/pokeditor/gui/editors/data/formats/scripts/ScriptDocument.java",
+        "namespace": "io.github.turtleisaac.pokeditor.gui.editors.data.formats.scripts.ScriptDocument.ScriptFileSyntaxVisitor",
+        "name": "visitAction_definition",
+        "body": "00fde8f3432ef676",
+        "start": 379,
+        "end": 387
+      }
+    },
+    {
+      "language": "java",
+      "score": 0.820896,
+      "left": {
+        "path": "src/main/java/io/github/turtleisaac/pokeditor/gui/editors/data/formats/scripts/ScriptDocument.java",
+        "namespace": "io.github.turtleisaac.pokeditor.gui.editors.data.formats.scripts.ScriptDocument.ScriptFileSyntaxVisitor",
+        "name": "visitLabel_definition",
+        "body": "a38e4fb35f17b448",
+        "start": 343,
+        "end": 351
+      },
+      "right": {
+        "path": "src/main/java/io/github/turtleisaac/pokeditor/gui/editors/data/formats/scripts/ScriptDocument.java",
+        "namespace": "io.github.turtleisaac.pokeditor.gui.editors.data.formats.scripts.ScriptDocument.ScriptFileSyntaxVisitor",
+        "name": "visitTable_definition",
+        "body": "0c6fcb9008b8201d",
+        "start": 389,
+        "end": 397
+      }
+    },
+    {
+      "language": "java",
+      "score": 0.820896,
+      "left": {
+        "path": "src/main/java/io/github/turtleisaac/pokeditor/gui/editors/data/formats/scripts/ScriptDocument.java",
+        "namespace": "io.github.turtleisaac.pokeditor.gui.editors.data.formats.scripts.ScriptDocument.ScriptFileSyntaxVisitor",
+        "name": "visitLabel_definition",
+        "body": "a38e4fb35f17b448",
+        "start": 343,
+        "end": 351
+      },
+      "right": {
+        "path": "src/main/java/io/github/turtleisaac/pokeditor/gui/editors/data/formats/scripts/ScriptDocument.java",
+        "namespace": "io.github.turtleisaac.pokeditor.gui.editors.data.formats.scripts.ScriptDocument.ScriptFileSyntaxVisitor",
+        "name": "visitTable_entry",
+        "body": "a48b205bfcb59db2",
+        "start": 399,
+        "end": 407
+      }
+    },
+    {
+      "language": "java",
+      "score": 0.820896,
+      "left": {
+        "path": "src/main/java/io/github/turtleisaac/pokeditor/gui/editors/data/formats/scripts/ScriptDocument.java",
+        "namespace": "io.github.turtleisaac.pokeditor.gui.editors.data.formats.scripts.ScriptDocument.ScriptFileSyntaxVisitor",
+        "name": "visitLabel_definition",
+        "body": "a38e4fb35f17b448",
+        "start": 343,
+        "end": 351
+      },
+      "right": {
+        "path": "src/main/java/io/github/turtleisaac/pokeditor/gui/editors/data/formats/scripts/ScriptDocument.java",
+        "namespace": "io.github.turtleisaac.pokeditor.gui.editors.data.formats.scripts.ScriptDocument.ScriptFileSyntaxVisitor",
+        "name": "visitEnd_table",
+        "body": "0b20c4b4f58bd178",
+        "start": 409,
+        "end": 417
+      }
+    },
+    {
+      "language": "java",
+      "score": 0.820896,
+      "left": {
+        "path": "src/main/java/io/github/turtleisaac/pokeditor/gui/editors/data/formats/scripts/ScriptDocument.java",
+        "namespace": "io.github.turtleisaac.pokeditor.gui.editors.data.formats.scripts.ScriptDocument.ScriptFileSyntaxVisitor",
+        "name": "visitLabel_definition",
+        "body": "a38e4fb35f17b448",
+        "start": 343,
+        "end": 351
+      },
+      "right": {
+        "path": "src/main/java/io/github/turtleisaac/pokeditor/gui/editors/data/formats/scripts/ScriptDocument.java",
+        "namespace": "io.github.turtleisaac.pokeditor.gui.editors.data.formats.scripts.ScriptDocument.ScriptFileSyntaxVisitor",
+        "name": "visitParameters",
+        "body": "49abd8d4184f1aec",
+        "start": 590,
+        "end": 598
+      }
+    },
+    {
+      "language": "java",
+      "score": 0.820896,
+      "left": {
+        "path": "src/main/java/io/github/turtleisaac/pokeditor/gui/editors/data/formats/scripts/ScriptDocument.java",
+        "namespace": "io.github.turtleisaac.pokeditor.gui.editors.data.formats.scripts.ScriptDocument.ScriptFileSyntaxVisitor",
+        "name": "visitLabel_definition",
+        "body": "a38e4fb35f17b448",
+        "start": 343,
+        "end": 351
+      },
+      "right": {
+        "path": "src/main/java/io/github/turtleisaac/pokeditor/gui/editors/data/formats/scripts/ScriptDocument.java",
+        "namespace": "io.github.turtleisaac.pokeditor.gui.editors.data.formats.scripts.ScriptDocument.ScriptFileSyntaxVisitor",
+        "name": "visitAction_command",
+        "body": "63d30a3dced7479c",
+        "start": 621,
+        "end": 630
+      }
+    },
+    {
+      "language": "java",
+      "score": 0.820896,
+      "left": {
+        "path": "src/main/java/io/github/turtleisaac/pokeditor/gui/editors/data/formats/scripts/ScriptDocument.java",
+        "namespace": "io.github.turtleisaac.pokeditor.gui.editors.data.formats.scripts.ScriptDocument.ScriptFileSyntaxVisitor",
+        "name": "visitLabel_definition",
+        "body": "a38e4fb35f17b448",
+        "start": 343,
+        "end": 351
+      },
+      "right": {
+        "path": "src/main/java/io/github/turtleisaac/pokeditor/gui/editors/data/formats/scripts/ScriptDocument.java",
+        "namespace": "io.github.turtleisaac.pokeditor.gui.editors.data.formats.scripts.ScriptDocument.ScriptFileSyntaxVisitor",
+        "name": "visitAction_parameters",
+        "body": "776352b30ca9537e",
+        "start": 632,
+        "end": 640
+      }
+    },
+    {
+      "language": "java",
+      "score": 0.820896,
+      "left": {
+        "path": "src/main/java/io/github/turtleisaac/pokeditor/gui/editors/data/formats/scripts/ScriptDocument.java",
+        "namespace": "io.github.turtleisaac.pokeditor.gui.editors.data.formats.scripts.ScriptDocument.ScriptFileSyntaxVisitor",
+        "name": "visitAction_definition",
+        "body": "00fde8f3432ef676",
+        "start": 379,
+        "end": 387
+      },
+      "right": {
+        "path": "src/main/java/io/github/turtleisaac/pokeditor/gui/editors/data/formats/scripts/ScriptDocument.java",
+        "namespace": "io.github.turtleisaac.pokeditor.gui.editors.data.formats.scripts.ScriptDocument.ScriptFileSyntaxVisitor",
+        "name": "visitTable_definition",
+        "body": "0c6fcb9008b8201d",
+        "start": 389,
+        "end": 397
+      }
+    },
+    {
+      "language": "java",
+      "score": 0.820896,
+      "left": {
+        "path": "src/main/java/io/github/turtleisaac/pokeditor/gui/editors/data/formats/scripts/ScriptDocument.java",
+        "namespace": "io.github.turtleisaac.pokeditor.gui.editors.data.formats.scripts.ScriptDocument.ScriptFileSyntaxVisitor",
+        "name": "visitAction_definition",
+        "body": "00fde8f3432ef676",
+        "start": 379,
+        "end": 387
+      },
+      "right": {
+        "path": "src/main/java/io/github/turtleisaac/pokeditor/gui/editors/data/formats/scripts/ScriptDocument.java",
+        "namespace": "io.github.turtleisaac.pokeditor.gui.editors.data.formats.scripts.ScriptDocument.ScriptFileSyntaxVisitor",
+        "name": "visitTable_entry",
+        "body": "a48b205bfcb59db2",
+        "start": 399,
+        "end": 407
+      }
+    },
+    {
+      "language": "java",
+      "score": 0.820896,
+      "left": {
+        "path": "src/main/java/io/github/turtleisaac/pokeditor/gui/editors/data/formats/scripts/ScriptDocument.java",
+        "namespace": "io.github.turtleisaac.pokeditor.gui.editors.data.formats.scripts.ScriptDocument.ScriptFileSyntaxVisitor",
+        "name": "visitAction_definition",
+        "body": "00fde8f3432ef676",
+        "start": 379,
+        "end": 387
+      },
+      "right": {
+        "path": "src/main/java/io/github/turtleisaac/pokeditor/gui/editors/data/formats/scripts/ScriptDocument.java",
+        "namespace": "io.github.turtleisaac.pokeditor.gui.editors.data.formats.scripts.ScriptDocument.ScriptFileSyntaxVisitor",
+        "name": "visitEnd_table",
+        "body": "0b20c4b4f58bd178",
+        "start": 409,
+        "end": 417
+      }
+    },
+    {
+      "language": "java",
+      "score": 0.820896,
+      "left": {
+        "path": "src/main/java/io/github/turtleisaac/pokeditor/gui/editors/data/formats/scripts/ScriptDocument.java",
+        "namespace": "io.github.turtleisaac.pokeditor.gui.editors.data.formats.scripts.ScriptDocument.ScriptFileSyntaxVisitor",
+        "name": "visitAction_definition",
+        "body": "00fde8f3432ef676",
+        "start": 379,
+        "end": 387
+      },
+      "right": {
+        "path": "src/main/java/io/github/turtleisaac/pokeditor/gui/editors/data/formats/scripts/ScriptDocument.java",
+        "namespace": "io.github.turtleisaac.pokeditor.gui.editors.data.formats.scripts.ScriptDocument.ScriptFileSyntaxVisitor",
+        "name": "visitParameters",
+        "body": "49abd8d4184f1aec",
+        "start": 590,
+        "end": 598
+      }
+    },
+    {
+      "language": "java",
+      "score": 0.820896,
+      "left": {
+        "path": "src/main/java/io/github/turtleisaac/pokeditor/gui/editors/data/formats/scripts/ScriptDocument.java",
+        "namespace": "io.github.turtleisaac.pokeditor.gui.editors.data.formats.scripts.ScriptDocument.ScriptFileSyntaxVisitor",
+        "name": "visitAction_definition",
+        "body": "00fde8f3432ef676",
+        "start": 379,
+        "end": 387
+      },
+      "right": {
+        "path": "src/main/java/io/github/turtleisaac/pokeditor/gui/editors/data/formats/scripts/ScriptDocument.java",
+        "namespace": "io.github.turtleisaac.pokeditor.gui.editors.data.formats.scripts.ScriptDocument.ScriptFileSyntaxVisitor",
+        "name": "visitAction_command",
+        "body": "63d30a3dced7479c",
+        "start": 621,
+        "end": 630
+      }
+    },
+    {
+      "language": "java",
+      "score": 0.820896,
+      "left": {
+        "path": "src/main/java/io/github/turtleisaac/pokeditor/gui/editors/data/formats/scripts/ScriptDocument.java",
+        "namespace": "io.github.turtleisaac.pokeditor.gui.editors.data.formats.scripts.ScriptDocument.ScriptFileSyntaxVisitor",
+        "name": "visitAction_definition",
+        "body": "00fde8f3432ef676",
+        "start": 379,
+        "end": 387
+      },
+      "right": {
+        "path": "src/main/java/io/github/turtleisaac/pokeditor/gui/editors/data/formats/scripts/ScriptDocument.java",
+        "namespace": "io.github.turtleisaac.pokeditor.gui.editors.data.formats.scripts.ScriptDocument.ScriptFileSyntaxVisitor",
+        "name": "visitAction_parameters",
+        "body": "776352b30ca9537e",
+        "start": 632,
+        "end": 640
+      }
+    },
+    {
+      "language": "java",
+      "score": 0.820896,
+      "left": {
+        "path": "src/main/java/io/github/turtleisaac/pokeditor/gui/editors/data/formats/scripts/ScriptDocument.java",
+        "namespace": "io.github.turtleisaac.pokeditor.gui.editors.data.formats.scripts.ScriptDocument.ScriptFileSyntaxVisitor",
+        "name": "visitTable_definition",
+        "body": "0c6fcb9008b8201d",
+        "start": 389,
+        "end": 397
+      },
+      "right": {
+        "path": "src/main/java/io/github/turtleisaac/pokeditor/gui/editors/data/formats/scripts/ScriptDocument.java",
+        "namespace": "io.github.turtleisaac.pokeditor.gui.editors.data.formats.scripts.ScriptDocument.ScriptFileSyntaxVisitor",
+        "name": "visitTable_entry",
+        "body": "a48b205bfcb59db2",
+        "start": 399,
+        "end": 407
+      }
+    },
+    {
+      "language": "java",
+      "score": 0.820896,
+      "left": {
+        "path": "src/main/java/io/github/turtleisaac/pokeditor/gui/editors/data/formats/scripts/ScriptDocument.java",
+        "namespace": "io.github.turtleisaac.pokeditor.gui.editors.data.formats.scripts.ScriptDocument.ScriptFileSyntaxVisitor",
+        "name": "visitTable_definition",
+        "body": "0c6fcb9008b8201d",
+        "start": 389,
+        "end": 397
+      },
+      "right": {
+        "path": "src/main/java/io/github/turtleisaac/pokeditor/gui/editors/data/formats/scripts/ScriptDocument.java",
+        "namespace": "io.github.turtleisaac.pokeditor.gui.editors.data.formats.scripts.ScriptDocument.ScriptFileSyntaxVisitor",
+        "name": "visitEnd_table",
+        "body": "0b20c4b4f58bd178",
+        "start": 409,
+        "end": 417
+      }
+    },
+    {
+      "language": "java",
+      "score": 0.820896,
+      "left": {
+        "path": "src/main/java/io/github/turtleisaac/pokeditor/gui/editors/data/formats/scripts/ScriptDocument.java",
+        "namespace": "io.github.turtleisaac.pokeditor.gui.editors.data.formats.scripts.ScriptDocument.ScriptFileSyntaxVisitor",
+        "name": "visitTable_definition",
+        "body": "0c6fcb9008b8201d",
+        "start": 389,
+        "end": 397
+      },
+      "right": {
+        "path": "src/main/java/io/github/turtleisaac/pokeditor/gui/editors/data/formats/scripts/ScriptDocument.java",
+        "namespace": "io.github.turtleisaac.pokeditor.gui.editors.data.formats.scripts.ScriptDocument.ScriptFileSyntaxVisitor",
+        "name": "visitParameters",
+        "body": "49abd8d4184f1aec",
+        "start": 590,
+        "end": 598
+      }
+    },
+    {
+      "language": "java",
+      "score": 0.820896,
+      "left": {
+        "path": "src/main/java/io/github/turtleisaac/pokeditor/gui/editors/data/formats/scripts/ScriptDocument.java",
+        "namespace": "io.github.turtleisaac.pokeditor.gui.editors.data.formats.scripts.ScriptDocument.ScriptFileSyntaxVisitor",
+        "name": "visitTable_definition",
+        "body": "0c6fcb9008b8201d",
+        "start": 389,
+        "end": 397
+      },
+      "right": {
+        "path": "src/main/java/io/github/turtleisaac/pokeditor/gui/editors/data/formats/scripts/ScriptDocument.java",
+        "namespace": "io.github.turtleisaac.pokeditor.gui.editors.data.formats.scripts.ScriptDocument.ScriptFileSyntaxVisitor",
+        "name": "visitAction_command",
+        "body": "63d30a3dced7479c",
+        "start": 621,
+        "end": 630
+      }
+    },
+    {
+      "language": "java",
+      "score": 0.820896,
+      "left": {
+        "path": "src/main/java/io/github/turtleisaac/pokeditor/gui/editors/data/formats/scripts/ScriptDocument.java",
+        "namespace": "io.github.turtleisaac.pokeditor.gui.editors.data.formats.scripts.ScriptDocument.ScriptFileSyntaxVisitor",
+        "name": "visitTable_definition",
+        "body": "0c6fcb9008b8201d",
+        "start": 389,
+        "end": 397
+      },
+      "right": {
+        "path": "src/main/java/io/github/turtleisaac/pokeditor/gui/editors/data/formats/scripts/ScriptDocument.java",
+        "namespace": "io.github.turtleisaac.pokeditor.gui.editors.data.formats.scripts.ScriptDocument.ScriptFileSyntaxVisitor",
+        "name": "visitAction_parameters",
+        "body": "776352b30ca9537e",
+        "start": 632,
+        "end": 640
+      }
+    },
+    {
+      "language": "java",
+      "score": 0.820896,
+      "left": {
+        "path": "src/main/java/io/github/turtleisaac/pokeditor/gui/editors/data/formats/scripts/ScriptDocument.java",
+        "namespace": "io.github.turtleisaac.pokeditor.gui.editors.data.formats.scripts.ScriptDocument.ScriptFileSyntaxVisitor",
+        "name": "visitTable_entry",
+        "body": "a48b205bfcb59db2",
+        "start": 399,
+        "end": 407
+      },
+      "right": {
+        "path": "src/main/java/io/github/turtleisaac/pokeditor/gui/editors/data/formats/scripts/ScriptDocument.java",
+        "namespace": "io.github.turtleisaac.pokeditor.gui.editors.data.formats.scripts.ScriptDocument.ScriptFileSyntaxVisitor",
+        "name": "visitEnd_table",
+        "body": "0b20c4b4f58bd178",
+        "start": 409,
+        "end": 417
+      }
+    },
+    {
+      "language": "java",
+      "score": 0.820896,
+      "left": {
+        "path": "src/main/java/io/github/turtleisaac/pokeditor/gui/editors/data/formats/scripts/ScriptDocument.java",
+        "namespace": "io.github.turtleisaac.pokeditor.gui.editors.data.formats.scripts.ScriptDocument.ScriptFileSyntaxVisitor",
+        "name": "visitTable_entry",
+        "body": "a48b205bfcb59db2",
+        "start": 399,
+        "end": 407
+      },
+      "right": {
+        "path": "src/main/java/io/github/turtleisaac/pokeditor/gui/editors/data/formats/scripts/ScriptDocument.java",
+        "namespace": "io.github.turtleisaac.pokeditor.gui.editors.data.formats.scripts.ScriptDocument.ScriptFileSyntaxVisitor",
+        "name": "visitParameters",
+        "body": "49abd8d4184f1aec",
+        "start": 590,
+        "end": 598
+      }
+    },
+    {
+      "language": "java",
+      "score": 0.820896,
+      "left": {
+        "path": "src/main/java/io/github/turtleisaac/pokeditor/gui/editors/data/formats/scripts/ScriptDocument.java",
+        "namespace": "io.github.turtleisaac.pokeditor.gui.editors.data.formats.scripts.ScriptDocument.ScriptFileSyntaxVisitor",
+        "name": "visitTable_entry",
+        "body": "a48b205bfcb59db2",
+        "start": 399,
+        "end": 407
+      },
+      "right": {
+        "path": "src/main/java/io/github/turtleisaac/pokeditor/gui/editors/data/formats/scripts/ScriptDocument.java",
+        "namespace": "io.github.turtleisaac.pokeditor.gui.editors.data.formats.scripts.ScriptDocument.ScriptFileSyntaxVisitor",
+        "name": "visitAction_command",
+        "body": "63d30a3dced7479c",
+        "start": 621,
+        "end": 630
+      }
+    },
+    {
+      "language": "java",
+      "score": 0.820896,
+      "left": {
+        "path": "src/main/java/io/github/turtleisaac/pokeditor/gui/editors/data/formats/scripts/ScriptDocument.java",
+        "namespace": "io.github.turtleisaac.pokeditor.gui.editors.data.formats.scripts.ScriptDocument.ScriptFileSyntaxVisitor",
+        "name": "visitTable_entry",
+        "body": "a48b205bfcb59db2",
+        "start": 399,
+        "end": 407
+      },
+      "right": {
+        "path": "src/main/java/io/github/turtleisaac/pokeditor/gui/editors/data/formats/scripts/ScriptDocument.java",
+        "namespace": "io.github.turtleisaac.pokeditor.gui.editors.data.formats.scripts.ScriptDocument.ScriptFileSyntaxVisitor",
+        "name": "visitAction_parameters",
+        "body": "776352b30ca9537e",
+        "start": 632,
+        "end": 640
+      }
+    },
+    {
+      "language": "java",
+      "score": 0.820896,
+      "left": {
+        "path": "src/main/java/io/github/turtleisaac/pokeditor/gui/editors/data/formats/scripts/ScriptDocument.java",
+        "namespace": "io.github.turtleisaac.pokeditor.gui.editors.data.formats.scripts.ScriptDocument.ScriptFileSyntaxVisitor",
+        "name": "visitEnd_table",
+        "body": "0b20c4b4f58bd178",
+        "start": 409,
+        "end": 417
+      },
+      "right": {
+        "path": "src/main/java/io/github/turtleisaac/pokeditor/gui/editors/data/formats/scripts/ScriptDocument.java",
+        "namespace": "io.github.turtleisaac.pokeditor.gui.editors.data.formats.scripts.ScriptDocument.ScriptFileSyntaxVisitor",
+        "name": "visitParameters",
+        "body": "49abd8d4184f1aec",
+        "start": 590,
+        "end": 598
+      }
+    },
+    {
+      "language": "java",
+      "score": 0.820896,
+      "left": {
+        "path": "src/main/java/io/github/turtleisaac/pokeditor/gui/editors/data/formats/scripts/ScriptDocument.java",
+        "namespace": "io.github.turtleisaac.pokeditor.gui.editors.data.formats.scripts.ScriptDocument.ScriptFileSyntaxVisitor",
+        "name": "visitEnd_table",
+        "body": "0b20c4b4f58bd178",
+        "start": 409,
+        "end": 417
+      },
+      "right": {
+        "path": "src/main/java/io/github/turtleisaac/pokeditor/gui/editors/data/formats/scripts/ScriptDocument.java",
+        "namespace": "io.github.turtleisaac.pokeditor.gui.editors.data.formats.scripts.ScriptDocument.ScriptFileSyntaxVisitor",
+        "name": "visitAction_command",
+        "body": "63d30a3dced7479c",
+        "start": 621,
+        "end": 630
+      }
+    },
+    {
+      "language": "java",
+      "score": 0.820896,
+      "left": {
+        "path": "src/main/java/io/github/turtleisaac/pokeditor/gui/editors/data/formats/scripts/ScriptDocument.java",
+        "namespace": "io.github.turtleisaac.pokeditor.gui.editors.data.formats.scripts.ScriptDocument.ScriptFileSyntaxVisitor",
+        "name": "visitEnd_table",
+        "body": "0b20c4b4f58bd178",
+        "start": 409,
+        "end": 417
+      },
+      "right": {
+        "path": "src/main/java/io/github/turtleisaac/pokeditor/gui/editors/data/formats/scripts/ScriptDocument.java",
+        "namespace": "io.github.turtleisaac.pokeditor.gui.editors.data.formats.scripts.ScriptDocument.ScriptFileSyntaxVisitor",
+        "name": "visitAction_parameters",
+        "body": "776352b30ca9537e",
+        "start": 632,
+        "end": 640
+      }
+    },
+    {
+      "language": "java",
+      "score": 0.820896,
+      "left": {
+        "path": "src/main/java/io/github/turtleisaac/pokeditor/gui/editors/data/formats/scripts/ScriptDocument.java",
+        "namespace": "io.github.turtleisaac.pokeditor.gui.editors.data.formats.scripts.ScriptDocument.ScriptFileSyntaxVisitor",
+        "name": "visitParameters",
+        "body": "49abd8d4184f1aec",
+        "start": 590,
+        "end": 598
+      },
+      "right": {
+        "path": "src/main/java/io/github/turtleisaac/pokeditor/gui/editors/data/formats/scripts/ScriptDocument.java",
+        "namespace": "io.github.turtleisaac.pokeditor.gui.editors.data.formats.scripts.ScriptDocument.ScriptFileSyntaxVisitor",
+        "name": "visitAction_command",
+        "body": "63d30a3dced7479c",
+        "start": 621,
+        "end": 630
+      }
+    },
+    {
+      "language": "java",
+      "score": 0.820896,
+      "left": {
+        "path": "src/main/java/io/github/turtleisaac/pokeditor/gui/editors/data/formats/scripts/ScriptDocument.java",
+        "namespace": "io.github.turtleisaac.pokeditor.gui.editors.data.formats.scripts.ScriptDocument.ScriptFileSyntaxVisitor",
+        "name": "visitParameters",
+        "body": "49abd8d4184f1aec",
+        "start": 590,
+        "end": 598
+      },
+      "right": {
+        "path": "src/main/java/io/github/turtleisaac/pokeditor/gui/editors/data/formats/scripts/ScriptDocument.java",
+        "namespace": "io.github.turtleisaac.pokeditor.gui.editors.data.formats.scripts.ScriptDocument.ScriptFileSyntaxVisitor",
+        "name": "visitAction_parameters",
+        "body": "776352b30ca9537e",
+        "start": 632,
+        "end": 640
+      }
+    },
+    {
+      "language": "java",
+      "score": 0.820896,
+      "left": {
+        "path": "src/main/java/io/github/turtleisaac/pokeditor/gui/editors/data/formats/scripts/ScriptDocument.java",
+        "namespace": "io.github.turtleisaac.pokeditor.gui.editors.data.formats.scripts.ScriptDocument.ScriptFileSyntaxVisitor",
+        "name": "visitAction_command",
+        "body": "63d30a3dced7479c",
+        "start": 621,
+        "end": 630
+      },
+      "right": {
+        "path": "src/main/java/io/github/turtleisaac/pokeditor/gui/editors/data/formats/scripts/ScriptDocument.java",
+        "namespace": "io.github.turtleisaac.pokeditor.gui.editors.data.formats.scripts.ScriptDocument.ScriptFileSyntaxVisitor",
+        "name": "visitAction_parameters",
+        "body": "776352b30ca9537e",
+        "start": 632,
+        "end": 640
+      }
+    }
+  ]
+}
