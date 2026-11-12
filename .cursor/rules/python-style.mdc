@@ -1,0 +1,101 @@
+---
+description: Python style for scripts in this repo
+globs: "**/*.py"
+alwaysApply: false
+---
+
+# Python style
+
+## Comments
+
+A comment is `#` plus a space. It sits on the line above a step, or at the end of the line it explains. It is a short label or one sentence. Do not write a paragraph where a label will do. Capitalization is not strict.
+
+```python
+# Don't need to increment self.pos because it is handled by read_u8()
+return ret
+```
+
+```python
+if tile < transparency_tile:  # transparency tile is the first tile in the source image
+    transparency_tile = tile
+```
+
+Every function gets a docstring. Use triple double quotes, with the opening and closing quotes on their own lines and the text indented with the body. One short line saying what the function does. No paragraph, in a docstring or in a `#` comment. Do not leave a blank line between the closing quotes and the code.
+
+```python
+def split_stereo_wav(in_wav, left_out_wav, right_out_wav):
+    """
+    Use ffmpeg to split a stereo wav to two mono wavs
+    """
+    subprocess.run([...])
+```
+
+A file-level note, when there is one, is a triple-quoted block above the imports.
+
+## Blank lines
+
+One blank line between functions. The docstring sits directly under `def`, and the code follows the closing quotes with no blank line. Do not stack blank lines.
+
+Group the lines that do one step, and put one blank line between steps. A run of the same kind of statement stays together. A blank line is where that run stops and something else starts.
+
+A long run of assignments is not one step just because the lines look alike. Split where a new stage begins, when later lines are built from the results above.
+
+Leave one blank line after a substantial `if`, `for`, `while`, `with`, or `try` before the next step. `elif`, `else`, `except`, and `finally` stay attached. Nested blocks that end together share that one blank line. None when they end the function.
+
+After a guard (`if` whose body is a single `continue`, `break`, or `return`), leave a blank line before the next step. Skip it when the next line is another guard of the same kind, or when the whole body is a short loop: the guard plus one or two lines. An `if`/`else` pair stays together. A chain of `if`s that each return or transform stays together, and the fallback `return` after that chain gets a blank line.
+
+A `print` or other short call stays with the `return` under it. In a very short block the `return` can also follow a small loop. No blank line when the `return` is the only line in its block.
+
+```python
+for path in paths:
+    if not path.endswith('.java'):
+        continue
+    found.append(path)
+
+if status is None:
+    return
+
+rows.append(status)
+```
+
+```python
+if token == 'KILLED':
+    return 'killed'
+if token == 'SURVIVED':
+    return 'survived'
+
+return 'other'
+```
+
+## Layout
+
+Four spaces, no tabs. A space after `if`, `for`, `while`, and `except` when it takes an expression: `if rom_in is not None:`. `else` starts its own line.
+
+Long calls put each argument on its own line, indented one level:
+
+```python
+create_button = ttk.Button(
+    top_frame,
+    text='Repair ROM',
+    command=create,
+    width=30,
+)
+```
+
+Long messages break with `+` at the end of the line, or inside parentheses. There is no hard column.
+
+Slices and calls stay tight: `self.data[self.pos:self.pos + read_length]`, `read_u8()`. Not `data[start - 1 : end]`.
+
+## Names, quotes, imports
+
+Functions and locals are `snake_case`. Classes are `CapWords`. Real constants are `UPPER_SNAKE`.
+
+Prefer single quotes. An f-string is fine when the line would otherwise be a chain of `+`.
+
+Imports are one name per statement. A local module comes after a blank line. Do not use `from module import *`.
+
+## Types and `main`
+
+Skip annotations unless the file already has them.
+
+A CLI ends in `if __name__ == '__main__':` and calls `main()`. Use single quotes.

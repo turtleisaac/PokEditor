@@ -1,0 +1,39 @@
+name: Mutation testing
+
+# Changed files on pull requests. Full run weekly and on workflow_dispatch.
+on:
+  pull_request:
+  schedule:
+    - cron: "0 7 * * 1"
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  mutation:
+    name: PIT
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          # This module compiles at source/target 20. The build workflow uses 21.
+          java-version: '21'
+          cache: maven
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Mutation score
+        env:
+          QUALITY_BASE: origin/${{ github.base_ref || 'main' }}
+          QUALITY_MODE: ${{ github.event_name == 'pull_request' && 'changed' || 'full' }}
+        run: scripts/quality/mutate.sh

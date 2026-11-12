@@ -20,3 +20,9 @@
 
 # Maven build output
 /target/
+
+# Quality-gate tools and reports. Baselines under .quality/ are committed.
+.quality/py/
+.upstream/
+__pycache__/
+*.pyc

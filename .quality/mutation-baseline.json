@@ -1,0 +1,1004 @@
+{
+  "version": 1,
+  "score": {
+    "killedAndTimedOut": "counted as detected",
+    "excluded": [
+      "NON_VIABLE",
+      "EQUIVALENT",
+      "COMPILE_ERROR",
+      "IGNORED"
+    ]
+  },
+  "java": {
+    "tool": "pitest",
+    "totals": {
+      "killed": 752,
+      "timedOut": 14,
+      "survived": 328,
+      "noCoverage": 1676,
+      "other": 0
+    },
+    "classes": {
+      "io.github.turtleisaac.pokeditor.gui.editors.data.formats.scripts.field.FieldScriptEditor": {
+        "killed": 0,
+        "timedOut": 0,
+        "survived": 0,
+        "noCoverage": 281,
+        "other": 0
+      },
+      "io.github.turtleisaac.pokeditor.gui.sheets.DefaultSheetPanel": {
+        "killed": 0,
+        "timedOut": 0,
+        "survived": 0,
+        "noCoverage": 140,
+        "other": 0
+      },
+      "io.github.turtleisaac.pokeditor.gui.editors.data.formats.pokemon_sprite.PokemonSpriteEditor": {
+        "killed": 0,
+        "timedOut": 0,
+        "survived": 0,
+        "noCoverage": 124,
+        "other": 0
+      },
+      "io.github.turtleisaac.pokeditor.gui.PokeditorManager": {
+        "killed": 9,
+        "timedOut": 0,
+        "survived": 2,
+        "noCoverage": 94,
+        "other": 0
+      },
+      "io.github.turtleisaac.pokeditor.gui.editors.data.formats.scripts.ScriptDocument$ScriptFileSyntaxVisitor": {
+        "killed": 21,
+        "timedOut": 2,
+        "survived": 38,
+        "noCoverage": 39,
+        "other": 0
+      },
+      "io.github.turtleisaac.pokeditor.gui.sheets.tables.DefaultTable": {
+        "killed": 53,
+        "timedOut": 0,
+        "survived": 25,
+        "noCoverage": 5,
+        "other": 0
+      },
+      "io.github.turtleisaac.pokeditor.gui.editors.data.DefaultDataEditorPanel": {
+        "killed": 0,
+        "timedOut": 0,
+        "survived": 0,
+        "noCoverage": 81,
+        "other": 0
+      },
+      "io.github.turtleisaac.variabletracker.gui.variables.VariableTracker": {
+        "killed": 0,
+        "timedOut": 0,
+        "survived": 0,
+        "noCoverage": 78,
+        "other": 0
+      },
+      "io.github.turtleisaac.pokeditor.gui.sheets.tables.DefaultTable$PasteAction": {
+        "killed": 51,
+        "timedOut": 0,
+        "survived": 20,
+        "noCoverage": 5,
+        "other": 0
+      },
+      "io.github.turtleisaac.pokeditor.utilities.TrainerPersonalityCalculator": {
+        "killed": 24,
+        "timedOut": 0,
+        "survived": 5,
+        "noCoverage": 46,
+        "other": 0
+      },
+      "io.github.turtleisaac.pokeditor.gui.sheets.tables.formats.PersonalTable$PersonalModel": {
+        "killed": 65,
+        "timedOut": 0,
+        "survived": 5,
+        "noCoverage": 3,
+        "other": 0
+      },
+      "io.github.turtleisaac.pokeditor.framework.CsvReader": {
+        "killed": 34,
+        "timedOut": 3,
+        "survived": 27,
+        "noCoverage": 2,
+        "other": 0
+      },
+      "io.github.turtleisaac.pokeditor.gui.editors.data.formats.scripts.ScriptDocument": {
+        "killed": 15,
+        "timedOut": 7,
+        "survived": 25,
+        "noCoverage": 15,
+        "other": 0
+      },
+      "io.github.turtleisaac.pokeditor.gui.editors.data.formats.scripts.ScriptPane": {
+        "killed": 16,
+        "timedOut": 0,
+        "survived": 3,
+        "noCoverage": 36,
+        "other": 0
+      },
+      "io.github.turtleisaac.pokeditor.gui.editors.data.formats.pokemon_sprite.PokemonSpriteEditor$PalettePanel": {
+        "killed": 0,
+        "timedOut": 0,
+        "survived": 0,
+        "noCoverage": 48,
+        "other": 0
+      },
+      "io.github.turtleisaac.pokeditor.gui.sheets.tables.formats.LearnsetsTable$LearnsetsModel": {
+        "killed": 25,
+        "timedOut": 0,
+        "survived": 16,
+        "noCoverage": 6,
+        "other": 0
+      },
+      "io.github.turtleisaac.pokeditor.gui.sheets.tables.formats.EvolutionsTable$EvolutionsModel": {
+        "killed": 24,
+        "timedOut": 1,
+        "survived": 16,
+        "noCoverage": 5,
+        "other": 0
+      },
+      "io.github.turtleisaac.pokeditor.DataManager": {
+        "killed": 9,
+        "timedOut": 0,
+        "survived": 3,
+        "noCoverage": 33,
+        "other": 0
+      },
+      "io.github.turtleisaac.pokeditor.gui_old.JCheckboxTree": {
+        "killed": 29,
+        "timedOut": 0,
+        "survived": 4,
+        "noCoverage": 11,
+        "other": 0
+      },
+      "io.github.turtleisaac.pokeditor.gui.sheets.tables.cells.editors.NumberOnlyCellEditor": {
+        "killed": 32,
+        "timedOut": 0,
+        "survived": 9,
+        "noCoverage": 2,
+        "other": 0
+      },
+      "io.github.turtleisaac.pokeditor.gui.sheets.tables.formats.MovesTable$MovesModel": {
+        "killed": 32,
+        "timedOut": 0,
+        "survived": 5,
+        "noCoverage": 3,
+        "other": 0
+      },
+      "io.github.turtleisaac.pokeditor.gui_old.CircleButton": {
+        "killed": 8,
+        "timedOut": 0,
+        "survived": 6,
+        "noCoverage": 26,
+        "other": 0
+      },
+      "io.github.turtleisaac.pokeditor.gui.editors.data.formats.pokemon_sprite.PokemonSpriteEditor$SpriteModel": {
+        "killed": 0,
+        "timedOut": 0,
+        "survived": 0,
+        "noCoverage": 38,
+        "other": 0
+      },
+      "io.github.turtleisaac.pokeditor.gui.sheets.tables.FrozenColumnTable": {
+        "killed": 3,
+        "timedOut": 0,
+        "survived": 34,
+        "noCoverage": 0,
+        "other": 0
+      },
+      "io.github.turtleisaac.pokeditor.framework.BitStream": {
+        "killed": 28,
+        "timedOut": 1,
+        "survived": 5,
+        "noCoverage": 2,
+        "other": 0
+      },
+      "io.github.turtleisaac.pokeditor.gui.editors.data.formats.pokemon_sprite.PokemonSpriteEditor$BattleMockupPanel": {
+        "killed": 0,
+        "timedOut": 0,
+        "survived": 0,
+        "noCoverage": 34,
+        "other": 0
+      },
+      "io.github.turtleisaac.pokeditor.gui.editors.data.formats.pokemon_sprite.PokemonSpriteEditor$PokemonSpriteDisplayPanel": {
+        "killed": 0,
+        "timedOut": 0,
+        "survived": 0,
+        "noCoverage": 32,
+        "other": 0
+      },
+      "io.github.turtleisaac.pokeditor.gui.sheets.tables.FormatModel": {
+        "killed": 27,
+        "timedOut": 0,
+        "survived": 1,
+        "noCoverage": 4,
+        "other": 0
+      },
+      "io.github.turtleisaac.pokeditor.Main": {
+        "killed": 13,
+        "timedOut": 0,
+        "survived": 2,
+        "noCoverage": 17,
+        "other": 0
+      },
+      "io.github.turtleisaac.variabletracker.gui.variables.VariableTracker$VariableTableModel": {
+        "killed": 0,
+        "timedOut": 0,
+        "survived": 0,
+        "noCoverage": 29,
+        "other": 0
+      },
+      "io.github.turtleisaac.pokeditor.framework.BitVector": {
+        "killed": 20,
+        "timedOut": 0,
+        "survived": 6,
+        "noCoverage": 1,
+        "other": 0
+      },
+      "io.github.turtleisaac.pokeditor.gui.sheets.FindDialog": {
+        "killed": 0,
+        "timedOut": 0,
+        "survived": 0,
+        "noCoverage": 24,
+        "other": 0
+      },
+      "io.github.turtleisaac.pokeditor.gui.sheets.tables.formats.TmCompatibilityTable$TmCompatibilityModel": {
+        "killed": 9,
+        "timedOut": 0,
+        "survived": 8,
+        "noCoverage": 7,
+        "other": 0
+      },
+      "io.github.turtleisaac.pokeditor.gui.sheets.tables.formats.EvolutionsTable$EvolutionRequirementCellRenderer": {
+        "killed": 0,
+        "timedOut": 0,
+        "survived": 0,
+        "noCoverage": 22,
+        "other": 0
+      },
+      "io.github.turtleisaac.pokeditor.gui.editors.data.formats.scripts.ScriptDocument$ElementRange": {
+        "killed": 19,
+        "timedOut": 0,
+        "survived": 2,
+        "noCoverage": 1,
+        "other": 0
+      },
+      "io.github.turtleisaac.pokeditor.gui.editors.data.DefaultDataEditor": {
+        "killed": 14,
+        "timedOut": 0,
+        "survived": 2,
+        "noCoverage": 4,
+        "other": 0
+      },
+      "io.github.turtleisaac.pokeditor.gui.sheets.tables.cells.editors.BitfieldComboBoxEditor": {
+        "killed": 14,
+        "timedOut": 0,
+        "survived": 5,
+        "noCoverage": 0,
+        "other": 0
+      },
+      "io.github.turtleisaac.pokeditor.gui.sheets.tables.cells.TableCellComponents": {
+        "killed": 18,
+        "timedOut": 0,
+        "survived": 0,
+        "noCoverage": 0,
+        "other": 0
+      },
+      "io.github.turtleisaac.pokeditor.gui.sheets.tables.cells.renderers.BitfieldStringCellRenderer": {
+        "killed": 12,
+        "timedOut": 0,
+        "survived": 4,
+        "noCoverage": 0,
+        "other": 0
+      },
+      "io.github.turtleisaac.pokeditor.gui.sheets.tables.formats.EvolutionsTable$EvolutionRequirementCellEditor": {
+        "killed": 0,
+        "timedOut": 0,
+        "survived": 0,
+        "noCoverage": 15,
+        "other": 0
+      },
+      "io.github.turtleisaac.pokeditor.gui.editors.data.formats.pokemon_sprite.PokemonSpriteEditor$PalettePanel$PaletteEditingSpritePanel": {
+        "killed": 0,
+        "timedOut": 0,
+        "survived": 0,
+        "noCoverage": 14,
+        "other": 0
+      },
+      "io.github.turtleisaac.variabletracker.gui.cells.HexadecimalCellRenderer": {
+        "killed": 0,
+        "timedOut": 0,
+        "survived": 0,
+        "noCoverage": 14,
+        "other": 0
+      },
+      "io.github.turtleisaac.pokeditor.gui.sheets.tables.cells.renderers.IndexedStringCellRenderer": {
+        "killed": 11,
+        "timedOut": 0,
+        "survived": 3,
+        "noCoverage": 0,
+        "other": 0
+      },
+      "io.github.turtleisaac.variabletracker.gui.variables.VariableTracker$VariableTable": {
+        "killed": 0,
+        "timedOut": 0,
+        "survived": 0,
+        "noCoverage": 13,
+        "other": 0
+      },
+      "io.github.turtleisaac.pokeditor.gui.sheets.tables.formats.TmCompatibilityTable$2": {
+        "killed": 0,
+        "timedOut": 0,
+        "survived": 0,
+        "noCoverage": 13,
+        "other": 0
+      },
+      "io.github.turtleisaac.variabletracker.gui.cells.NumberCellEditor": {
+        "killed": 0,
+        "timedOut": 0,
+        "survived": 0,
+        "noCoverage": 13,
+        "other": 0
+      },
+      "io.github.turtleisaac.pokeditor.gui.sheets.DefaultSheetPanel$2": {
+        "killed": 0,
+        "timedOut": 0,
+        "survived": 0,
+        "noCoverage": 13,
+        "other": 0
+      },
+      "io.github.turtleisaac.pokeditor.framework.ArrayModifier": {
+        "killed": 13,
+        "timedOut": 0,
+        "survived": 0,
+        "noCoverage": 0,
+        "other": 0
+      },
+      "io.github.turtleisaac.pokeditor.gui.sheets.tables.cells.editors.ComboBoxCellEditor": {
+        "killed": 11,
+        "timedOut": 0,
+        "survived": 1,
+        "noCoverage": 0,
+        "other": 0
+      },
+      "io.github.turtleisaac.pokeditor.gui.editors.data.formats.scripts.field.FieldScriptEditor$3": {
+        "killed": 0,
+        "timedOut": 0,
+        "survived": 0,
+        "noCoverage": 12,
+        "other": 0
+      },
+      "io.github.turtleisaac.pokeditor.gui.sheets.tables.cells.renderers.MultiLineTableHeaderRenderer": {
+        "killed": 6,
+        "timedOut": 0,
+        "survived": 5,
+        "noCoverage": 1,
+        "other": 0
+      },
+      "io.github.turtleisaac.pokeditor.gui_old.JCheckboxTree$CheckBoxCellRenderer": {
+        "killed": 3,
+        "timedOut": 0,
+        "survived": 7,
+        "noCoverage": 2,
+        "other": 0
+      },
+      "io.github.turtleisaac.pokeditor.framework.XmlReader": {
+        "killed": 2,
+        "timedOut": 0,
+        "survived": 6,
+        "noCoverage": 3,
+        "other": 0
+      },
+      "io.github.turtleisaac.pokeditor.gui.sheets.tables.cells.renderers.DefaultSheetCellRenderer": {
+        "killed": 4,
+        "timedOut": 0,
+        "survived": 7,
+        "noCoverage": 0,
+        "other": 0
+      },
+      "io.github.turtleisaac.variabletracker.ScriptVariable": {
+        "killed": 1,
+        "timedOut": 0,
+        "survived": 1,
+        "noCoverage": 9,
+        "other": 0
+      },
+      "io.github.turtleisaac.pokeditor.framework.Directory": {
+        "killed": 9,
+        "timedOut": 0,
+        "survived": 2,
+        "noCoverage": 0,
+        "other": 0
+      },
+      "io.github.turtleisaac.pokeditor.gui.sheets.tables.formats.MovesTable$MovesModel$1": {
+        "killed": 0,
+        "timedOut": 0,
+        "survived": 0,
+        "noCoverage": 11,
+        "other": 0
+      },
+      "io.github.turtleisaac.pokeditor.gui.sheets.tables.formats.TmCompatibilityTable": {
+        "killed": 0,
+        "timedOut": 0,
+        "survived": 0,
+        "noCoverage": 10,
+        "other": 0
+      },
+      "io.github.turtleisaac.pokeditor.gui.sheets.tables.formats.TmCompatibilityTable$1": {
+        "killed": 0,
+        "timedOut": 0,
+        "survived": 0,
+        "noCoverage": 10,
+        "other": 0
+      },
+      "io.github.turtleisaac.pokeditor.gui.sheets.tables.cells.renderers.IndexedStringCellRenderer$ColoredIndexedStringCellRenderer": {
+        "killed": 9,
+        "timedOut": 0,
+        "survived": 1,
+        "noCoverage": 0,
+        "other": 0
+      },
+      "io.github.turtleisaac.pokeditor.gui.ConsoleWindow": {
+        "killed": 0,
+        "timedOut": 0,
+        "survived": 0,
+        "noCoverage": 9,
+        "other": 0
+      },
+      "io.github.turtleisaac.variabletracker.gui.variables.VariableTracker$VariableTable$1": {
+        "killed": 0,
+        "timedOut": 0,
+        "survived": 0,
+        "noCoverage": 9,
+        "other": 0
+      },
+      "io.github.turtleisaac.pokeditor.framework.ArrayProcessor": {
+        "killed": 9,
+        "timedOut": 0,
+        "survived": 0,
+        "noCoverage": 0,
+        "other": 0
+      },
+      "io.github.turtleisaac.pokeditor.gui.editors.data.formats.pokemon_sprite.PokemonSpriteEditor$PokemonSpriteDisplayPanel$PokemonSpriteDisplaySubPanel": {
+        "killed": 0,
+        "timedOut": 0,
+        "survived": 0,
+        "noCoverage": 9,
+        "other": 0
+      },
+      "io.github.turtleisaac.pokeditor.gui.sheets.tables.formats.PersonalTable$PersonalModel$1": {
+        "killed": 0,
+        "timedOut": 0,
+        "survived": 0,
+        "noCoverage": 9,
+        "other": 0
+      },
+      "io.github.turtleisaac.pokeditor.gui_old.JRoundButton$RoundedBorder": {
+        "killed": 0,
+        "timedOut": 0,
+        "survived": 0,
+        "noCoverage": 8,
+        "other": 0
+      },
+      "io.github.turtleisaac.pokeditor.gui.sheets.tables.formats.EvolutionsTable$EvolutionsModel$1": {
+        "killed": 0,
+        "timedOut": 0,
+        "survived": 0,
+        "noCoverage": 8,
+        "other": 0
+      },
+      "io.github.turtleisaac.pokeditor.gui.sheets.tables.formats.LearnsetsTable$LearnsetsModel$1": {
+        "killed": 0,
+        "timedOut": 0,
+        "survived": 0,
+        "noCoverage": 8,
+        "other": 0
+      },
+      "io.github.turtleisaac.pokeditor.gui.sheets.tables.formats.TmCompatibilityTable$TmCompatibilityModel$1": {
+        "killed": 0,
+        "timedOut": 0,
+        "survived": 0,
+        "noCoverage": 8,
+        "other": 0
+      },
+      "io.github.turtleisaac.pokeditor.framework.SheetExceptionFactory": {
+        "killed": 4,
+        "timedOut": 0,
+        "survived": 4,
+        "noCoverage": 0,
+        "other": 0
+      },
+      "io.github.turtleisaac.pokeditor.gui.editors.data.formats.scripts.ScriptDocument$ScriptElementList": {
+        "killed": 7,
+        "timedOut": 0,
+        "survived": 0,
+        "noCoverage": 0,
+        "other": 0
+      },
+      "io.github.turtleisaac.variabletracker.gui.variables.VariableTracker$VariableValueTableModel": {
+        "killed": 0,
+        "timedOut": 0,
+        "survived": 0,
+        "noCoverage": 7,
+        "other": 0
+      },
+      "io.github.turtleisaac.variabletracker.gui.variables.VariableTracker$VariableValueTable": {
+        "killed": 0,
+        "timedOut": 0,
+        "survived": 0,
+        "noCoverage": 7,
+        "other": 0
+      },
+      "io.github.turtleisaac.pokeditor.gui.sheets.tables.formats.EvolutionsTable": {
+        "killed": 0,
+        "timedOut": 0,
+        "survived": 0,
+        "noCoverage": 7,
+        "other": 0
+      },
+      "io.github.turtleisaac.pokeditor.gui.editors.data.formats.scripts.field.FieldScriptEditor$FieldScriptModel": {
+        "killed": 0,
+        "timedOut": 0,
+        "survived": 0,
+        "noCoverage": 6,
+        "other": 0
+      },
+      "io.github.turtleisaac.pokeditor.gui_old.JCheckboxTree$4": {
+        "killed": 0,
+        "timedOut": 0,
+        "survived": 0,
+        "noCoverage": 6,
+        "other": 0
+      },
+      "io.github.turtleisaac.pokeditor.gui_old.JCheckboxTree$2": {
+        "killed": 0,
+        "timedOut": 0,
+        "survived": 0,
+        "noCoverage": 6,
+        "other": 0
+      },
+      "io.github.turtleisaac.pokeditor.framework.JarClassLoader": {
+        "killed": 2,
+        "timedOut": 0,
+        "survived": 0,
+        "noCoverage": 4,
+        "other": 0
+      },
+      "io.github.turtleisaac.pokeditor.gui.sheets.tables.cells.renderers.CheckBoxRenderer": {
+        "killed": 4,
+        "timedOut": 0,
+        "survived": 2,
+        "noCoverage": 0,
+        "other": 0
+      },
+      "io.github.turtleisaac.pokeditor.gui_old.JCheckboxTree$CheckedNode": {
+        "killed": 6,
+        "timedOut": 0,
+        "survived": 0,
+        "noCoverage": 0,
+        "other": 0
+      },
+      "io.github.turtleisaac.pokeditor.gui.sheets.tables.formats.PersonalTable": {
+        "killed": 0,
+        "timedOut": 0,
+        "survived": 0,
+        "noCoverage": 5,
+        "other": 0
+      },
+      "io.github.turtleisaac.pokeditor.gui.sheets.tables.cells.editors.CheckBoxEditor": {
+        "killed": 5,
+        "timedOut": 0,
+        "survived": 0,
+        "noCoverage": 0,
+        "other": 0
+      },
+      "io.github.turtleisaac.pokeditor.gui.sheets.tables.formats.PersonalTable$PersonalColumns": {
+        "killed": 3,
+        "timedOut": 0,
+        "survived": 1,
+        "noCoverage": 1,
+        "other": 0
+      },
+      "io.github.turtleisaac.pokeditor.gui.sheets.tables.formats.LearnsetsTable": {
+        "killed": 0,
+        "timedOut": 0,
+        "survived": 0,
+        "noCoverage": 5,
+        "other": 0
+      },
+      "io.github.turtleisaac.variabletracker.Main": {
+        "killed": 0,
+        "timedOut": 0,
+        "survived": 0,
+        "noCoverage": 5,
+        "other": 0
+      },
+      "io.github.turtleisaac.pokeditor.gui.editors.data.formats.pokemon_sprite.PokemonSpriteEditor$PokemonSpriteDisplayPanel$2": {
+        "killed": 0,
+        "timedOut": 0,
+        "survived": 0,
+        "noCoverage": 5,
+        "other": 0
+      },
+      "io.github.turtleisaac.pokeditor.gui_old.JRoundButton": {
+        "killed": 0,
+        "timedOut": 0,
+        "survived": 0,
+        "noCoverage": 5,
+        "other": 0
+      },
+      "io.github.turtleisaac.pokeditor.gui_old.CircleButton$1": {
+        "killed": 0,
+        "timedOut": 0,
+        "survived": 0,
+        "noCoverage": 5,
+        "other": 0
+      },
+      "io.github.turtleisaac.pokeditor.gui.sheets.tables.FrozenColumnTable$1": {
+        "killed": 3,
+        "timedOut": 0,
+        "survived": 0,
+        "noCoverage": 1,
+        "other": 0
+      },
+      "io.github.turtleisaac.variabletracker.gui.cells.HexadecimalSpinner$HexFormatter": {
+        "killed": 0,
+        "timedOut": 0,
+        "survived": 0,
+        "noCoverage": 4,
+        "other": 0
+      },
+      "io.github.turtleisaac.pokeditor.gui.sheets.tables.formats.LearnsetsTable$LearnsetsColumn": {
+        "killed": 4,
+        "timedOut": 0,
+        "survived": 0,
+        "noCoverage": 0,
+        "other": 0
+      },
+      "io.github.turtleisaac.pokeditor.gui.PokeditorManager$2": {
+        "killed": 0,
+        "timedOut": 0,
+        "survived": 0,
+        "noCoverage": 4,
+        "other": 0
+      },
+      "io.github.turtleisaac.pokeditor.gui.PokeditorManager$1": {
+        "killed": 0,
+        "timedOut": 0,
+        "survived": 0,
+        "noCoverage": 4,
+        "other": 0
+      },
+      "io.github.turtleisaac.pokeditor.gui.PokeditorManager$4": {
+        "killed": 0,
+        "timedOut": 0,
+        "survived": 0,
+        "noCoverage": 4,
+        "other": 0
+      },
+      "io.github.turtleisaac.pokeditor.gui.PokeditorManager$3": {
+        "killed": 0,
+        "timedOut": 0,
+        "survived": 0,
+        "noCoverage": 4,
+        "other": 0
+      },
+      "io.github.turtleisaac.pokeditor.gui.editors.data.formats.scripts.ScriptPane$1": {
+        "killed": 0,
+        "timedOut": 0,
+        "survived": 0,
+        "noCoverage": 4,
+        "other": 0
+      },
+      "io.github.turtleisaac.variabletracker.gui.variables.VariableTracker$1": {
+        "killed": 0,
+        "timedOut": 0,
+        "survived": 0,
+        "noCoverage": 4,
+        "other": 0
+      },
+      "io.github.turtleisaac.pokeditor.gui.sheets.DefaultSheetPanel$1": {
+        "killed": 0,
+        "timedOut": 0,
+        "survived": 0,
+        "noCoverage": 4,
+        "other": 0
+      },
+      "io.github.turtleisaac.pokeditor.gui.sheets.tables.formats.MovesTable$MovesColumn": {
+        "killed": 3,
+        "timedOut": 0,
+        "survived": 0,
+        "noCoverage": 1,
+        "other": 0
+      },
+      "io.github.turtleisaac.variabletracker.gui.cells.HexadecimalSpinner": {
+        "killed": 0,
+        "timedOut": 0,
+        "survived": 0,
+        "noCoverage": 3,
+        "other": 0
+      },
+      "io.github.turtleisaac.pokeditor.gui.sheets.FindDialog$1": {
+        "killed": 0,
+        "timedOut": 0,
+        "survived": 0,
+        "noCoverage": 3,
+        "other": 0
+      },
+      "io.github.turtleisaac.variabletracker.ScriptFlag": {
+        "killed": 0,
+        "timedOut": 0,
+        "survived": 0,
+        "noCoverage": 3,
+        "other": 0
+      },
+      "io.github.turtleisaac.pokeditor.gui.editors.data.formats.pokemon_sprite.PokemonSpriteEditor$SpriteContents": {
+        "killed": 0,
+        "timedOut": 0,
+        "survived": 0,
+        "noCoverage": 3,
+        "other": 0
+      },
+      "io.github.turtleisaac.pokeditor.gui.sheets.tables.formats.TmCompatibilityTable$TmCompatibilityColumns": {
+        "killed": 3,
+        "timedOut": 0,
+        "survived": 0,
+        "noCoverage": 0,
+        "other": 0
+      },
+      "io.github.turtleisaac.pokeditor.gui.editors.data.formats.pokemon_sprite.PokemonSpriteEditor$ShadowSize": {
+        "killed": 0,
+        "timedOut": 0,
+        "survived": 0,
+        "noCoverage": 3,
+        "other": 0
+      },
+      "io.github.turtleisaac.pokeditor.gui.sheets.tables.formats.MovesTable": {
+        "killed": 0,
+        "timedOut": 0,
+        "survived": 0,
+        "noCoverage": 3,
+        "other": 0
+      },
+      "io.github.turtleisaac.pokeditor.gui.ConsoleWindow$1": {
+        "killed": 0,
+        "timedOut": 0,
+        "survived": 0,
+        "noCoverage": 3,
+        "other": 0
+      },
+      "io.github.turtleisaac.pokeditor.gui.sheets.tables.formats.EvolutionsTable$EvolutionsColumn": {
+        "killed": 3,
+        "timedOut": 0,
+        "survived": 0,
+        "noCoverage": 0,
+        "other": 0
+      },
+      "io.github.turtleisaac.variabletracker.ScriptVariable$VariableValue": {
+        "killed": 0,
+        "timedOut": 0,
+        "survived": 0,
+        "noCoverage": 3,
+        "other": 0
+      },
+      "io.github.turtleisaac.pokeditor.gui.sheets.tables.cells.editors.NumberOnlyCellEditor$1": {
+        "killed": 1,
+        "timedOut": 0,
+        "survived": 0,
+        "noCoverage": 1,
+        "other": 0
+      },
+      "io.github.turtleisaac.pokeditor.gui.sheets.tables.formats.EvolutionsTable$EvolutionRequirementCellSupplier": {
+        "killed": 0,
+        "timedOut": 0,
+        "survived": 0,
+        "noCoverage": 2,
+        "other": 0
+      },
+      "io.github.turtleisaac.pokeditor.gui_old.tutorial.TutorialFrame": {
+        "killed": 0,
+        "timedOut": 0,
+        "survived": 0,
+        "noCoverage": 2,
+        "other": 0
+      },
+      "io.github.turtleisaac.variabletracker.gui.variables.VariableTracker$4": {
+        "killed": 0,
+        "timedOut": 0,
+        "survived": 0,
+        "noCoverage": 2,
+        "other": 0
+      },
+      "io.github.turtleisaac.variabletracker.gui.variables.VariableTracker$6": {
+        "killed": 0,
+        "timedOut": 0,
+        "survived": 0,
+        "noCoverage": 2,
+        "other": 0
+      },
+      "io.github.turtleisaac.pokeditor.gui.editors.data.formats.scripts.field.FieldScriptEditor$4": {
+        "killed": 0,
+        "timedOut": 0,
+        "survived": 0,
+        "noCoverage": 2,
+        "other": 0
+      },
+      "io.github.turtleisaac.pokeditor.gui.editors.data.formats.pokemon_sprite.PokemonSpriteEditor$PokemonSpriteDisplayPanel$1": {
+        "killed": 0,
+        "timedOut": 0,
+        "survived": 0,
+        "noCoverage": 2,
+        "other": 0
+      },
+      "io.github.turtleisaac.pokeditor.gui_old.editors.trainers.classes.ClassPanel": {
+        "killed": 0,
+        "timedOut": 0,
+        "survived": 0,
+        "noCoverage": 1,
+        "other": 0
+      },
+      "io.github.turtleisaac.pokeditor.gui.EditorComboBox$ComboBoxItem": {
+        "killed": 1,
+        "timedOut": 0,
+        "survived": 0,
+        "noCoverage": 0,
+        "other": 0
+      },
+      "io.github.turtleisaac.pokeditor.DataManager$MovesModule": {
+        "killed": 0,
+        "timedOut": 0,
+        "survived": 1,
+        "noCoverage": 0,
+        "other": 0
+      },
+      "io.github.turtleisaac.pokeditor.DataManager$ItemsModule": {
+        "killed": 0,
+        "timedOut": 0,
+        "survived": 1,
+        "noCoverage": 0,
+        "other": 0
+      },
+      "io.github.turtleisaac.pokeditor.DataManager$PokemonSpriteModule": {
+        "killed": 0,
+        "timedOut": 0,
+        "survived": 1,
+        "noCoverage": 0,
+        "other": 0
+      },
+      "io.github.turtleisaac.pokeditor.DataManager$SinnohEncountersModule": {
+        "killed": 0,
+        "timedOut": 0,
+        "survived": 1,
+        "noCoverage": 0,
+        "other": 0
+      },
+      "io.github.turtleisaac.pokeditor.DataManager$PersonalModule": {
+        "killed": 0,
+        "timedOut": 0,
+        "survived": 1,
+        "noCoverage": 0,
+        "other": 0
+      },
+      "io.github.turtleisaac.pokeditor.gui.EditorComboBox": {
+        "killed": 1,
+        "timedOut": 0,
+        "survived": 0,
+        "noCoverage": 0,
+        "other": 0
+      },
+      "io.github.turtleisaac.pokeditor.DataManager$JohtoEncountersModule": {
+        "killed": 0,
+        "timedOut": 0,
+        "survived": 1,
+        "noCoverage": 0,
+        "other": 0
+      },
+      "io.github.turtleisaac.pokeditor.gui.editors.general.starters.StarterEditor": {
+        "killed": 0,
+        "timedOut": 0,
+        "survived": 0,
+        "noCoverage": 1,
+        "other": 0
+      },
+      "io.github.turtleisaac.pokeditor.DataManager$LearnsetsModule": {
+        "killed": 0,
+        "timedOut": 0,
+        "survived": 1,
+        "noCoverage": 0,
+        "other": 0
+      },
+      "io.github.turtleisaac.pokeditor.DataManager$TextBankModule": {
+        "killed": 0,
+        "timedOut": 0,
+        "survived": 1,
+        "noCoverage": 0,
+        "other": 0
+      },
+      "io.github.turtleisaac.pokeditor.gui.editors.data.formats.trainer_sprite.TrainerSpriteEditor": {
+        "killed": 0,
+        "timedOut": 0,
+        "survived": 0,
+        "noCoverage": 1,
+        "other": 0
+      },
+      "io.github.turtleisaac.variabletracker.gui.variables.VariableTracker$3": {
+        "killed": 0,
+        "timedOut": 0,
+        "survived": 0,
+        "noCoverage": 1,
+        "other": 0
+      },
+      "io.github.turtleisaac.variabletracker.gui.variables.VariableTracker$2": {
+        "killed": 0,
+        "timedOut": 0,
+        "survived": 0,
+        "noCoverage": 1,
+        "other": 0
+      },
+      "io.github.turtleisaac.variabletracker.gui.variables.VariableTracker$5": {
+        "killed": 0,
+        "timedOut": 0,
+        "survived": 0,
+        "noCoverage": 1,
+        "other": 0
+      },
+      "io.github.turtleisaac.variabletracker.gui.cells.HexadecimalSpinner$HexFormatterFactory": {
+        "killed": 0,
+        "timedOut": 0,
+        "survived": 0,
+        "noCoverage": 1,
+        "other": 0
+      },
+      "io.github.turtleisaac.variabletracker.gui.variables.VariableTracker$7": {
+        "killed": 0,
+        "timedOut": 0,
+        "survived": 0,
+        "noCoverage": 1,
+        "other": 0
+      },
+      "io.github.turtleisaac.variabletracker.gui.flags.FlagTracker": {
+        "killed": 0,
+        "timedOut": 0,
+        "survived": 0,
+        "noCoverage": 1,
+        "other": 0
+      },
+      "io.github.turtleisaac.pokeditor.DataManager$TrainersModule": {
+        "killed": 0,
+        "timedOut": 0,
+        "survived": 1,
+        "noCoverage": 0,
+        "other": 0
+      },
+      "io.github.turtleisaac.pokeditor.gui.editors.general.GeneralEditorPanel": {
+        "killed": 0,
+        "timedOut": 0,
+        "survived": 0,
+        "noCoverage": 1,
+        "other": 0
+      },
+      "io.github.turtleisaac.pokeditor.gui.editors.data.formats.scripts.field.FieldScriptEditor$2": {
+        "killed": 0,
+        "timedOut": 0,
+        "survived": 0,
+        "noCoverage": 1,
+        "other": 0
+      },
+      "io.github.turtleisaac.pokeditor.gui.editors.data.formats.pokemon_sprite.PokemonSpriteEditor$1": {
+        "killed": 0,
+        "timedOut": 0,
+        "survived": 0,
+        "noCoverage": 1,
+        "other": 0
+      },
+      "io.github.turtleisaac.pokeditor.DataManager$EvolutionsModule": {
+        "killed": 0,
+        "timedOut": 0,
+        "survived": 1,
+        "noCoverage": 0,
+        "other": 0
+      }
+    }
+  }
+}
